@@ -1,0 +1,42 @@
+$desktop: 1440px;
+$notebook: 1280px;
+$tablet: 1024px;
+$tablet-900: 900px;
+$mobile: 600px;
+
+$base-font: 18px;
+
+@media screen and (width <=$tablet) {
+  $base-font: 16px;
+}
+
+$paddings-container-desktop: 0 2rem;
+$paddings-container-notebook: 0 2rem;
+$paddings-container-tablet: 0 1.5rem;
+$paddings-container-tablet-900: 0 1.5rem;
+$paddings-container-mobile: 0 1rem;
+
+$transition: .3s;
+$border-radius: 5px;
+
+$footer-padding: 5.5rem 0 2.4rem;
+
+$border: 0 0 0 1px var(--font-color-dimmed);
+$shadow-s: 0 2px 16px 0px var(--block-shadow-color);
+$shadow-l: 0 2px 30px -6px var(--block-shadow-color);
+
+$section-paddings-s: 1.5rem;
+$section-paddings-l: 2.5rem;
+$section-paddings-xl: 4rem;
+
+:root {
+  --desktop: $desktop;
+  --notebook: $notebook;
+  --tablet: $tablet;
+  --tablet-900: $tablet-900;
+  --mobile: $mobile;
+
+  --swiper-pagination-color: rgba(255, 255, 255);
+  --swiper-pagination-bullet-inactive-color: rgba(255, 255, 255, 0.25);
+  --swiper-pagination-bullet-inactive-opacity: 0.9;
+}
