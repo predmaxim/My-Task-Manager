@@ -1,0 +1,30 @@
+[
+  {
+    "id": 1,
+    "name": "Some Project",
+    "status": "active",
+    "created": 1696166995998,
+    "user": 1,
+    "icon": "RiHomeHeartLine",
+    "color": "#eeeeee",
+    "tasks": [
+      1,
+      5,
+      3
+    ]
+  },
+  {
+    "id": 2,
+    "name": "Some Project 2",
+    "status": "active",
+    "created": 1716966995998,
+    "user": 1,
+    "icon": "RiBuildingLine",
+    "color": "#60ff46",
+    "tasks": [
+      1,
+      5,
+      3
+    ]
+  }
+]
