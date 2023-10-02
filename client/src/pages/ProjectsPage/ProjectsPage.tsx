@@ -1,4 +1,4 @@
-import { MainHeader } from 'components/MainHeader';
+import { MainHeader } from 'src/components/MainHeader';
 import './ProjectsPage.scss';
 
 export default function ProjectsPage() {

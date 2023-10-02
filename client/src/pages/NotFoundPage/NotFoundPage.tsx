@@ -1,5 +1,5 @@
-import { Header } from 'components';
 import { RiArrowLeftLine } from 'react-icons/ri'
+import { Header } from 'src/components';
 import './NotFoundPage.scss';
 
 export default function NotFoundPage() {

@@ -3,8 +3,11 @@
     "id": 1,
     "name": "Admin",
     "email": "qwe@qwe.ru",
-    "pass": "pass",
+    "password": "password",
     "avatarURL": "https://www.pinclipart.com/picdir/big/165-1653686_female-user-icon-png-download-user-colorful-icon.png",
+    "role": "admin",
+    "created": 1696226995998,
+    "lastVisit": 1696826995998,
     "projectsID": [
       1,
       2
