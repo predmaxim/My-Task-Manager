@@ -1,13 +1,14 @@
 import { Request, Response } from 'express';
 import Comment from '../models/Comment';
 import Task from '../models/Task';
+import { CommentType } from '@/types';
 
 export const createComment = async (req: Request, res: Response) => {
   try {
-    const { taskId, comment } = req.body;
+    const { taskId, comment }: { taskId: string, comment: CommentType } = req.body;
 
     if (!comment)
-      return res.json({ message: 'Comment cannot be empty' });
+      return res.status(400).json({ message: 'Comment cannot be empty' });
 
     const newComment = new Comment({ comment });
     await newComment.save();
@@ -20,9 +21,9 @@ export const createComment = async (req: Request, res: Response) => {
       console.log(error);
     }
 
-    res.json(newComment);
+    res.status(201).json(newComment);
 
   } catch (error) {
-    res.json({ message: 'Something went wrong' });
+    res.status(500).json({ message: 'Something went wrong', error });
   }
 };
