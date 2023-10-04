@@ -1,0 +1,78 @@
+@import 'src/assets/vars.scss';
+
+$modal-padding: 30px;
+
+@media screen and (width <=$tablet) {
+  $modal-padding: 20px;
+}
+
+@media screen and (width <=$mobile) {
+  $modal-padding: 15px;
+}
+
+.Modal {
+  &__overlay {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background-color: var(--overlay-bg);
+    z-index: 3;
+    transition: 0.3s;
+  }
+
+  &__body {
+    position: absolute;
+    top: 10%;
+    left: 50%;
+    padding: $modal-padding;
+    width: calc(100% - $modal-padding * 4);
+    max-width: 600px;
+    background: var(--bg-color);
+    border-radius: $border-radius;
+    visibility: hidden;
+    animation: smoothAppearanceHide .2s forwards;
+    transform: translateY(-999vh);
+    opacity: 0;
+    z-index: -100;
+
+    &.active {
+      visibility: visible;
+      z-index: 3;
+      animation: smoothAppearanceShow .2s forwards;
+    }
+  }
+
+  &__closeBtn {
+    position: absolute;
+    top: $modal-padding / 2;
+    right: $modal-padding / 2;
+    font-size: 1.5rem;
+    cursor: pointer;
+  }
+}
+
+@keyframes smoothAppearanceShow {
+  0% {
+    transform: translate(-50%, -100%);
+    opacity: 0;
+  }
+
+  100% {
+    transform: translate(-50%, 0);
+    opacity: 1;
+  }
+}
+
+@keyframes smoothAppearanceHide {
+  100% {
+    transform: translate(-50%, 0);
+    opacity: 1;
+  }
+
+  100% {
+    transform: translate(-50%, -100%);
+    opacity: 0;
+  }
+}
