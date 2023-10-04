@@ -7,9 +7,9 @@
   background: var(--primary-color);
   border-radius: 10px;
   transition: 0.3s;
+  cursor: pointer;
   align-items: center;
   justify-content: center;
-  cursor: pointer;
 
   &:hover {
     background: var(--primary-color-darker);
