@@ -4,7 +4,7 @@ $tablet: 1024px;
 $tablet-900: 900px;
 $mobile: 600px;
 
-$base-font: 18px;
+$base-font: 16px;
 
 @media screen and (width <=$tablet) {
   $base-font: 16px;
@@ -17,7 +17,7 @@ $paddings-container-tablet-900: 0 1.5rem;
 $paddings-container-mobile: 0 1rem;
 
 $transition: .3s;
-$border-radius: 5px;
+$border-radius: 10px;
 
 $footer-padding: 5.5rem 0 2.4rem;
 
