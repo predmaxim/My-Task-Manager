@@ -1,14 +1,21 @@
-import { MainHeader } from 'src/components/MainHeader';
+import { MainHeader } from 'src/components';
+import { ProjectList } from 'src/components';
+import { NewProjectBtn } from 'src/components';
 import './ProjectsPage.scss';
 
 export default function ProjectsPage() {
+
+
   return (
     <>
       <MainHeader />
       <main className="ProjectsPage">
         <div className="container">
-          <h1>Projects Page</h1>
+          <NewProjectBtn />
+          <p className="ProjectsPage__project-header">Select Project:</p>
+          <ProjectList />
         </div>
+
       </main>
     </>
   );
