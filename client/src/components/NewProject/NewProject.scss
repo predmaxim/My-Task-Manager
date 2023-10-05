@@ -1,6 +1,6 @@
 @import 'src/assets/vars.scss';
 
-.NewProjectBtn {
+.NewProject {
   margin: auto;
   margin-bottom: 50px
 }
@@ -24,34 +24,15 @@
     font-size: .88rem;
   }
 
-  &__input {
-    padding: 15px;
-    font-size: 1rem;
-    border: 1px solid var(--border-color);
+  &__input {}
 
-    &.active,
-    &:hover {
-      border: 1px solid var(--border-color-darker);
-    }
-  }
-
-  &__selectIconBtn {
+  &__selectIconBtn.button {
     display: flex;
     align-items: center;
     justify-content: center;
+    align-self: end;
     padding: 10px;
     font-size: 1.8rem;
-    background: var(--primary-color);
-    border-radius: 10px;
-    text-align: center;
-    height: 50px;
-    align-self: end;
-    transition: 0.3s;
-    cursor: pointer;
-
-    &:hover {
-      background: var(--primary-color-darker);
-    }
 
     @media screen and (width <=$mobile) {
       align-self: auto;
@@ -60,7 +41,7 @@
   }
 
   &__text {
-    font-size: 1rem;
+    font-size: .8rem;
     padding: 0 10px;
   }
 }

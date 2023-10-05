@@ -1,25 +1,27 @@
 import { ChangeEvent, useCallback, useEffect, useMemo, useState } from "react";
 import { createPortal } from "react-dom";
 import { useNavigate } from "react-router-dom";
+import { IconType } from "react-icons";
+import axios from "axios";
 import { ButtonWithIcon } from "src/components/ButtonWithIcon";
 import { Modal } from "src/components/Modal";
 import { icons } from 'src/components/icons';
-import { IconType } from "react-icons";
+import { onActionModal } from "src/utils/helpers";
 import { ProjectType } from "src/utils/types";
-import './NewProjectBtn.scss';
-import axios from "axios";
+import { BASE_URL } from "src/utils/constants";
+import './NewProject.scss';
 
-export function NewProjectBtn() {
+export function NewProject() {
   const [showNewProjectModal, setNewProjectModal] = useState(false);
   const [showIconModal, setShowIconModal] = useState(false);
   const [ProjectIcon, setProjectIcon] = useState<JSX.Element>();
-  const [inputValue, setInputValue] = useState('');
   const [newProject, setNewProject] = useState<ProjectType>();
+  const [inputValue, setInputValue] = useState('');
 
   const navigate = useNavigate();
 
   const onChangeInputHandler = (e: ChangeEvent<HTMLInputElement>) => {
-    setInputValue(() => e.target.value);
+    setInputValue(e.target.value);
   };
 
   const onOkModal = () => {
@@ -30,21 +32,13 @@ export function NewProjectBtn() {
       icon: ProjectIcon?.type.name
     };
     setNewProject(project);
-    createNewProject(project);
+    setNewProjectModal(false);
     // navigate(`/tasks`);
-  };
-
-  const openModal = (fn: (value: React.SetStateAction<boolean>) => void) => {
-    fn(true);
-  };
-
-  const onCloseModal = (fn: (value: React.SetStateAction<boolean>) => void) => {
-    fn(false);
   };
 
   const setIconOnClickHandler = useCallback((icon: JSX.Element) => {
     setProjectIcon(icon);
-    onCloseModal(setShowIconModal);
+    onActionModal(setShowIconModal, false);
   }, []);
 
   const SetProjectIconBtn = () => {
@@ -81,11 +75,11 @@ export function NewProjectBtn() {
   const newProjectForm = (
     <form className="NewProjectForm" id="NewProjectForm">
       <div className="input-wrapper">
-        <label htmlFor="NewProjectForm__input" className="NewProjectForm__label">Project Name:</label>
+        <label htmlFor="NewProjectForm__input" className="NewProjectForm__label label">Project Name:</label>
         <input
           type="text"
           id="NewProjectForm__input"
-          className="NewProjectForm__input"
+          className="NewProjectForm__input input"
           placeholder="My Project"
           value={inputValue}
           onChange={onChangeInputHandler}
@@ -94,8 +88,8 @@ export function NewProjectBtn() {
       </div>
       <button
         type="button"
-        className="NewProjectForm__selectIconBtn"
-        onClick={() => openModal(setShowIconModal)}
+        className="NewProjectForm__selectIconBtn button"
+        onClick={() => onActionModal(setShowIconModal, true)}
       >
         {SetProjectIconBtn()}
       </button>
@@ -105,8 +99,9 @@ export function NewProjectBtn() {
 
   const createNewProject = useCallback(async (project: ProjectType) => {
     try {
-      const { data } = await axios.post(`${URL}/api/projects`, project);
+      const { data } = await axios.post(`${BASE_URL}/api/projects`, project);
       console.log(data)
+      setNewProject(data.project);
 
     } catch (error) {
       console.log(error);
@@ -114,22 +109,22 @@ export function NewProjectBtn() {
   }, []);
 
   useEffect(() => {
-    newProject && createNewProject(newProject)
-  }, [createNewProject, newProject])
+    newProject && createNewProject(newProject);
+  }, [createNewProject, newProject]);
 
   return (
     <>
       <ButtonWithIcon
-        className="NewProjectBtn"
+        className="NewProject"
         icon="RiAddLine"
         text="New Project"
-        onClick={() => openModal(setNewProjectModal)}
+        onClick={() => onActionModal(setNewProjectModal, true)}
       />
       {showNewProjectModal && createPortal(
         <Modal
           className="NewProject"
           isActive={true}
-          onClose={() => onCloseModal(setNewProjectModal)}
+          onClose={() => onActionModal(setNewProjectModal, false)}
           onOk={onOkModal}
           children={newProjectForm}
           header="Add New Project"
@@ -141,7 +136,7 @@ export function NewProjectBtn() {
         <Modal
           className="iconModal"
           isActive={true}
-          onClose={() => onCloseModal(setShowIconModal)}
+          onClose={() => onActionModal(setShowIconModal, false)}
           onOk={onOkModal}
           children={iconModal}
           header="Select Icon"
