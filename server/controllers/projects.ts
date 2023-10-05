@@ -1,14 +1,10 @@
-// import jwt from 'jsonwebtoken';
 import { Request, Response } from 'express';
 import { ProjectType } from '../types';
 import Project from '../models/Project';
 
-const JWT_SECRET = process.env.JWT_SECRET as string;
-const JWT_EXPIRES = process.env.JWT_EXPIRES as string;
-
 export const getProjects = async (req: Request, res: Response) => {
   try {
-    const projects = await Project.find<ProjectType[]>().sort('-created');
+    const projects = await Project.find<ProjectType[]>();//.sort('created');
 
     if (!projects.length) {
       return res.status(404).json({ message: 'There are no projects' });
@@ -24,12 +20,10 @@ export const getProjects = async (req: Request, res: Response) => {
 export const getProject = async (req: Request, res: Response) => {
   try {
     const project = await Project.findById<ProjectType>(req.params.id);
-    
+
     if (!project) {
       return res.status(404).json({ message: 'Project not found' });
     }
-
-    // const token = jwt.sign({ id: project._id }, JWT_SECRET, { expiresIn: JWT_EXPIRES });
 
     res.status(200).json({ project });
 
@@ -40,17 +34,18 @@ export const getProject = async (req: Request, res: Response) => {
 
 export const createProject = async (req: Request, res: Response) => {
   try {
-    const { project }: { project: ProjectType } = req.body;
+    const project: ProjectType = req.body;
 
     if (!project.name)
       return res.status(400).json({ message: 'Project name cannot be empty' });
 
-    const isAlreadyExists = await Project.find({ name: project.name });
+    const isAlreadyExists = await Project.find({ "name": project.name });
 
-    if (isAlreadyExists)
+    if (isAlreadyExists[0]) {
       return res.status(400).json({ message: 'This project name is busy' });
+    }
 
-    const newProject = new Project({ project });
+    const newProject = new Project(project);
     await newProject.save();
 
     res.status(201).json(newProject);
@@ -66,8 +61,7 @@ export const deleteProject = async (req: Request, res: Response) => {
 
     if (project) {
       const removedProject = await Project.findByIdAndDelete<ProjectType>(req.params.id);
-      // const token = jwt.sign({ id: project._id }, JWT_SECRET, { expiresIn: JWT_EXPIRES });
-      res.status(200).json({ removedProject });
+      res.status(200).json(removedProject);
     } else {
       return res.status(404).json({ message: 'Project not found' });
     }
@@ -84,8 +78,7 @@ export const updateProject = async (req: Request, res: Response) => {
 
     if (project) {
       const updatedProject = await Project.findByIdAndUpdate<ProjectType>(req.params.id, req.body);
-      // const token = jwt.sign({ id: project._id }, JWT_SECRET, { expiresIn: JWT_EXPIRES });
-      res.status(200).json({ updatedProject });
+      res.status(200).json(updatedProject);
     } else {
       return res.status(404).json({ message: 'Project not found' });
     }
