@@ -152,11 +152,6 @@ input {
     padding: $paddings-container-tablet;
   }
 
-  @media screen and (width <=$tablet-900) {
-    max-width: $tablet-900;
-    padding: $paddings-container-tablet-900;
-  }
-
   @media screen and (width <=$mobile) {
     max-width: $mobile;
     padding: $paddings-container-mobile;
@@ -182,4 +177,35 @@ section {
 .hidden {
   opacity: 0 !important;
   visibility: hidden !important;
+}
+
+.button {
+  background: var(--color-light-grey);
+  border-radius: 10px;
+  text-align: center;
+  height: 45px;
+  padding: 10px 20px;
+  transition: 0.3s;
+  cursor: pointer;
+
+  &:hover {
+    background: var(--color-light-grey-darker);
+  }
+}
+
+.close-btn {
+  position: absolute;
+  font-size: 1.5rem;
+  cursor: pointer;
+}
+
+.input {
+  padding: 12.5px;
+  font-size: 1rem;
+  border: 1px solid var(--border-color);
+
+  &.active,
+  &:hover {
+    border: 1px solid var(--border-color-darker);
+  }
 }

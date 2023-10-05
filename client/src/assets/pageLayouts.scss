@@ -2,23 +2,28 @@
   display: grid;
   grid-template: min-content 1fr min-content/100%;
   grid-template-areas:
-"header"
-"main"
-"footer";
+    "header"
+    "main"
+    "footer";
+  gap: 30px;
+
+  @media screen and (width <=$tablet) {
+    gap: 0;
+  }
 }
 
 .left-aside {
   display: grid;
   grid-template-areas:
-"header  header"
-"aside   main"
-"footer  footer";
+    "header  header"
+    "aside   main"
+    "footer  footer";
 }
 
 .right-aside {
   display: grid;
   grid-template-areas:
-"header header"
-"main   aside"
-"footer footer";
+    "header header"
+    "main   aside"
+    "footer footer";
 }
