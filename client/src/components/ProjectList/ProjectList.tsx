@@ -1,44 +1,20 @@
-import { useCallback, useEffect, useState } from 'react';
-import axios from 'axios';
-import { nanoid } from 'nanoid';
-import { ProjectType } from 'src/utils/types';
 import { Loading } from 'src/components/Loading';
 import { ButtonWithIcon } from 'src/components/ButtonWithIcon';
-import { BASE_URL } from 'src/utils/constants';
+import useGetProjects from 'src/utils/hooks/useGetProjects';
 import './ProjectList.scss';
 
 export function ProjectList() {
-  const [projects, setProjects] = useState<ProjectType[]>([])
-  const [isLoading, setIsLoading] = useState(true);
-
-
-  const getProjects = useCallback(async () => {
-    try {
-      const { data }: {
-        data: { projects: ProjectType[] }
-      } = await axios.get(`${BASE_URL}/api/projects`);
-
-      setProjects(data.projects);
-      setIsLoading(false);
-
-    } catch (error) {
-      console.log(error);
-    }
-  }, []);
-
-  useEffect(() => {
-    getProjects();
-  }, [getProjects]);
-
+  const [projects, isLoading] = useGetProjects();
   return (
     <div className="ProjectList">
       {
         isLoading
           ? <Loading />
-          : projects.map((project) => {
+          : projects?.length &&
+          projects.map((project) => {
             return (
               <ButtonWithIcon
-                key={nanoid()}
+                key={project._id}
                 className='ProjectButton'
                 icon={project.icon}
                 text={project.name}
