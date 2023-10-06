@@ -1,38 +1,61 @@
+import { useState } from 'react';
+import { createPortal } from 'react-dom';
+import { Link, useParams } from 'react-router-dom';
 import { Search } from 'src/components/Search';
 import { Loading } from 'src/components/Loading';
 import logoHorizontal from 'src/assets/img/logoHorizontal.svg';
-import useGetProjects from 'src/utils/hooks/useGetProjects';
+import useGetProject from 'src/utils/hooks/useGetProject';
+import { ButtonWithIcon } from 'src/components/ButtonWithIcon';
+import { Modal } from 'src/components/Modal';
+import { onActionModal } from 'src/utils/helpers';
 import './Header.scss';
+import { ProjectsPage } from 'src/pages';
 
 export function Header() {
-  const [projects, isLoading] = useGetProjects();
+  const { name } = useParams();
+  const [project, isLoading] = useGetProject(name);
+  const [showIconModal, setShowIconModal] = useState(false);
 
-  // TODO: select current project name, not "projects[0].name"
+  const onSClickProjectBtn = () => {
+    setShowIconModal(true)
+  };
+
+  // TODO: select current project name
 
   return (
     <header className="Header">
       <div className="container">
-        <a href="/" className="Header_logoLink">
+
+        <Link to="/" className="Header_logoLink">
           <img src={logoHorizontal} className="Header__logoImg" alt="logo" />
-        </a>
+        </Link>
+
         <Search className="Header__search" />
 
         {
           isLoading
             ? <Loading />
-            : projects &&
-            <div className="Header__selectWrapper ">
-              <select
-                className="Header__select button"
-                name="projects"
-                id="projects-select"
-              >
-                <option value="">{projects[0].name}</option>
-                {projects.slice(1).map((project) =>
-                  <option key={project._id} value={project.name}>{project.name}</option>)}
-              </select>
+            : <div className="Header__ProjectBtnWrap">
+              <ButtonWithIcon
+                className="Header__ProjectBtn"
+                icon={project?.icon}
+                text={`${project?.name}`}
+                onClick={onSClickProjectBtn}
+              />
             </div>
         }
+        {showIconModal && createPortal(
+          <Modal
+            className="NewProject"
+            isActive={true}
+            onClose={() => onActionModal(setShowIconModal, false)}
+            children={<ProjectsPage />}
+            header="Select Project"
+            showActionBtns={false}
+          />,
+          document.body
+        )}
+
       </div>
     </header >
   );
