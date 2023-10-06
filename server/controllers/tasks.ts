@@ -1,13 +1,13 @@
 // import jwt from 'jsonwebtoken';
 import { Request, Response } from 'express';
-import { ProjectType, TaskType } from '../types';
+import { ProjectType, TaskType } from '../utils/types';
 import Task from '../models/Task';
 
 export const getTasks = async (req: Request, res: Response) => {
   try {
     const projectName = req.params.projectName;
     const tasks = await Task.find<TaskType[]>({ project: projectName }).sort('created');
-    
+
     if (!tasks.length) {
       return res.status(404).json({ message: 'There are no tasks' });
     }
