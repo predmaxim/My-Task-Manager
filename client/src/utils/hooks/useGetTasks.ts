@@ -1,35 +1,41 @@
 import axios from "axios";
 import { useCallback, useEffect, useState } from "react";
+import { toast } from "react-toastify";
 import { BASE_URL, TASK_STATUSES } from "src/utils/constants";
-import { TaskType, TasksFilteredByStatusType } from "src/utils/types";
+import { ProjectType, TaskType, TasksFilteredByStatusType } from "src/utils/types";
 
 export type useGetTasksType = [tasks?: TasksFilteredByStatusType, isLoading?: boolean];
 
-export default function useGetTasks(): useGetTasksType {
+export default function useGetTasks(projectName: string | undefined): useGetTasksType {
   const [isLoading, setIsLoading] = useState(true);
   const [tasks, setTasks] = useState<TasksFilteredByStatusType>();
 
   const getTasksData = useCallback(async () => {
     try {
-      const { data }: {
+      // const { data: projectData }: {
+      //   data: { project: ProjectType | undefined }
+      // } = await axios.get(`${BASE_URL}/api/projects/${projectName}`);
+
+      const { data: tasksData }: {
         data: { tasks: TaskType[] }
-      } = await axios.get(`${BASE_URL}/api/tasks`);
+      } = await axios.get(`${BASE_URL}/api/tasks/${projectName}`);
 
       const tasks = {
-        queue: data.tasks.filter((task) => task.status === TASK_STATUSES.queue),
-        development: data.tasks.filter((task) => task.status === TASK_STATUSES.development),
-        done: data.tasks.filter((task) => task.status === TASK_STATUSES.done)
-      }
+        queue: tasksData.tasks.filter((task) => task.status === TASK_STATUSES.queue),
+        development: tasksData.tasks.filter((task) => task.status === TASK_STATUSES.development),
+        done: tasksData.tasks.filter((task) => task.status === TASK_STATUSES.done)
+      };
+
       setTasks(tasks);
       setIsLoading(false);
     } catch (error) {
-      console.log(error);
+      toast(`Get Tasks Error: ${error}`);
     }
-  }, []);
+  }, [projectName]);
 
   useEffect(() => {
     return () => {
-      getTasksData()
+      getTasksData();
     }
   }, [getTasksData]);
 
