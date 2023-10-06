@@ -19,7 +19,7 @@ export const getProjects = async (req: Request, res: Response) => {
 
 export const getProject = async (req: Request, res: Response) => {
   try {
-    const project = await Project.findById<ProjectType>(req.params.id);
+    const project = await Project.findOne<ProjectType>({ name: req.params.name });
 
     if (!project) {
       return res.status(404).json({ message: 'Project not found' });
