@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom';
 import './HomeHeader.scss';
 import logoVertical from 'src/assets/img/logoVertical.svg';
 
@@ -5,7 +6,7 @@ export function HomeHeader() {
   return (
     <header className="HomeHeader">
       <div className="container">
-        <a href="/">
+        <Link to="/">
           <img
             src={logoVertical}
             className="logoVertical"
@@ -13,7 +14,7 @@ export function HomeHeader() {
             width={239}
             height={169}
           />
-        </a>
+        </Link>
       </div>
     </header >
   );
