@@ -12,7 +12,7 @@ const router = Router();
 
 // get Tasks
 // http://localhost:5000/api/tasks
-router.get('/api/tasks/', getTasks);
+router.get('/api/tasks/:projectName', getTasks);
 
 // Get Task
 // http://localhost:5000/api/tasks/:id
