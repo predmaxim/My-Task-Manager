@@ -6,6 +6,7 @@ import { ButtonWithIcon } from 'src/components/ButtonWithIcon';
 import { Modal } from 'src/components/Modal';
 import { TaskContent } from 'src/components/TaskContent';
 import './Task.scss';
+import { toast } from 'react-toastify';
 
 export type TaskProps = {
   task: TaskType;
@@ -16,12 +17,12 @@ export function Task(task: TaskType) {
   const { done, name, due } = task;
 
   const onChangeTaskCheckBoxHandler = (task: TaskType) => {
-    console.log('done');
+    toast(`Done`);
     // task.status = task.status //!!!
   }
 
   const onClickEditBtn = () => {
-    console.log(task.due);
+    toast(task.name);
   }
 
   const onOkModal = () => {
