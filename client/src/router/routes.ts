@@ -1,4 +1,4 @@
 export const ROUTES = {
   projects: '/',
-  tasks: 'tasks'
-};
+  tasks: 'project/:name'
+}
