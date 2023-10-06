@@ -2,7 +2,7 @@ import { ProjectList } from 'src/components';
 import { NewProject } from 'src/components';
 import './ProjectsPage.scss';
 
-export default function ProjectsPage() {
+export function ProjectsPage() {
   return (
       <main className="ProjectsPage">
         <div className="container">

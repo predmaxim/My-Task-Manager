@@ -2,7 +2,7 @@ import { RiArrowLeftLine } from 'react-icons/ri'
 import { Link } from 'react-router-dom';
 import './NotFoundPage.scss';
 
-export default function NotFoundPage() {
+export function NotFoundPage() {
   return (
     <main className="NotFoundPage">
       <div className="container">
