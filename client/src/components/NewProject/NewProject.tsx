@@ -33,7 +33,6 @@ export function NewProject() {
     };
     setNewProject(project);
     setNewProjectModal(false);
-    // navigate(`/tasks`);
   };
 
   const setIconOnClickHandler = useCallback((icon: JSX.Element) => {
@@ -84,6 +83,7 @@ export function NewProject() {
           value={inputValue}
           onChange={onChangeInputHandler}
           onSubmit={onOkModal}
+          autoFocus
         />
       </div>
       <button
@@ -110,7 +110,8 @@ export function NewProject() {
 
   useEffect(() => {
     newProject && createNewProject(newProject);
-  }, [createNewProject, newProject]);
+    newProject && navigate(`/project/${newProject.name}`);
+  }, [createNewProject, navigate, newProject]);
 
   return (
     <>
