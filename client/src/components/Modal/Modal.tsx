@@ -6,7 +6,7 @@ export type ModalProps = {
   isActive: boolean,
   children: JSX.Element,
   onClose: () => void,
-  onOk: () => void,
+  onOk?: () => void,
   header: string,
   formId?: string,
   showActionBtns?: boolean
