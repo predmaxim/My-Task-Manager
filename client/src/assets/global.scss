@@ -209,3 +209,7 @@ section {
     border: 1px solid var(--border-color-darker);
   }
 }
+
+.Toastify__toast {
+  border-radius: $border-radius!important;
+}
