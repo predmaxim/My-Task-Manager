@@ -1,24 +1,29 @@
 import mongoose from 'mongoose';
 import bcrypt from 'bcryptjs';
-import { UserType } from '../types';
+import { UserType } from '../utils/types';
+import { ProjectSchema } from './Project';
 
-const UserSchema = new mongoose.Schema<UserType>({
+export const UserSchema = new mongoose.Schema<UserType>({
   name: {
     type: String,
     required: [true, 'Please enter your name'],
+    minLength: [1, 'Your name must be longer than 1 characters'],
+    maxLength: [100, 'Your name must be shorten than 100 characters'],
   },
   email: {
     type: String,
     required: [true, 'Please enter your email'],
+    minLength: [1, 'Your email must be longer than 1 characters'],
+    maxLength: [100, 'Your email must be shorten than 100 characters'],
     unique: true,
   },
   password: {
     type: String,
     required: [true, 'Please enter your password'],
-    minLength: [6, 'Your password must be longer than 6 characters'],
+    minLength: [1, 'Your password must be longer than 1 characters'],
+    maxLength: [100, 'Your password must be shorten than 100 characters'],
     select: false,
   },
-  avatarURL: String,
   role: {
     type: String,
     default: 'user',
@@ -28,9 +33,9 @@ const UserSchema = new mongoose.Schema<UserType>({
     default: Date.now,
   },
   lastVisit: Date,
-  projects: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Project' }],
-},
-  { timestamps: true }
+  avatarURL: String,
+  projects: [ProjectSchema],
+}
 );
 
 UserSchema.pre('save', async function (next) {
