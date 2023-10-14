@@ -1,4 +1,4 @@
-@import 'src/assets/vars';
+@import "assets/vars";
 
 .Board {
   display: grid;
@@ -12,12 +12,8 @@
   .column {
     border-radius: $border-radius;
     background: var(--color-light-grey);
-    // overflow: hidden;
-    min-height: calc(80vh - 60px);
-
-    @media screen and (width <=$tablet) {
-      min-height: auto;
-    }
+    position: relative;
+    height: fit-content;
 
     &__header {
       display: flex;
@@ -25,23 +21,23 @@
       align-items: center;
       padding: 10px 20px;
       border-radius: $border-radius $border-radius 0 0;
-      // background: var(--2-column-header-color);
+
+      .ButtonWithIconWrap {
+        margin-right: -10px;
+      }
+
+      @media screen and (width <=$mobile) {
+        padding: 10px;
+      }
     }
-
-    // &:first-child .column__header {
-    //   background: var(--1-column-header-color);
-    // }
-
-    // &:last-child .column__header {
-    //   background: var(--3-column-header-color);
-    // }
 
     &__title {
       font-weight: 700;
       font-size: 1.2rem;
     }
 
-    &__newTaskBtn {
+
+    &__menuBtn {
       background: none;
       padding: 0;
       height: auto;
@@ -53,11 +49,25 @@
       }
     }
 
+    &__CreateNewTask {
+      padding-bottom: 10px;
+    }
+
     &__body {
       display: flex;
       flex-direction: column;
       gap: 10px;
-      padding: 15px;
+      padding: 0 10px 15px 10px;
+      max-height: calc(100vh - 320px);
+      overflow-y: auto;
+
+      @media screen and (width <=$tablet) {
+        max-height: fit-content;
+      }
+
+      @media screen and (width <=$mobile) {
+        padding: 10px;
+      }
     }
   }
 
