@@ -1,0 +1,44 @@
+.CreateNewTask {
+  padding: 0 15px;
+  position: relative;
+
+  &__newTaskBtn {
+    background: none;
+    height: auto;
+    padding: 0;
+
+    &.ButtonWithIcon {
+      justify-content: flex-start;
+    }
+
+    &:hover {
+      background: none;
+      color: var(--primary-color);
+    }
+  }
+
+  &__newTaskText {
+    resize: none;
+    background: transparent;
+    overflow: hidden;
+    font-family: "Roboto", sans-serif;
+    font-size: 1rem;
+    cursor: pointer;
+    outline: none;
+    border: none;
+    line-height: 1.4;
+    padding: 15px 0 0;
+    width: 100%;
+    color: var(--font-color);
+    box-shadow: 0 1px 0 var(--border-color-darker);
+    border-radius: 0;
+
+    &:focus-visible,
+    &:focus-within {
+      cursor: auto;
+    }
+
+    &.active {
+    }
+  }
+}
