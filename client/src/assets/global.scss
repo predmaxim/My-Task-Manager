@@ -1,7 +1,7 @@
 html {
   font-size: $base-font;
   line-height: 1.7;
-  font-family: 'Roboto', sans-serif;
+  font-family: "Roboto", sans-serif;
 }
 
 html,
@@ -180,6 +180,7 @@ section {
 }
 
 .button {
+  //@include button
   background: var(--color-light-grey);
   border-radius: 10px;
   text-align: center;
@@ -211,5 +212,5 @@ section {
 }
 
 .Toastify__toast {
-  border-radius: $border-radius!important;
+  border-radius: $border-radius !important;
 }
