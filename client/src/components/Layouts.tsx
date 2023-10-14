@@ -1,5 +1,5 @@
+import { Footer, Header, HomeHeader } from 'components';
 import { Outlet } from 'react-router-dom';
-import { Footer, Header, HomeHeader } from 'src/components';
 
 export const HomeLayout = () => (
   <>
