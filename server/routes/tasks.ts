@@ -1,16 +1,9 @@
 import { Router } from 'express';
-import { authCheck } from '../utils/authCheck';
-import {
-  getTasks,
-  getTask,
-  createTask,
-  deleteTask,
-  updateTask
-} from '../controllers/tasks';
+import { createTask, deleteTask, getTask, getTasks, updateTask } from '../controllers/tasks';
 
 const router = Router();
 
-// get Tasks
+// Get Tasks
 // http://localhost:5000/api/tasks
 router.get('/api/tasks/:projectName', getTasks);
 
