@@ -1,14 +1,15 @@
+@import "assets/vars";
+@import "assets/mixins";
+
 .CreateNewTask {
   padding: 0 15px;
   position: relative;
 
   &__newTaskBtn {
-    background: none;
-    height: auto;
-    padding: 0;
 
     &.ButtonWithIcon {
       justify-content: flex-start;
+      @include button("s");
     }
 
     &:hover {
