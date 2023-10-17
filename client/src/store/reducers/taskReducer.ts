@@ -85,8 +85,10 @@ export const taskReducer = (
 
     case UPDATE_TASK:
       const updatedTask: TaskType = action.payload as TaskType;
-      const allWithoutUpdated: TaskType[] = state.tasks.filter((task: TaskType) =>
-        task._id !== updatedTask._id);
+      const allWithoutUpdated: TaskType[] = state.tasks.filter(({ _id: id, project, number }: TaskType) =>
+        id !== updatedTask._id
+        && (project === updatedTask.project && number !== updatedTask.number));
+
       return {
         ...state,
         tasks: [...allWithoutUpdated, updatedTask].sort((a: TaskType, b: TaskType) =>
