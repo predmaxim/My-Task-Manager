@@ -9,6 +9,7 @@ import { ProjectType, ThunkDispatchType } from 'utils/types';
 import { deleteProjectThunk } from '../../store/asyncActions/deleteProjectThunk';
 import { getAllProjectsFromDbThunk } from '../../store/asyncActions/getAllProjectsFromDbThunk';
 import { setCurrentProjectThunk } from '../../store/asyncActions/setCurrentProjectThunk';
+import { deleteSearch } from '../../store/reducers/searchReducer';
 import { BASE_PROJECT_URL } from '../../utils/constants';
 import './ProjectList.scss';
 
@@ -25,6 +26,7 @@ export function ProjectList({ isModalAction }: ProjectListType) {
     isModalAction && isModalAction();
     navigate(`${BASE_PROJECT_URL}/${project.name}`);
     dispatch(setCurrentProjectThunk(project.name));
+    dispatch(deleteSearch());
   };
 
   const removeAction = (projectName: string) => {

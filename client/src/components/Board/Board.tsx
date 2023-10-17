@@ -10,6 +10,7 @@ import { TaskReducerStateType } from 'store/reducers/taskReducer';
 import { TASK_STATUSES } from 'utils/constants';
 import { upperCaseFirstLetter } from 'utils/helpers';
 import { TaskStatusType, TaskType, ThunkDispatchType } from 'utils/types';
+import { SearchReducerStateType } from '../../store/reducers/searchReducer';
 import { Loading } from '../Loading';
 import './Board.scss';
 
@@ -27,13 +28,20 @@ export type ColumnType = {
 export function Board({ currentProjectName }: BoardType) {
   const dispatch: ThunkDispatchType = useDispatch();
   const { tasks, isLoading }: TaskReducerStateType = useSelector((state: RootState) => state.tasks);
+  const { query }: SearchReducerStateType = useSelector((state: RootState) => state.search);
 
   const genColumn = (status: TaskStatusType): ColumnType => {
-    const tasksByStatus: TaskType[] = tasks.filter((task: TaskType) => task.status === status);
+    const newQuery = new RegExp(query.toLowerCase());
+    const tasksByStatus: TaskType[] = tasks.filter(
+      (task: TaskType) => task.status === status
+    );
+
     return {
       title: status,
       onClickMenu: () => console.log('menu'),
-      currentColumnTasks: tasksByStatus,
+      currentColumnTasks: tasksByStatus.filter((task: TaskType) =>
+        task.name.toLowerCase().match(newQuery)
+        || String(task.number).toLowerCase().match(newQuery)),
       total: tasksByStatus.length
     };
   };

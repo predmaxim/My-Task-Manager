@@ -2,8 +2,34 @@
 @import "assets/mixins";
 
 .Search {
+  position: relative;
+
   &__input {
     width: calc(100% - 25px);
     @include input;
+  }
+
+  .ButtonWithIconWrap {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+
+    .ButtonWithIcon {
+      @include button("s");
+      opacity: 0;
+      color: var(--font-color-dimmed);
+
+      &:hover {
+        color: var(--font-color);
+      }
+    }
+  }
+
+  &.active {
+    .ButtonWithIcon {
+      @include button("s");
+      opacity: 1;
+    }
   }
 }
