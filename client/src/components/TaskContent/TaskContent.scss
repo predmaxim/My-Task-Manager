@@ -1,11 +1,144 @@
+@import "assets/vars";
+@import "assets/mixins";
+
 .TaskContent {
-  &-label {
-    display: flex;
-    flex-direction: column;
+  display: grid;
+  gap: 18px 20px;
+  grid-template-areas: "name        name        name        status      priority    due"
+                       "description description description description description files"
+                       "info        info        info        info        info        files"
+                       "hr          hr          hr          hr          hr          hr"
+                       "comments    comments    comments    commentBtn  subTasks    subTasks";
+
+  &__name {
+    grid-area: name;
+
+    .nameInput {
+      @include input;
+      resize: none;
+    }
   }
 
-  &-row {
+  &__status {
+    grid-area: status;
+
+    .statusSelect {
+      @include input;
+    }
+  }
+
+  &__priority {
+    grid-area: priority;
+
+    .prioritySelect {
+      @include input;
+    }
+  }
+
+  &__due {
+    grid-area: due;
+
+    .dueSelect {
+      @include input;
+      padding: 9.5px 12.5px;
+    }
+  }
+
+  &__description {
+    grid-area: description;
+
+    .descriptionInput {
+      @include input;
+      resize: none;
+    }
+  }
+
+  &__info {
+    grid-area: info;
     display: flex;
-    justify-content: space-between;
+    gap: 10px;
+    font-size: .88rem;
+  }
+
+  &__files {
+    grid-area: files;
+    align-self: flex-end;
+    height: 80%;
+
+    .addFilesBtn {
+      background: var(--color-light-grey);
+      border-radius: $border-radius;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100%;
+      width: 100%;
+      font-size: 1rem;
+      color: var(--font-color-dimmed);
+      transition: $transition;
+      cursor: pointer;
+
+      &:hover {
+        background: var(--color-light-grey-darker);
+        color: var(--font-color-dimmed-darker);
+      }
+    }
+  }
+
+  &__hr {
+    grid-area: hr;
+    height: 1px;
+    border: 0;
+    border-top: 1px solid var(--border-color);
+    margin: 20px 0;
+    padding: 0;
+  }
+
+  &__comments {
+    grid-area: comments;
+
+    .commentInput {
+      @include input;
+      resize: none;
+      padding: 10.5px 12.5px;
+    }
+  }
+
+  &__commentBtn {
+    grid-area: commentBtn;
+    @include button("xl");
+    align-self: flex-end;
+    height: min-content;
+    width: min-content;
+
+  }
+
+  &__subTasks {
+    grid-area: subTasks;
+
+    .subTasks {
+      @include input;
+      resize: none;
+      padding: 10.5px 12.5px;
+    }
+  }
+
+  &__name, &__status, &__priority, &__due, &__description, &__files, &__comments, &__subTasks {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+  }
+
+  .created, .inWork, .done {
+    color: var(--font-color-dimmed);
+
+    &__title {
+      font-weight: 700;
+      margin-right: 5px;
+    }
+  }
+
+  .label {
+    font-size: .88rem;
   }
 }
