@@ -32,46 +32,68 @@
 
 // buttons
 @mixin button(
-  $size,
-  $width,
+  $size: "xl",
+  $width: auto,
 ) {
-  @if not $size {
-    $size: "xl";
-  }
-  @if $size== "xl" {
-    height: 45px;
-    padding: 10px 20px
-  } @else if $size== "x" {
-    height: 45px;
-    padding: 10px 20px
-  } @else if $size== "l" {
-    height: 45px;
-    padding: 10px 20px
-  } @else if $size== "s" {
-    height: 45px;
-    padding: 10px 20px
-  }
-
-  @if not $width {
-    $width: auto;
-  } @else if $width== "full" {
-    width: 100%;
-  }
-  position: relative;
-  width: $width;
+  //font-size: $base-font;
   background: var(--color-light-grey);
-  border-radius: $border-radius;
-  text-align: center;
-  transition: $transition;
-  font-size: $base-font;
-  cursor: pointer;
+  font-size: .9rem;
 
   &:hover {
     background: var(--color-light-grey-darker);
   }
+
+  @if $size== "xl" {
+    height: 45px;
+    padding: 10px 20px
+  } @else if $size== "x" {
+    height: 36px;
+    padding: 10px 10px
+  } @else if $size== "l" {
+    height: 24px;
+    padding: 5px 10px;
+    font-size: .88rem;
+  } @else if $size== "s" {
+    height: auto;
+    padding: 0;
+    font-size: .88rem;
+    background: transparent;
+
+    &:hover {
+      background: transparent;
+    }
+  }
+
+  @if $width== "full" {
+    width: 100%;
+  }
+
+  width: $width;
+  border-radius: $border-radius;
+  transition: $transition;
+  position: relative;
+  text-align: center;
+  cursor: pointer;
 }
 
 // inputs
+@mixin input {
+  padding: 12.5px;
+  font-size: 1rem;
+  border: 1px solid var(--border-color);
+  transition: $transition;
+  border-radius: $border-radius;
+  background: var(--bg-color);
+
+  &:hover,
+  &.active {
+    border-color: var(--border-color-darker);
+  }
+
+  &:focus-within {
+    outline: none;
+  }
+}
 
 // textarea
 
@@ -92,4 +114,25 @@
   &::-webkit-input-placeholder {
     @content;
   }
+}
+
+// scrollbar
+@mixin scrollbar {
+  // for Chrome и Safari
+  &::-webkit-scrollbar {
+    width: 5px;
+    height: 5px;
+    border-radius: 30px;
+  }
+  &::-webkit-scrollbar-thumb {
+    background: var(--scroll-foreground-color);
+    border-radius: 30px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: var(--scroll-background-color);
+    border-radius: 30px;
+  }
+  // for Firefox
+  scrollbar-color: var(--scroll-foreground-color) var(--scroll-background-color);
 }
