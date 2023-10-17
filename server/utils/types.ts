@@ -43,12 +43,13 @@ export type TaskType = {
   lastStatus: TaskStatusType,
   description?: string,
   done?: false | Date,
-  priority?: TaskPriorityType,
+  priority: TaskPriorityType['name'],
   parent?: string,
   due?: false | Date,
   inWork?: false | Date,
   files?: FileType[],
   comments?: CommentType[],
+  subTasks?: TaskType[]
 };
 
 export type ProjectStatusType = keyof typeof PROJECT_STATUSES;
