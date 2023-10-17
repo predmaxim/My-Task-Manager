@@ -81,15 +81,19 @@
     }
   }
 
+
+  &.done {
+    color: var(--font-color-dimmed);
+    background: var(--color-light-grey-dimmed);
+
+  }
+
   &__name {
     padding: 3px 0 0 6px;
     overflow-wrap: anywhere;
     transition: $transition;
     line-height: 1.2;
 
-    &.done {
-      color: var(--font-color-dimmed);
-    }
   }
 
   &:hover {
