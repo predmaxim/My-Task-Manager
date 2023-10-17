@@ -1,6 +1,7 @@
-@import "assets/vars.scss";
+@import "assets/vars";
+@import "assets/mixins";
 
-$modal-padding: 30px;
+$modal-padding: 15px;
 $modal-body-max-height: 80vh;
 
 @media screen and (width <=$tablet) {
@@ -32,10 +33,6 @@ $modal-body-max-height: 80vh;
     }
   }
 
-  &__header {
-    margin-top: -14px;
-  }
-
   &__body {
     position: absolute;
     top: 10vh;
@@ -43,7 +40,7 @@ $modal-body-max-height: 80vh;
     padding: $modal-padding;
     width: calc(100% - $modal-padding * 4);
     max-width: 600px;
-    max-height: $modal-body-max-height;
+    //max-height: $modal-body-max-height;
     background: var(--bg-color);
     border-radius: $border-radius;
     visibility: hidden;
@@ -52,6 +49,9 @@ $modal-body-max-height: 80vh;
     opacity: 0;
     z-index: -100;
     overflow: hidden;
+    box-shadow: $shadow-s;
+    overflow-y: auto;
+    @include scrollbar;
 
     &.active {
       visibility: visible;
@@ -61,8 +61,10 @@ $modal-body-max-height: 80vh;
   }
 
   &__content {
+    padding: 5px $modal-padding $modal-padding $modal-padding;
     overflow-y: auto;
-    max-height: calc($modal-body-max-height - $modal-padding * 2 - 50px);
+    max-height: calc($modal-body-max-height - $modal-padding * 4 - 100px);
+    @include scrollbar;
 
     .ProjectList {
       &__container {
@@ -79,7 +81,7 @@ $modal-body-max-height: 80vh;
     display: flex;
     justify-content: center;
     gap: 20px;
-    padding-top: 30px;
+    padding: 15px 0;
   }
 
   &__okBtn {
@@ -88,6 +90,7 @@ $modal-body-max-height: 80vh;
 
   &__okBtn,
   &__cancelBtn {
+    @include button("xl", 150px);
   }
 
   &__closeBtn {
