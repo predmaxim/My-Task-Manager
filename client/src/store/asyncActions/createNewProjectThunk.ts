@@ -13,7 +13,8 @@ export const createNewProjectThunk = (projectName: string, icon: string) => {
         status: 'active',
         created: new Date(),
         icon: icon,
-        current: false
+        current: false,
+        tasks: 0
       };
 
       const { data: newProject }:
