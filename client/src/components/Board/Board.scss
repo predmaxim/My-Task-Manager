@@ -62,6 +62,7 @@
       padding: 0 10px 15px 10px;
       max-height: calc(100vh - 320px);
       overflow-y: auto;
+      overflow-x: hidden;
       @include scrollbar;
 
       @media screen and (width <=$tablet) {

@@ -24,6 +24,7 @@
 
     .statusSelect {
       @include input;
+      padding: 12px;
     }
   }
 
@@ -32,6 +33,7 @@
 
     .prioritySelect {
       @include input;
+      padding: 12px;
     }
   }
 
@@ -100,7 +102,6 @@
     .commentInput {
       @include input;
       resize: none;
-      padding: 10.5px 12.5px;
     }
   }
 
@@ -119,7 +120,6 @@
     .subTasks {
       @include input;
       resize: none;
-      padding: 10.5px 12.5px;
     }
   }
 
