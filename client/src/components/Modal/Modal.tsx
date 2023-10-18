@@ -1,11 +1,11 @@
-import { MouseEvent } from 'react';
+import { MouseEvent, ReactNode } from 'react';
 import { RiCloseLine } from 'react-icons/ri';
 import './Modal.scss';
 
 export type ModalProps = {
   className: string,
   isActive: boolean,
-  children: JSX.Element,
+  children: ReactNode,
   onClose: () => void,
   onOk?: (e: MouseEvent<HTMLButtonElement>) => void,
   header: string,
