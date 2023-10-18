@@ -8,9 +8,9 @@ export const getTasks = async (req: Request, res: Response) => {
     const projectName = req.params.projectName;
 
     const tasks: TaskType[] =
-      await Task.find<TaskType>({ project: projectName }).sort('-created');
-    const total = tasks.length;
-    res.status(200).json({ tasks, total });
+      await Task.find<TaskType>({ project: projectName });
+
+    res.status(200).json(tasks);
 
   } catch (error) {
     res.status(500).json({ message: 'Something went wrong', error });
@@ -75,7 +75,7 @@ export const deleteTask = async (req: Request, res: Response) => {
 export const updateTask = async (req: Request, res: Response) => {
   try {
     try {
-      const updatedTask = await Task.findByIdAndUpdate<TaskType>(req.params.id, req.body).sort('created');
+      const updatedTask = await Task.findByIdAndUpdate<TaskType>(req.params.id, req.body);//.sort('created');
       res.status(200).json(updatedTask);
     } catch (err) {
       return res.status(404).json({ message: 'Task not found' });
