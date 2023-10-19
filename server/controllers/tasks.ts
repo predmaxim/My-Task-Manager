@@ -8,7 +8,7 @@ export const getTasks = async (req: Request, res: Response) => {
     const projectName = req.params.projectName;
 
     const tasks: TaskType[] =
-      await Task.find<TaskType>({ project: projectName });
+      await Task.find<TaskType>({ project: projectName }).sort('index');
 
     res.status(200).json(tasks);
 
@@ -49,7 +49,8 @@ export const createTask = async (req: Request, res: Response) => {
       return res.status(400).json({ message: 'Task number cannot be be empty' });
     }
 
-    const newTask = new Task({ ...task, created: new Date() });
+    await Task.updateMany({ status: task.status }, { $inc: { index: 1 } });
+    const newTask = new Task(task);
     await newTask.save();
 
     res.status(201).json({ task: newTask });
