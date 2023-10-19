@@ -1,4 +1,4 @@
-import { ReactNode, useEffect } from 'react';
+import { ReactNode, useLayoutEffect } from 'react';
 import { useDispatch } from 'react-redux';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -6,11 +6,12 @@ import { getAllProjectsFromDbThunk } from './store/asyncActions/getAllProjectsFr
 import { ThunkDispatchType } from './utils/types';
 
 export function GlobalProvider({ children }: { children: ReactNode }) {
-  const dispatch: ThunkDispatchType = useDispatch();
+  const dispatchThunk: ThunkDispatchType = useDispatch();
 
-  useEffect(() => {
-    dispatch(getAllProjectsFromDbThunk());
-  }, [dispatch]);
+  useLayoutEffect(() => {
+    document.body.className = matchMedia('(prefers-color-scheme: dark)') ? 'dark' : 'light';
+    dispatchThunk(getAllProjectsFromDbThunk());
+  }, [dispatchThunk]);
 
   return (
     <>
