@@ -15,7 +15,7 @@ body {
 body {
   color: var(--font-color);
   background: var(--bg-color);
-  transition: .3s;
+  transition: $transition;
   @include scrollbar;
 }
 
@@ -131,7 +131,9 @@ button {
 }
 
 button,
-input {
+input,
+select,
+textarea {
   outline: none;
   border: none;
   color: var(--font-color);

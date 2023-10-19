@@ -48,6 +48,13 @@
       color: var(--font-color-dimmed)
     }
 
+    button,
+    input,
+    select,
+    textarea {
+      color-scheme: light;
+    }
+
   }
 
   //@media (prefers-color-scheme: dark) {
@@ -98,6 +105,14 @@
     .logoVertical {
       filter: brightness(10);
     }
+
+    button,
+    input,
+    select,
+    textarea {
+      color-scheme: dark;
+    }
+
   }
 
   //}
