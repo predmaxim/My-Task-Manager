@@ -119,7 +119,7 @@ export function Board({ currentProjectName }: BoardType) {
   return (
     <div className={`Board`}>
       <DragDropContext key={'Board'} onDragEnd={onDragEnd}>
-        {board.map(({ id, title, onClickMenu, tasks, total }: ColumnType) => {
+        {board.map(({ id, title, tasks }: ColumnType) => {
           return (
             <div className={`column column-${title}`} key={`column-${id}`}>
               <div className="column__header">
@@ -129,7 +129,6 @@ export function Board({ currentProjectName }: BoardType) {
                 {/*  onClick={onClickMenu}*/}
                 {/*  icon="RiMore2Line"*/}
                 {/*/>*/}
-                {/*{total}*/}
               </div>
               <div className="column__CreateNewTask">
                 {currentProjectName &&
