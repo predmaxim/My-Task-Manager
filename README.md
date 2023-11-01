@@ -1,3 +1,5 @@
+App in development mode. See the "development" brach
+
 ## Задача
 
 Создать SPA TODO-приложение с использованием React и Redux.
