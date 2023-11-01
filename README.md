@@ -1,4 +1,4 @@
-App in development mode. See the "development" brach
+App in development mode. See the "development" brach.
 
 ## Задача
 
