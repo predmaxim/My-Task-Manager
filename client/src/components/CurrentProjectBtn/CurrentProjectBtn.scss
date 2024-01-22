@@ -1,6 +1,12 @@
 @import "assets/vars";
 @import "assets/mixins";
 
+.CurrentProjectBtnWrap {
+  @media screen and (width <=$mobile) {
+    flex: 1;
+  }
+}
+
 .CurrentProjectBtn {
   @include button("xl", 100%);
 }
