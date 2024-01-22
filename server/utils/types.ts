@@ -1,4 +1,4 @@
-import { PROJECT_STATUSES, ROLES, TASK_PRIORITY, TASK_STATUSES } from './constants';
+import {PROJECT_STATUSES, ROLES, TASK_PRIORITY, TASK_STATUSES} from './constants';
 
 export type ThemeType = 'dark' | 'light';
 export type LanguageType = 'ru' | 'en';
@@ -42,7 +42,6 @@ export type TaskType = {
   user: UserType['_id'],
   project: ProjectType['name']
   status: TaskStatusType,
-  lastStatus: TaskStatusType,
   index: number,
   description?: string,
   done?: false | Date,
