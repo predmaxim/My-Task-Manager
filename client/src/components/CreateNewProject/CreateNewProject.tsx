@@ -1,17 +1,17 @@
-import { ButtonWithIcon } from 'components/ButtonWithIcon';
-import { icons } from 'components/icons';
-import { Modal } from 'components/Modal';
-import { ChangeEvent, ReactNode, useCallback, useEffect, useMemo, useState } from 'react';
-import { createPortal } from 'react-dom';
-import { IconType } from 'react-icons';
-import { useDispatch, useSelector } from 'react-redux';
-import { toast } from 'react-toastify';
-import { createNewProjectThunk } from 'store/asyncActions/createNewProjectThunk';
-import { onActionModal } from 'utils/helpers';
-import { ThunkDispatchType } from 'utils/types';
-import { RootState } from '../../store';
-import { setCurrentProjectThunk } from '../../store/asyncActions/setCurrentProjectThunk';
-import { ProjectsReducerStateType } from '../../store/reducers/projectReducer';
+import {ButtonWithIcon} from 'components/ButtonWithIcon';
+import {icons} from 'components/icons';
+import {Modal} from 'components/Modal';
+import React, {ChangeEvent, ReactNode, useCallback, useEffect, useMemo, useState} from 'react';
+import {createPortal} from 'react-dom';
+import {IconType} from 'react-icons';
+import {useDispatch, useSelector} from 'react-redux';
+import {toast} from 'react-toastify';
+import {createNewProjectThunk} from 'store/asyncActions/createNewProjectThunk';
+import {onActionModal} from 'utils/helpers';
+import {ThunkDispatchType} from 'utils/types';
+import {RootState} from '../../store';
+import {setCurrentProjectThunk} from '../../store/asyncActions/setCurrentProjectThunk';
+import {ProjectsReducerStateType} from '../../store/reducers/projectReducer';
 import './CreateNewProject.scss';
 
 export function CreateNewProject() {
@@ -21,7 +21,7 @@ export function CreateNewProject() {
   const [ProjectIcon, setProjectIcon] = useState<JSX.Element>();
   const [inputValue, setInputValue] = useState('');
   const [allIcons, setAllIcons] = useState<ReactNode[]>();
-  const { projects }: ProjectsReducerStateType = useSelector((state: RootState) => state.projects);
+  const {projects}: ProjectsReducerStateType = useSelector((state: RootState) => state.projects);
 
   const onChangeInputHandler = (e: ChangeEvent<HTMLInputElement>) => {
     setInputValue(e.target.value);
@@ -44,7 +44,7 @@ export function CreateNewProject() {
     }
   };
 
-  const setIconOnClickHandler = useCallback((icon: JSX.Element) => {
+  const setIconOnClickHandler = useCallback((icon: React.JSX.Element) => {
     setProjectIcon(icon);
     onActionModal(setShowIconModal, false);
   }, []);
@@ -56,23 +56,22 @@ export function CreateNewProject() {
           key={Icon.name}
           className="iconsBox__btn"
           onClick={() => {
-            const newIcon = <Icon />;
-            setIconOnClickHandler(newIcon);
+            setIconOnClickHandler(<Icon/>);
           }}
         >
-          <Icon className="iconsBox__icon" />
+          <Icon className="iconsBox__icon"/>
         </button>
       );
     });
   }, [setIconOnClickHandler]);
 
-  const IconModal = (
+  const IconModal: React.JSX.Element = (
     <div className="iconsBox">
       {allIcons}
     </div>
   );
 
-  const NewProjectForm = (
+  const NewProjectForm: React.JSX.Element = (
     <div className="CreateNewProjectForm" id="CreateNewProjectForm">
       <div className="input-wrapper">
         <label htmlFor="CreateNewProjectForm__input" className="CreateNewProjectForm__label label">Project Name:</label>
