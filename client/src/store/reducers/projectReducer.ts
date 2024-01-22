@@ -1,108 +1,115 @@
-import { ProjectType } from 'utils/types';
+import {ProjectType} from 'utils/types';
 
 export type ProjectsReducerStateType = {
-  projects: ProjectType[],
-  isLoading: boolean,
-  currentProject?: ProjectType
-}
+  projects: ProjectType[];
+  currentProject?: ProjectType;
+  isLoading: boolean;
+};
 
-export type UpdateProjectsPayloadType = ProjectType['name'] & Partial<ProjectType>;
-export type ProjectsPayloadType = ProjectType | ProjectType[] | UpdateProjectsPayloadType | string | boolean;
-
-type ProjectActionType = {
-  type: string,
-  payload?: ProjectsPayloadType
-}
+type ProjectActionType<T, P> = {
+  type: T;
+  payload?: P;
+};
 
 export const initialState: ProjectsReducerStateType = {
   projects: [],
   isLoading: true
 };
 
-// actions
-export const SET_CURRENT_PROJECT = 'SET_CURRENT_PROJECT';
-export const SET_PROJECTS = 'SET_PROJECTS';
-export const DELETE_PROJECT = 'DELETE_PROJECT';
-export const UPDATE_PROJECT = 'UPDATE_PROJECT';
-export const CREATE_PROJECT = 'CREATE_PROJECT';
-export const SET_LOADING = 'SET_LOADING';
+const createActionType = <T extends string>(action: T) => action;
 
-// reducers
+const SET_CURRENT_PROJECT = createActionType('SET_CURRENT_PROJECT');
+const SET_PROJECTS = createActionType('SET_PROJECTS');
+const DELETE_PROJECT = createActionType('DELETE_PROJECT');
+const UPDATE_PROJECT = createActionType('UPDATE_PROJECT');
+const CREATE_PROJECT = createActionType('CREATE_PROJECT');
+const SET_LOADING = createActionType('SET_LOADING');
+
 export const projectReducer = (
   state: ProjectsReducerStateType = initialState,
-  action: ProjectActionType
+  action:
+    | ProjectActionType<typeof SET_CURRENT_PROJECT, ProjectType>
+    | ProjectActionType<typeof SET_PROJECTS, ProjectType[]>
+    | ProjectActionType<typeof CREATE_PROJECT, ProjectType>
+    | ProjectActionType<typeof UPDATE_PROJECT, Partial<ProjectType>>
+    | ProjectActionType<typeof DELETE_PROJECT, ProjectType['name']>
+    | ProjectActionType<typeof SET_LOADING, boolean>
 ): ProjectsReducerStateType => {
-
   switch (action.type) {
     case SET_PROJECTS:
-      return {
-        ...state,
-        projects: action.payload as ProjectType[]
-      };
+      return {...state, projects: action.payload || []};
 
     case SET_CURRENT_PROJECT:
-      return {
-        ...state,
-        ...state.projects.map((project: ProjectType) => {
-          return project.current = project.name === (action.payload as ProjectType).name;
-        }),
-        currentProject: action.payload as ProjectType
-      };
+      return {...state, currentProject: action.payload};
 
     case CREATE_PROJECT:
-      const projects: ProjectType[] = [...state.projects];
-      const newProject: ProjectType = action.payload as ProjectType;
-      projects.push(newProject);
-      return {
-        ...state,
-        projects: projects
-      };
+      return {...state, projects: [...state.projects, action.payload as ProjectType]};
 
     case UPDATE_PROJECT:
-      const updatedProject: ProjectType = action.payload as ProjectType;
-      const projectsWithoutUpdatedProject: ProjectType[] = state.projects
-        .filter((project: ProjectType) => project.name !== updatedProject.name);
+      const updatedProject = action.payload as Partial<ProjectType>;
       return {
         ...state,
-        projects: [...projectsWithoutUpdatedProject, updatedProject]
+        projects: state.projects.map((project) =>
+          project.name === updatedProject?.name ? {...project, ...updatedProject} : project
+        )
       };
 
     case DELETE_PROJECT:
-      const projectName = action.payload as ProjectType['name'];
-      const newProjects: ProjectType[] = state.projects
-        .filter((project: ProjectType) => project.name !== projectName);
+      const projectNameToDelete = action.payload as ProjectType['name'];
       return {
         ...state,
-        projects: newProjects
+        projects: state.projects.filter((project) => project.name !== projectNameToDelete)
       };
 
     case SET_LOADING:
-      return {
-        ...state,
-        isLoading: action.payload as boolean
-      };
-
+      return {...state, isLoading: action.payload || false};
 
     default:
       return state;
   }
 };
 
-// action creators
-export const setCurrentProject = (payload: ProjectType): ProjectActionType =>
-  ({ type: SET_CURRENT_PROJECT, payload });
+export const setCurrentProject = (
+  payload: ProjectType | undefined
+): ProjectActionType<typeof SET_CURRENT_PROJECT, ProjectType | undefined> => ({
+  type: SET_CURRENT_PROJECT,
+  payload
+});
 
-export const setProjects = (payload: ProjectType[]): ProjectActionType =>
-  ({ type: SET_PROJECTS, payload });
+export const setProjects = (
+  payload: ProjectType[]
+): ProjectActionType<typeof SET_PROJECTS, ProjectType[]> => ({
+  type: SET_PROJECTS,
+  payload
+});
 
-export const createProject = (payload: ProjectType): ProjectActionType =>
-  ({ type: CREATE_PROJECT, payload });
+export const createProject = (
+  payload: ProjectType
+): ProjectActionType<typeof CREATE_PROJECT, ProjectType> => ({
+  type: CREATE_PROJECT,
+  payload
+});
 
-export const updateProject = (payload: UpdateProjectsPayloadType): ProjectActionType =>
-  ({ type: UPDATE_PROJECT, payload });
+export const updateProject = (
+  payload: Partial<ProjectType>
+): ProjectActionType<typeof UPDATE_PROJECT, Partial<ProjectType>> => ({
+  type: UPDATE_PROJECT,
+  payload
+});
 
-export const deleteProject = (payload: string): ProjectActionType =>
-  ({ type: DELETE_PROJECT, payload });
+export const deleteProject = (
+  payload: string
+): ProjectActionType<typeof DELETE_PROJECT, ProjectType['name']> => ({
+  type: DELETE_PROJECT,
+  payload
+});
 
-export const setLoadingProjects = (payload: boolean): ProjectActionType =>
-  ({ type: SET_LOADING, payload });
+export const setLoadingProjects = (
+  payload: boolean | undefined
+): ProjectActionType<typeof SET_LOADING, boolean | undefined> => ({
+  type: SET_LOADING,
+  payload
+});
+
+export class UpdateProjectsPayloadType {
+}
