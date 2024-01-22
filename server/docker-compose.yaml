@@ -1,0 +1,13 @@
+version: '1'
+services:
+  mongoMTM:
+    image: mongo
+    restart: always
+    environment:
+      MONGO_STR: mongodb://mongoMTM:27017
+    ports:
+      - 27017:27017
+    volumes:
+      - type: bind
+        source: ./data/db
+        target: /data/db
