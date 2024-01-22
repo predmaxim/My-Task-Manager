@@ -1,40 +1,50 @@
-import { icons } from 'components/icons';
-import { MouseEvent } from 'react';
+import React, {MouseEvent} from 'react';
+import {icons} from 'components/icons';
 import './ButtonWithIcon.scss';
+import {IconType} from 'react-icons';
 
 export type ButtonWithIconProps = {
-  className: string,
-  icon?: string,
-  text?: string,
-  onClick: (e: MouseEvent<HTMLButtonElement>) => void,
-  showActions?: boolean,
+  className: string;
+  icon?: string;
+  text?: string;
+  onClick: (e: MouseEvent<HTMLButtonElement>) => void;
+  showActions?: boolean;
   actions?: {
-    remove?: () => void,
-    edit?: () => void
-  }
-}
+    remove?: () => void;
+    edit?: () => void;
+  };
+};
 
-export function ButtonWithIcon({ className, icon, text, onClick, showActions = false, actions }: ButtonWithIconProps) {
-  const GenerateBtnIcon = (icon: string) => icons.filter((el) => el.name === icon)[0];
+const getIconByName = (iconName: string): IconType => icons.find((el) => el.name === iconName) || icons[0];
 
-  const BtnIcon = GenerateBtnIcon(icon ? icon : '');
-  const BtnIconRemove = GenerateBtnIcon('RiDeleteBin6Line');
-  const BtnIconEdit = GenerateBtnIcon('RiPencilLine');
+export function ButtonWithIcon({
+                                 className,
+                                 icon = '',
+                                 text,
+                                 onClick,
+                                 showActions = false,
+                                 actions = {}
+                               }: ButtonWithIconProps) {
+  const BtnIcon = getIconByName(icon);
+  const BtnIconRemove = getIconByName('RiDeleteBin6Line');
+  const BtnIconEdit = getIconByName('RiPencilLine');
 
   return (
-    <div className={`ButtonWithIconWrap`}>
-      <button
-        className={`ButtonWithIcon button ${className}`}
-        onClick={onClick}>
-        {icon
-          && icon.toLowerCase() !== 'loading...'
-          && <BtnIcon className="ButtonWithIcon__icon" />}
+    <div className="ButtonWithIconWrap">
+      <button className={`ButtonWithIcon button ${className}`} onClick={onClick}>
+        {icon && icon.toLowerCase() !== 'loading...' && <BtnIcon className="ButtonWithIcon__icon"/>}
         {text && <span className="ButtonWithIcon__text">{text}</span>}
       </button>
-      {showActions &&
+      {showActions && (
         <div className="button__actions">
-          <BtnIconRemove className="ButtonWithIcon__icon button" onClick={actions && actions.remove} />
-          <BtnIconEdit className="ButtonWithIcon__icon button" onClick={actions && actions.edit} />
-        </div>}
-    </div>);
+          {actions.remove && (
+            <BtnIconRemove className="ButtonWithIcon__icon button" onClick={actions.remove}/>
+          )}
+          {actions.edit && (
+            <BtnIconEdit className="ButtonWithIcon__icon button" onClick={actions.edit}/>
+          )}
+        </div>
+      )}
+    </div>
+  );
 }
