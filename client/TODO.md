@@ -1,0 +1,10 @@
+- [x] fix task priority
+- [x] stretch project button in mobile
+- [x] big refactoring
+- [ ] fix reindexing after done, undone and restart page
+- [ ] add menu with actions in project button
+- [ ] add edit project fn
+- [ ] add user registration and login
+- [ ] add comments fns in task
+- [ ] add subtasks fns in task
+- [ ] add files fns in task
