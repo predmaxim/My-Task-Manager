@@ -1,0 +1,82 @@
+model Task {
+  id          Int       @id @default(autoincrement())
+  name        String
+  description String?
+  created     DateTime  @default(now())
+  done        Boolean   @default(false)
+  priority    Priority  @relation(fields: [priority_id], references: [id])
+  priority_id Int
+  status      Status    @relation(fields: [status_id], references: [id])
+  status_id   Int
+  parent      Task?     @relation("TaskToTask", fields: [parent_id], references: [id])
+  parent_id   Int?
+  project     Project   @relation(fields: [project_id], references: [id])
+  project_id  Int
+  index       Int       @default(0)
+  due         DateTime?
+  in_work     Int?
+  files       File[]
+  children    Task[]    @relation("TaskToTask")
+  Comment     Comment[]
+}
+
+model User {
+  id       Int       @id @default(autoincrement())
+  name     String
+  email    String    @unique
+  password String
+  avatar   String?
+  created  DateTime  @default(now())
+  projects Project[]
+  role     Role      @relation(fields: [role_id], references: [id])
+  role_id  Int
+}
+
+model Project {
+  id      Int      @id @default(autoincrement())
+  name    String
+  created DateTime @default(now())
+  icon    String?
+  color   String?
+  tasks   Task[]
+  user    User     @relation(fields: [user_id], references: [id])
+  user_id Int
+}
+
+model Comment {
+  id        Int       @id @default(autoincrement())
+  content   String
+  parent    Comment?  @relation("CommentToComment", fields: [parent_id], references: [id])
+  parent_id Int?
+  children  Comment[] @relation("CommentToComment")
+  task      Task      @relation(fields: [task_id], references: [id])
+  task_id   Int
+  created   DateTime  @default(now())
+}
+
+model File {
+  id      Int      @id @default(autoincrement())
+  src     String
+  task    Task     @relation(fields: [task_id], references: [id])
+  task_id Int
+  created DateTime @default(now())
+}
+
+model Role {
+  id   Int    @id @default(autoincrement())
+  name String
+  User User[]
+}
+
+model Priority {
+  id    Int    @id @default(autoincrement())
+  name  String
+  color String
+  Task  Task[]
+}
+
+model Status {
+  id   Int    @id @default(autoincrement())
+  name String
+  Task Task[]
+}
