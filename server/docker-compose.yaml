@@ -1,13 +1,11 @@
-version: '1'
 services:
-  mongoMTM:
-    image: mongo
-    restart: always
+  postgres_db:
+    image: postgres:alpine
+    container_name: postgres_mtm
+    #    restart: always
     environment:
-      MONGO_STR: mongodb://mongoMTM:27017
-    ports:
-      - 27017:27017
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_NAME}
     volumes:
-      - type: bind
-        source: ./data/db
-        target: /data/db
+      - ./data/db:/data/db
