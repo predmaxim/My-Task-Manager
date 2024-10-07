@@ -1,5 +1,4 @@
 import express, {Express} from 'express';
-import mongoose from 'mongoose';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import fileUpload from 'express-fileupload';
@@ -11,7 +10,6 @@ import commentRoute from './routes/comments';
 dotenv.config();
 
 const PORT = process.env.PORT || 5000;
-const DB_URI = `mongodb://${process.env.DB_SERVICE_NAME || 'localhost'}/${process.env.DB_NAME || 'mtm'}:${process.env.DB_PORT || 27017}`;
 
 const app: Express = express();
 
@@ -27,9 +25,8 @@ app.use(projectRoute);
 app.use(taskRoute);
 app.use(commentRoute);
 
-const start = async () => {
+const start = () => {
   try {
-    await mongoose.connect(DB_URI);
     app.listen(PORT,
       () => console.log(`⚡️[server]: Server started on port: ${PORT}`)
     );

@@ -1,27 +1,31 @@
 import {Request, Response} from 'express';
-import bcrypt from 'bcryptjs';
+import {compareSync, genSaltSync, hashSync} from 'bcrypt-ts';
 import jwt from 'jsonwebtoken';
-import User from '../models/user.prisma';
+import {prisma} from '../lib/prisma-client';
 
-const JWT_SECRET = process.env.JWT_SECRET as string;
-const JWT_EXPIRES = process.env.JWT_EXPIRES as string;
+const JWT_SECRET = process.env.JWT_SECRET || '';
+const JWT_EXPIRES = process.env.JWT_EXPIRES || '15m';
 
 // Register user
 export const register = async (req: Request, res: Response) => {
   try {
-    const {username, password} = req.body;
-    const isUsed = await User.findOne({username});
+    const {email, password} = req.body as { email: string, password: string };
+    const isUsed = await prisma.user.findFirst({where: {email}});
 
     if (isUsed) {
-      return res.status(400).json({message: 'This username is already busy'});
+      return res.status(400).json({message: 'This email is already busy'});
     }
 
-    const salt = bcrypt.genSaltSync(10);
-    const hash = bcrypt.hashSync(password, salt);
-    const newUser = new User({username, password: hash});
-    const token = jwt.sign({id: newUser._id}, JWT_SECRET, {expiresIn: JWT_EXPIRES});
-
-    await newUser.save();
+    const salt = genSaltSync(10);
+    const hash = hashSync(password, salt);
+    const newUser = await prisma.user.create({
+      data: {
+        password: hash,
+        email,
+        role_id: 2
+      }
+    });
+    const token = jwt.sign({id: newUser.id}, JWT_SECRET, {expiresIn: JWT_EXPIRES});
 
     res.status(201).json({newUser, token, message: 'Registration completed successfully'});
 
@@ -33,20 +37,20 @@ export const register = async (req: Request, res: Response) => {
 // Login user
 export const login = async (req: Request, res: Response) => {
   try {
-    const {username, password} = req.body;
-    const user = await User.findOne({username});
+    const {email, password} = req.body;
+    const user = await prisma.user.findFirst({where: {email}});
 
     if (!user) {
       return res.status(404).json({message: 'User not found'});
     }
 
-    const isPasswordCorrect = await bcrypt.compare(password, user.password);
+    const isPasswordCorrect = compareSync(password, user.password);
 
     if (!isPasswordCorrect) {
       return res.status(403).json({message: 'Incorrect password'});
     }
 
-    const token = jwt.sign({id: user._id}, JWT_SECRET, {expiresIn: JWT_EXPIRES});
+    const token = jwt.sign({id: user.id}, JWT_SECRET, {expiresIn: JWT_EXPIRES});
 
     res.status(200).json({token, user, message: 'Auth ok'});
 
@@ -58,13 +62,19 @@ export const login = async (req: Request, res: Response) => {
 // Get Me
 export const getMe = async (req: Request, res: Response) => {
   try {
-    const user = await User.findById(req.query.userId);
+    const id = req.query.userId ? Number(req.query.userId) : null;
+
+    if (!id) {
+      return res.status(400).json({message: 'Bad payload'});
+    }
+
+    const user = await prisma.user.findUnique({where: {id}});
 
     if (!user) {
       return res.status(404).json({message: 'User not found'});
     }
 
-    const token = jwt.sign({id: user._id}, JWT_SECRET, {expiresIn: JWT_EXPIRES});
+    const token = jwt.sign({id: user.id}, JWT_SECRET, {expiresIn: JWT_EXPIRES});
 
     res.status(200).json({user, token});
 

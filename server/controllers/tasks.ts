@@ -1,14 +1,17 @@
 // import jwt from 'jsonwebtoken';
 import {Request, Response} from 'express';
-import Task from '../models/models.prisma';
-import {TaskType} from '../utils/types';
+import {TaskType} from '../types';
+import {prisma} from '../lib/prisma-client';
 
 export const getTasks = async (req: Request, res: Response) => {
   try {
-    const projectName = req.params.projectName;
+    const projectId = req.params.projectId ? Number(req.params.projectId) : null;
 
-    const tasks: TaskType[] =
-      await Task.find<TaskType>({project: projectName}).sort('index');
+    if (!projectId) {
+      return res.status(400).json({message: 'Project ID cannot be empty'});
+    }
+
+    const tasks = await prisma.task.findMany({where: {project: {id: projectId}}, orderBy: {index: 'asc'}});
 
     res.status(200).json(tasks);
 
@@ -19,7 +22,13 @@ export const getTasks = async (req: Request, res: Response) => {
 
 export const getTask = async (req: Request, res: Response) => {
   try {
-    const task = await Task.findById<TaskType>(req.params.id);
+    const id = req.params.id ? Number(req.params.id) : null;
+
+    if (!id) {
+      return res.status(400).json({message: 'Task ID cannot be empty'});
+    }
+
+    const task = await prisma.task.findUnique({where: {id}});
 
     if (!task) {
       return res.status(404).json({message: 'Task not found'});
@@ -36,6 +45,8 @@ export const createTask = async (req: Request, res: Response) => {
   try {
     const task: TaskType = req.body;
 
+    // TODO: implement zod validation
+
     if (!task.name) {
       return res.status(400).json({message: 'Task name cannot be empty'});
     }
@@ -45,13 +56,15 @@ export const createTask = async (req: Request, res: Response) => {
     if (!task.status) {
       return res.status(400).json({message: 'Task status cannot be empty'});
     }
-    if (!task.number) {
-      return res.status(400).json({message: 'Task number cannot be be empty'});
-    }
 
-    await Task.updateMany({status: task.status}, {$inc: {index: 1}});
-    const newTask = new Task(task);
-    await newTask.save();
+    await prisma.task.updateMany({
+      where: {status: task.status}, data: {
+        index: {
+          increment: 1
+        }
+      }
+    });
+    const newTask = prisma.task.create({data: task});
 
     res.status(201).json({task: newTask});
 
@@ -62,7 +75,14 @@ export const createTask = async (req: Request, res: Response) => {
 
 export const deleteTask = async (req: Request, res: Response) => {
   try {
-    const removedTask = await Task.findByIdAndDelete<TaskType>(req.params.id);
+    const id = req.params.id ? Number(req.params.id) : null;
+
+    if (!id) {
+      return res.status(400).json({message: 'Task ID cannot be empty'});
+    }
+
+    const removedTask = await prisma.task.delete({where: {id}});
+
     if (removedTask) {
       res.status(200).json(removedTask);
     } else {
@@ -75,12 +95,18 @@ export const deleteTask = async (req: Request, res: Response) => {
 
 export const updateTask = async (req: Request, res: Response) => {
   try {
-    try {
-      const updatedTask = await Task.findByIdAndUpdate<TaskType>(req.params.id, req.body);//.sort('created');
-      res.status(200).json(updatedTask);
-    } catch (err) {
-      return res.status(404).json({message: 'Task not found'});
+    const id = req.params.id ? Number(req.params.id) : null;
+
+    if (!id) {
+      return res.status(400).json({message: 'Task ID cannot be empty'});
     }
+
+    const updatedTask = await prisma.task.update({where: {id}, data: req.body});
+
+    res.status(200).json(updatedTask);
+
+    return res.status(404).json({message: 'Task not found'});
+
   } catch (error) {
     res.status(500).json({message: 'Something went wrong', error});
   }
