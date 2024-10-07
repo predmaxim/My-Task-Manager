@@ -1,20 +1,24 @@
 [
   {
-  "name": "Project 1",
-  "status": "active",
-  "created": 1696329635849,
-  "user": "651bf0065fb59a873e3adc4d",
-  "color": "#f06292",
-  "icon": "RiPlantLine",
-  "tasks": []
+    "id": 1,
+    "name": "Project 1",
+    "created": 1696329635849,
+    "icon": "RiPlantLine",
+    "color": "#f06292",
+    "user": 1,
+    "tasks": [
+      1,
+      2,
+      3
+    ]
   },
   {
+    "id": 2,
     "name": "Project 2",
-    "status": "active",
     "created": 1696329935849,
-    "user": "651bf0065fb59a873e3adc4d",
-    "color": "#f06662",
     "icon": "RiBox2Fill",
+    "color": "#f06662",
+    "user": 1,
     "tasks": []
   }
 ]
