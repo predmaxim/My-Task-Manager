@@ -2,10 +2,10 @@ import express, {Express} from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import fileUpload from 'express-fileupload';
-import authRoute from './routes/auth';
 import projectRoute from './routes/projects';
 import taskRoute from './routes/tasks';
 import commentRoute from './routes/comments';
+import authRoute from './routes/auth';
 
 dotenv.config();
 
@@ -14,7 +14,7 @@ const PORT = process.env.PORT || 5000;
 const app: Express = express();
 
 // Middleware
-app.use(cors());
+app.use(cors({origin: 'http://localhost:3000', credentials: true}));
 app.use(fileUpload());
 app.use(express.json());
 app.use(express.static('uploads'));
