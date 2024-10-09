@@ -20,3 +20,6 @@ export const ROLES = {
   admin: 'admin',
   user: 'user'
 } as const;
+
+export const JWT_SECRET = process.env.JWT_SECRET || 'supersecret';
+export const JWT_EXPIRES = process.env.JWT_EXPIRES || '15m';
