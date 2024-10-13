@@ -1,4 +1,5 @@
-import {ProjectType} from '@/utils/types';
+import { ProjectType } from '@/utils/types';
+import { createSlice } from '@reduxjs/toolkit';
 
 export type ProjectsReducerStateType = {
   projects: ProjectType[];
@@ -37,20 +38,20 @@ export const projectReducer = (
 ): ProjectsReducerStateType => {
   switch (action.type) {
     case SET_PROJECTS:
-      return {...state, projects: action.payload || []};
+      return { ...state, projects: action.payload || [] };
 
     case SET_CURRENT_PROJECT:
-      return {...state, currentProject: action.payload};
+      return { ...state, currentProject: action.payload };
 
     case CREATE_PROJECT:
-      return {...state, projects: [...state.projects, action.payload as ProjectType]};
+      return { ...state, projects: [...state.projects, action.payload as ProjectType] };
 
     case UPDATE_PROJECT:
       const updatedProject = action.payload as Partial<ProjectType>;
       return {
         ...state,
         projects: state.projects.map((project) =>
-          project.name === updatedProject?.name ? {...project, ...updatedProject} : project
+          project.name === updatedProject?.name ? { ...project, ...updatedProject } : project
         )
       };
 
@@ -62,7 +63,7 @@ export const projectReducer = (
       };
 
     case SET_LOADING:
-      return {...state, isLoading: action.payload || false};
+      return { ...state, isLoading: action.payload || false };
 
     default:
       return state;
@@ -113,3 +114,36 @@ export const setLoadingProjectsAction = (
 
 export class UpdateProjectsPayloadType {
 }
+
+
+
+const projectSlice = createSlice({
+  name: 'project',
+  initialState: {
+    projects: [],
+    current: null,
+    isLoading: true
+  },
+  reducers: {
+    setCurrent: (state, action) => {
+      state.current = action.payload
+    },
+    getProject: (state) => {
+
+    },
+    getProjects: (state) => {
+
+    },
+    createProject: (state) => {
+
+    },
+    updateProject: (state) => {
+
+    },
+    deleteProject: (state) => {
+
+    }
+  }
+})
+
+export const { setCurrent, createProject, deleteProject, getProject, getProjects, updateProject } = projectSlice.actions
