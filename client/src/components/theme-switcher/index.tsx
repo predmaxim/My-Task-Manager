@@ -3,6 +3,7 @@ import {useDispatch, useSelector} from 'react-redux';
 import {RootState} from '@/store';
 import {setThemeAction} from '@/store/reducers/theme-reducer';
 import {ButtonWithIcon} from '@/components/button-with-iIcon';
+import styles from './styles.module.scss';
 
 export function ThemeSwitcher() {
   const dispatch = useDispatch();
@@ -18,7 +19,7 @@ export function ThemeSwitcher() {
 
   return (
     <ButtonWithIcon
-      className={'ThemeSwitcher'}
+      className={styles.ThemeSwitcher}
       onClick={onClickHandler}
       icon={icon}
     />

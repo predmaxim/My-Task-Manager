@@ -1,16 +1,15 @@
 import {ChangeEvent, useState} from 'react';
-import {useDispatch} from 'react-redux';
 import {deleteSearchAction, setSearchAction} from '@/store/reducers/search-reducer';
-import {ThunkDispatchType} from '@/utils/types';
 import {ButtonWithIcon} from '@/components/button-with-iIcon';
-import './styles.scss';
+import {useAppDispatch} from '@/lib/store';
+import styles from './styles.module.scss';
 
 export type SearchProps = {
   className?: string;
 }
 
 export function Search({className}: SearchProps) {
-  const dispatch: ThunkDispatchType = useDispatch();
+  const dispatch = useAppDispatch();
   const [inputValue, setInputValue] = useState('');
 
   const onChangeHandler = (e: ChangeEvent<HTMLInputElement>) => {
@@ -26,11 +25,11 @@ export function Search({className}: SearchProps) {
   const activeClass = inputValue ? 'active' : '';
 
   return (
-    <div className={`Search ${className} ${activeClass}`}>
+    <div className={`${styles.Search} ${className} ${activeClass}`}>
       <input
         type="text"
         id="Search__input"
-        className="Search__input input"
+        className={`${styles.Search__input} input`}
         placeholder="Search"
         value={inputValue}
         onChange={onChangeHandler}

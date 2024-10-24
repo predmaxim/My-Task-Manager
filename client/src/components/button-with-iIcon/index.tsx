@@ -1,6 +1,6 @@
-import React, {MouseEvent} from 'react';
+import {MouseEvent} from 'react';
 import {icons} from '@/components/icons';
-import './styles.scss';
+import styles from './styles.module.scss';
 import {IconType} from 'react-icons';
 
 export type ButtonWithIconProps = {
@@ -30,18 +30,18 @@ export function ButtonWithIcon({
   const BtnIconEdit = getIconByName('RiPencilLine');
 
   return (
-    <div className="ButtonWithIconWrap">
-      <button className={`ButtonWithIcon button ${className}`} onClick={onClick}>
-        {icon && icon.toLowerCase() !== 'loading...' && <BtnIcon className="ButtonWithIcon__icon"/>}
-        {text && <span className="ButtonWithIcon__text">{text}</span>}
+    <div className={styles.ButtonWithIconWrap}>
+      <button className={`${styles.ButtonWithIcon} button ${className}`} onClick={onClick}>
+        {icon && icon.toLowerCase() !== 'loading...' && <BtnIcon className={styles.ButtonWithIcon__icon}/>}
+        {text && <span className={styles.ButtonWithIcon__text}>{text}</span>}
       </button>
       {showActions && (
-        <div className="button__actions">
+        <div className={styles.button__actions}>
           {actions.remove && (
-            <BtnIconRemove className="ButtonWithIcon__icon button" onClick={actions.remove}/>
+            <BtnIconRemove className={`${styles.ButtonWithIcon__icon} button`} onClick={actions.remove}/>
           )}
           {actions.edit && (
-            <BtnIconEdit className="ButtonWithIcon__icon button" onClick={actions.edit}/>
+            <BtnIconEdit className={`${styles.ButtonWithIcon__icon} button`} onClick={actions.edit}/>
           )}
         </div>
       )}

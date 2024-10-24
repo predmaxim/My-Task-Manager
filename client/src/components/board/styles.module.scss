@@ -1,0 +1,78 @@
+@import "src/assets/vars";
+@import "src/assets/mixins";
+
+.Board {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 30px 20px;
+
+  @media screen and (width <=$tablet) {
+    grid-template-columns: 1fr;
+  }
+
+  .column {
+    border-radius: $border-radius;
+    background: var(--color-light-grey);
+    position: relative;
+    height: fit-content;
+
+    &__header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 20px;
+      border-radius: $border-radius $border-radius 0 0;
+
+      .ButtonWithIconWrap {
+        margin-right: -10px;
+      }
+
+      @media screen and (width <=$mobile) {
+        padding: 10px;
+      }
+    }
+
+    &__title {
+      font-weight: 700;
+      font-size: 1.2rem;
+    }
+
+
+    &__menuBtn {
+      background: none;
+      padding: 0;
+      height: auto;
+      @include button("s");
+
+      &:hover {
+        background: none;
+        padding: 0;
+        color: var(--primary-color);
+      }
+    }
+
+    &__CreateNewTask {
+      padding-bottom: 10px;
+    }
+
+    &__body {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      padding: 0 10px 15px 10px;
+      max-height: calc(100vh - 320px);
+      overflow-y: auto;
+      overflow-x: hidden;
+      @include scrollbar;
+
+      @media screen and (width <=$tablet) {
+        max-height: fit-content;
+      }
+
+      @media screen and (width <=$mobile) {
+        padding: 10px;
+      }
+    }
+  }
+
+}

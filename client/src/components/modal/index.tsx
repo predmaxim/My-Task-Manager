@@ -1,6 +1,6 @@
 import {MouseEvent, ReactNode} from 'react';
 import {RiCloseLine} from 'react-icons/ri';
-import './modal.scss';
+import styles from './modal.module.scss';
 
 export type ModalProps = {
   className: string,
@@ -30,23 +30,23 @@ export function Modal(
   const activeClass = isActive ? 'active' : '';
 
   return (
-    <div className={`Modal ${className}`}>
-      <div className={`Modal__overlay ${activeClass}`} onClick={onClose}/>
-      <div className={`Modal__body  ${activeClass}`} style={{maxWidth: width}}>
-        <RiCloseLine onClick={onClose} className="Modal__closeBtn"/>
-        <h5 className="Modal__header">{header}</h5>
-        <div className="Modal__content">{children}</div>
+    <div className={`${styles.Modal} ${className}`}>
+      <div className={`${styles.Modal__overlay} ${activeClass}`} onClick={onClose}/>
+      <div className={`${styles.Modal__body}  ${activeClass}`} style={{maxWidth: width}}>
+        <RiCloseLine onClick={onClose} className={styles.Modal__closeBtn}/>
+        <h5 className={styles.Modal__header}>{header}</h5>
+        <div className={styles.Modal__content}>{children}</div>
         {showActionBtns &&
-          <div className="actions">
+          <div className={styles.actions}>
             <button
-              className="Modal__okBtn button"
+              className={`${styles.Modal__okBtn} button`}
               onClick={onOk}
               form={formId}
               type="submit"
             >Ok
             </button>
             <button
-              className="Modal__cancelBtn button"
+              className={`${styles.Modal__cancelBtn} button`}
               onClick={onClose}
               type="button"
             >Cancel

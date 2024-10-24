@@ -1,9 +1,9 @@
-import {FormEventHandler} from 'react';
+import { FormEventHandler } from 'react';
 import TextareaAutosize from 'react-textarea-autosize';
-import {TASK_PRIORITY, TASK_STATUSES} from '@/utils/constants';
-import {formatDate, upperCaseFirstLetter} from '@/utils/helpers';
-import {TaskPriorityType, TaskStatusType, TaskType} from '@/utils/types';
-import './styles.scss';
+import { TASK_PRIORITY, TASK_STATUSES } from '@/constants';
+import { formatDate, upperCaseFirstLetter } from '@/utils/helpers';
+import { TaskPriorityType, TaskStatusType, TaskType } from '@/types';
+import styles from './styles.module.scss';
 
 type TaskFormFields = {
   name: HTMLTextAreaElement;
@@ -20,7 +20,7 @@ export type TaskContentType = {
   onSubmit: (task: Partial<TaskType>) => void;
 };
 
-export function TaskContent({task, onSubmit}: TaskContentType) {
+export function TaskContent({ task, onSubmit }: TaskContentType) {
   const genDone = (status: TaskStatusType) => {
     if (status === TASK_STATUSES.done && !task.done) {
       return new Date();
@@ -39,28 +39,28 @@ export function TaskContent({task, onSubmit}: TaskContentType) {
       status: form.status.value as TaskStatusType,
       due: form.due && form.due.valueAsDate ? form.due.valueAsDate : false,
       done: genDone(form.status.value as TaskStatusType),
-      priority: form.priority.value as TaskPriorityType['name']
+      priority: form.priority.value as TaskPriorityType['name'],
       // comments: form.comments && form.comments?.value,
       // subTasks: form.subTasks && form.subTasks?.value
     });
   };
 
   return (
-    <form className="TaskContent" id="TaskContentForm" onSubmit={onSubmitHandler}>
-      <div className="TaskContent__name">
-        <span className="label label-textarea-name">Name:</span>
+    <form className={styles.TaskContent} id="TaskContentForm" onSubmit={onSubmitHandler}>
+      <div className={styles.TaskContent__name}>
+        <span className={`${styles.label} ${styles['label-textarea-name']}`}>Name:</span>
         <TextareaAutosize
           name="name"
-          className="nameInput"
+          className={styles.nameInput}
           autoFocus={true}
           defaultValue={task.name}
         />
       </div>
-      <div className="TaskContent__status">
-        <span className="label label-status">Status:</span>
+      <div className={styles.TaskContent__status}>
+        <span className={`${styles.label} ${styles['label-status']}`}>Status:</span>
         <select
           name="status"
-          className="statusSelect"
+          className={styles.statusSelect}
           defaultValue={task.status}
         >
           {Object.values(TASK_STATUSES).map((status) => (
@@ -73,11 +73,11 @@ export function TaskContent({task, onSubmit}: TaskContentType) {
           ))}
         </select>
       </div>
-      <div className="TaskContent__priority">
-        <span className="label label-priority">Priority:</span>
+      <div className={styles.TaskContent__priority}>
+        <span className={`${styles.label} ${styles['label-priority']}`}>Priority:</span>
         <select
           name="priority"
-          className="prioritySelect"
+          className={styles.prioritySelect}
           defaultValue={task.priority}
         >
           {Object.values(TASK_PRIORITY).map((priority) => (
@@ -90,83 +90,83 @@ export function TaskContent({task, onSubmit}: TaskContentType) {
           ))}
         </select>
       </div>
-      <div className="TaskContent__due">
-        <span className="label label-due">Due:</span>
+      <div className={styles.TaskContent__due}>
+        <span className={`${styles.label} ${styles['label-due']}`}>Due:</span>
         <input
           name="due"
-          className="dueSelect"
+          className={styles.dueSelect}
           type="date"
           defaultValue={task.due ? formatDate(task.due) : ''}
         />
       </div>
-      <div className="TaskContent__description">
-        <span className="label label-description">Description:</span>
+      <div className={styles.TaskContent__description}>
+        <span className={`${styles.label} ${styles['label-description']}`}>Description:</span>
         <textarea
           name="description"
-          className="descriptionInput"
+          className={styles.descriptionInput}
           placeholder="Some Description"
           defaultValue={task.description}
         />
       </div>
-      <div className="TaskContent__info">
+      <div className={styles.TaskContent__info}>
         {task.created &&
-          <div className="created">
-            <span className="created__title">Created:</span>
-            <span className="created__date">
+          <div className={styles.created}>
+            <span className={styles.created__title}>Created:</span>
+            <span className={styles.created__date}>
               {formatDate(task.created)}
             </span>
           </div>}
         {task.inWork &&
-          <div className="inWork">
-            <span className="inWork__title">In work:</span>
-            <span className="inWork__date">
+          <div className={styles.inWork}>
+            <span className={styles.inWork__title}>In work:</span>
+            <span className={styles.inWork__date}>
               {formatDate(task.inWork)}
             </span>
           </div>}
         {task.done &&
-          <div className="done">
-            <span className="done__title">Done:</span>
-            <span className="done__date">
+          <div className={styles.done}>
+            <span className={styles.done__title}>Done:</span>
+            <span className={styles.done__date}>
               {formatDate(task.done)}
             </span>
           </div>
         }
       </div>
-      <div className="TaskContent__files">
+      <div className={styles.TaskContent__files}>
         {task.files?.length
           ? task.files?.map(file => (
-            <button key={file} type="button" className="button-big">
+            <button key={file} type="button" className={`${styles.button} big`}>
               {file}
             </button>
           ))
-          : <button className="addFilesBtn" type="button">+ Add File</button>
+          : <button className={styles.addFilesBtn} type="button">+ Add File</button>
         }
       </div>
-      <hr className="TaskContent__hr"/>
-      <div className="TaskContent__comments">
-        <span className="label label-comments">Comment:</span>
+      <hr className={styles.TaskContent__hr} />
+      <div className={styles.TaskContent__comments}>
+        <span className={`${styles.label} ${styles['label-comments']}`}>Comment:</span>
         <TextareaAutosize
           name="comment"
-          className="commentInput"
+          className={styles.commentInput}
           // placeholder="Comment Hear"
         />
       </div>
-      <div className="TaskContent__commentBtn">
-        <button type="button" className="button button-big commentBtn">
+      <div className={styles.TaskContent__commentBtn}>
+        <button type="button" className={`button button-big ${styles.commentBtn}`}>
           Comment
         </button>
       </div>
-      <div className="TaskContent__subTasks">
-        <span className="label label-subTasks">SubTasks:</span>
+      <div className={styles.TaskContent__subTasks}>
+        <span className={`${styles.label} ${styles['label-subTasks']}`}>SubTasks:</span>
         <TextareaAutosize
-          className="subTasks"
+          className={styles.subTasks}
           // placeholder="+ Add Subtask"
         />
         {task.subTasks &&
-          <div className="subTasks">
+          <div className={styles.subTasks}>
             {task.subTasks.map(task => (
               <button
-                key={task.id}
+                key={task._id}
                 type="button"
                 className="button button-big"
               >

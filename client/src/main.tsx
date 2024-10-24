@@ -1,12 +1,12 @@
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
-import App from './App'
-import { GlobalProvider } from "@/providers/global-provider";
+import App from './app.tsx'
+import { RootProvider } from "./providers/root-provider.tsx";
 
 createRoot(document.getElementById("root")!).render(
-  <StrictMode>    
-      <GlobalProvider>
+  <StrictMode>
+      <RootProvider>
         <App />
-      </GlobalProvider>
+      </RootProvider>
   </StrictMode>
 );
