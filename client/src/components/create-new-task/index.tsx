@@ -1,20 +1,20 @@
-import {FocusEvent, KeyboardEvent, useState} from 'react';
+import { FocusEvent, KeyboardEvent, useState } from 'react';
 import TextareaAutosize from 'react-textarea-autosize';
-import {TASK_STATUSES, TEMP_USER} from '@/constants';
-import {PartialTaskType, TaskStatusType} from '@/types';
-import {ButtonWithIcon} from '@/components/button-with-iIcon';
+import { TASK_STATUSES, TEMP_USER } from '@/constants';
+import { PartialTaskType, TaskStatusType } from '@/types';
+import { ButtonWithIcon } from '@/components/button-with-iIcon';
 import styles from './styles.module.scss';
-import {createNewTask} from '@/store/async-actions/create-new-task';
-import {useAppDispatch, useAppSelector} from '@/lib/store';
+import { useAppSelector } from '@/lib/store';
+import { useCreateTaskMutation } from '@/services/tasks';
 
 export type CreateNewTaskType = {
   projectName: string;
   taskStatus: TaskStatusType;
 };
 
-export function CreateNewTask({projectName, taskStatus}: CreateNewTaskType) {
-  const dispatch = useAppDispatch();
-  const {currentProject} = useAppSelector((state) => state.projects);
+export function CreateNewTask({ projectName, taskStatus }: CreateNewTaskType) {
+  const { currentProject } = useAppSelector((state) => state.projects);
+  const [createTask] = useCreateTaskMutation();
 
   const [newTaskName, setNewTaskName] = useState<string>('');
   const [showTaskCreator, setShowTaskCreator] = useState(false);
@@ -31,9 +31,9 @@ export function CreateNewTask({projectName, taskStatus}: CreateNewTaskType) {
         created: new Date(),
         priority: 'low',
         number: currentProject.tasks + 1,
-        index: 0
+        index: 0,
       };
-      dispatch(createNewTask(newTask));
+      createTask(newTask);
       setNewTaskName('');
       setShowTaskCreator(false);
     }

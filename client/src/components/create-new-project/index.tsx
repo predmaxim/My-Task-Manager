@@ -10,7 +10,7 @@ import { useCreateProjectMutation, useSetCurrentProjectMutation } from '@/servic
 import './styles.module.scss';
 
 export function CreateNewProject() {
-  const [createNewProject] = useCreateProjectMutation();
+  const [createProject] = useCreateProjectMutation();
   const [setCurrentProject] = useSetCurrentProjectMutation();
   const [showNewProjectModal, setNewProjectModal] = useState(false);
   const [showIconModal, setShowIconModal] = useState(false);
@@ -25,11 +25,11 @@ export function CreateNewProject() {
 
   const onOkModal = async () => {
     if (inputValue) {
-      if (projects?.some((el) => el._id === inputValue)) {
-        toast(`Project id "${inputValue}" is busy`);
+      if (projects?.some((el) => el.name === inputValue)) {
+        toast(`Project name "${inputValue}" is busy`);
       } else {
-        await createNewProject({ name: inputValue.trim(), icon: ProjectIcon?.type.name });
-        await setCurrentProject({ name: inputValue.trim() });
+        await createProject({ name: inputValue.trim(), icon: ProjectIcon?.type.name });
+        await setCurrentProject({ id: inputValue.trim(), current: true });
         setNewProjectModal(false);
         setInputValue('');
         setProjectIcon(undefined);

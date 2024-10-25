@@ -166,7 +166,7 @@ export function TaskContent({ task, onSubmit }: TaskContentType) {
           <div className={styles.subTasks}>
             {task.subTasks.map(task => (
               <button
-                key={task._id}
+                key={task.id}
                 type="button"
                 className="button button-big"
               >

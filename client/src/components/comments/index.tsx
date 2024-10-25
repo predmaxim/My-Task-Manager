@@ -4,8 +4,9 @@ export type CommentsProps = {
   prop?: string;
 }
 
-export function Comments({prop = 'default value'}: CommentsProps) {
+export function Comments({ prop = 'default value' }: CommentsProps) {
   console.log(styles);
+  console.log(prop);
   // if (taskNameEditRef.current) {
   //   const context = taskNameEditRef.current.editor?.getContent({ format: 'raw' });
   //   console.log(context);

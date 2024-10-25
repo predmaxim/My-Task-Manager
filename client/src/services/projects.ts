@@ -1,45 +1,45 @@
-import {createApi, fetchBaseQuery} from '@reduxjs/toolkit/query/react';
-import {PartialProjectType, ProjectType} from '@/types';
-import {API_URL} from '@/constants';
+import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
+import { ProjectType } from '@/types';
+import { API_URL } from '@/constants';
 
 export const projectsApi = createApi({
   reducerPath: 'projectsApi',
-  baseQuery: fetchBaseQuery({baseUrl: `${API_URL}/api/`}),
+  baseQuery: fetchBaseQuery({ baseUrl: `${API_URL}/` }),
   endpoints: (builder) => ({
     getProjects: builder.query<ProjectType[], void>({
-      query: () => `projects/`
+      query: () => `projects/`,
     }),
-    getProject: builder.query<ProjectType, ProjectType['_id']>({
-      query: (id) => `projects/${id}`
+    getProject: builder.query<ProjectType, ProjectType['id']>({
+      query: (id) => `projects/${id}`,
     }),
-    createProject: builder.mutation<ProjectType, PartialProjectType>({
+    createProject: builder.mutation<ProjectType, Pick<ProjectType, 'name'> & Partial<Pick<ProjectType, 'icon'>>>({
       query: (body) => ({
         url: `projects/`,
         method: 'POST',
-        body
-      })
+        body,
+      }),
     }),
     updateProject: builder.mutation<ProjectType, ProjectType>({
       query: (body) => ({
-        url: `projects/${body._id}`,
+        url: `projects/${body.id}`,
         method: 'PUT',
-        body
-      })
+        body,
+      }),
     }),
-    setCurrentProject: builder.mutation<ProjectType, { id: ProjectType['_id'], current: boolean }>({
+    setCurrentProject: builder.mutation<ProjectType, { id: ProjectType['id'], current: boolean }>({
       query: (body) => ({
         url: `projects/${body.id}`,
         method: 'PATCH',
-        body: body.current
-      })
+        body: body.current,
+      }),
     }),
-    deleteProject: builder.mutation<void, ProjectType['_id']>({
+    deleteProject: builder.mutation<void, ProjectType['id']>({
       query: (id) => ({
         url: `projects/${id}`,
-        method: 'DELETE'
-      })
-    })
-  })
+        method: 'DELETE',
+      }),
+    }),
+  }),
 });
 
 export const {
@@ -48,5 +48,5 @@ export const {
   useDeleteProjectMutation,
   useCreateProjectMutation,
   useUpdateProjectMutation,
-  useSetCurrentProjectMutation
+  useSetCurrentProjectMutation,
 } = projectsApi;

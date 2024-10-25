@@ -1,28 +1,26 @@
-import {ChangeEvent, useState} from 'react';
-import {deleteSearchAction, setSearchAction} from '@/store/reducers/search-reducer';
-import {ButtonWithIcon} from '@/components/button-with-iIcon';
-import {useAppDispatch} from '@/lib/store';
+import { ChangeEvent } from 'react';
+import { ButtonWithIcon } from '@/components/button-with-iIcon';
+import { useAppDispatch, useAppSelector } from '@/lib/store';
 import styles from './styles.module.scss';
+import { setSearch } from '@/lib/features/search-slice';
 
 export type SearchProps = {
   className?: string;
 }
 
-export function Search({className}: SearchProps) {
+export function Search({ className }: SearchProps) {
   const dispatch = useAppDispatch();
-  const [inputValue, setInputValue] = useState('');
+  const query = useAppSelector((state) => state.search.query);
 
   const onChangeHandler = (e: ChangeEvent<HTMLInputElement>) => {
-    setInputValue(e.target.value);
-    dispatch(setSearchAction(e.target.value));
+    dispatch(setSearch(e.target.value));
   };
 
   const onClear = () => {
-    setInputValue('');
-    dispatch(deleteSearchAction());
+    dispatch(setSearch(''));
   };
 
-  const activeClass = inputValue ? 'active' : '';
+  const activeClass = query ? 'active' : '';
 
   return (
     <div className={`${styles.Search} ${className} ${activeClass}`}>
@@ -31,7 +29,7 @@ export function Search({className}: SearchProps) {
         id="Search__input"
         className={`${styles.Search__input} input`}
         placeholder="Search"
-        value={inputValue}
+        value={query}
         onChange={onChangeHandler}
       />
       <ButtonWithIcon

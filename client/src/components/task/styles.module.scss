@@ -38,7 +38,7 @@
     &.mce-edit-focus {
       outline: none;
       background: var(--color-light-grey);
-      border-radius: $border-radius / 2;
+      border-radius: calc($border-radius / 2);
       cursor: auto;
     }
   }

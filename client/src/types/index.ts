@@ -1,4 +1,4 @@
-import {PROJECT_STATUSES, ROLES, TASK_PRIORITY, TASK_STATUSES} from '@/constants';
+import { PROJECT_STATUSES, ROLES, TASK_PRIORITY, TASK_STATUSES } from '@/constants';
 
 
 export type ThemeType = 'dark' | 'light';
@@ -10,7 +10,7 @@ export type GlobalStateType = {
 };
 
 export type UserType = {
-  _id: string,
+  id: string,
   name: string,
   email: string,
   password: string,
@@ -18,34 +18,34 @@ export type UserType = {
   created: Date,
   lastVisit: Date,
   avatarURL?: string,
-  projects?: ProjectType['_id'][]
+  projects?: ProjectType['id'][]
 };
 
-export type PartialUserType = Partial<Pick<UserType, '_id'>> & Omit<UserType, '_id'>;
+export type PartialUserType = Partial<Pick<UserType, 'id'>> & Omit<UserType, 'id'>;
 
 export type ProjectType = {
-  _id: string,
+  id: string,
   name: string,
   slug: string,
   status: ProjectStatusType,
   created: Date,
   tasks: TaskInProject,
-  user?: UserType['_id'],
+  user?: UserType['id'],
   current?: boolean,
   icon?: string,
   color?: string,
 };
 
-export type PartialProjectType = Partial<Pick<ProjectType, '_id'>> & Omit<ProjectType, '_id'>;
+export type PartialProjectType = Partial<Pick<ProjectType, 'id'>> & Omit<ProjectType, 'id'>;
 
 export type TaskInProject = number;
 
 export type TaskType = {
-  _id: string,
+  id: string,
   number: number,
   name: string,
   created: Date,
-  user: UserType['_id'],
+  user: UserType['id'],
   project: ProjectType['name']
   status: TaskStatusType,
   index: number,
@@ -60,7 +60,7 @@ export type TaskType = {
   subTasks?: TaskType[]
 };
 
-export type PartialTaskType = Partial<Pick<TaskType, '_id'>> & Omit<TaskType, '_id'>;
+export type PartialTaskType = Partial<Pick<TaskType, 'id'>> & Omit<TaskType, 'id'>;
 
 export type ProjectStatusType = keyof typeof PROJECT_STATUSES;
 export type RoleType = keyof typeof ROLES;
@@ -74,13 +74,13 @@ export type TaskPriorityType = {
 export type FileType = string;
 
 export type CommentType = {
-  _id: string,
+  id: string,
   comment: string,
   author: UserType,
   parent?: string
 };
 
-export type PartialCommentType = Partial<Pick<CommentType, '_id'>> & Omit<CommentType, '_id'>;
+export type PartialCommentType = Partial<Pick<CommentType, 'id'>> & Omit<CommentType, 'id'>;
 
 export type TaskMenuActionType = {
   name: 'edit' | 'remove',
@@ -88,11 +88,27 @@ export type TaskMenuActionType = {
 };
 
 export type TaskUpdateFieldsType =
-  Pick<TaskType, '_id' | 'number' | 'project'>
-  & Partial<Exclude<TaskType, '_id' | 'number' | 'project'>>
+  Pick<TaskType, 'id' | 'number' | 'project'>
+  & Partial<Exclude<TaskType, 'id' | 'number' | 'project'>>
 
 
 export type TokenType = {
   access_token: string,
   refresh_token: string,
+}
+
+export type AuthType = {
+  user: UserType,
+  token: TokenType
+}
+
+export type LoginType = {
+  email: string,
+  password: string
+}
+
+export type RegisterType = {
+  name: string,
+  email: string,
+  password: string
 }
