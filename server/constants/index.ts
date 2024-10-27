@@ -1,25 +1,10 @@
-import * as process from 'node:process';
+import * as process from "node:process";
 
-export const SERVER_URL = process.env.SERVER_URL || 'http://localhost';
-export const SERVER_PORT = process.env.SERVER_PORT || '5000';
-export const BASE_URL = `${SERVER_URL}:${SERVER_PORT}`;
+export const JWT_SECRET = process.env.JWT_SECRET || "supersecret";
+export const JWT_EXPIRES = process.env.JWT_EXPIRES || "15m";
 
-export const TASK_STATUSES = {
-  queue: 'queue',
-  development: 'development',
-  done: 'done'
-};
-
-export const TASK_PRIORITY = {
-  low: 'low',
-  normal: 'normal',
-  high: 'high'
-} as const;
-
-export const ROLES = {
-  admin: 'admin',
-  user: 'user'
-} as const;
-
-export const JWT_SECRET = process.env.JWT_SECRET || 'supersecret';
-export const JWT_EXPIRES = process.env.JWT_EXPIRES || '15m';
+export enum TASK_STATUSES {
+  queue = "queue",
+  development = "development",
+  done = "done",
+}

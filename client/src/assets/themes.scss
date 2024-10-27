@@ -5,13 +5,20 @@
 //}
 
 :root {
+  @media (prefers-color-scheme: light) {
+    html {
+      color-scheme: light;
+    }
+  }
+
   .light {
     --font-color: #333333;
-    --font-color-alt: #000000;
+    --font-color-alt: #ffffff;
     --font-color-dimmed: #999999;
     --font-color-dimmed-darker: #666666;
 
     --bg-color: #ffffff;
+    --bg-color-darker: #f6f6f6;
 
     --primary-color: #ec4545;
     --primary-color-darker: #c23131;
@@ -20,6 +27,12 @@
     --success-color: #45ec69;
     --warning-color: #ecd345;
     --error-color: #ec4545;
+
+    --button-primary-bg: var(--primary-color);
+    --button-primary-bg-hover: var(--primary-color-darker);
+
+    --button-secondary-bg: var(--secondary-color);
+    --button-secondary-bg-hover: var(--secondary-color-darker);
 
     --color-light-grey: #f0f0f0;
     --color-light-grey-dimmed: #f8f8f8;
@@ -33,7 +46,7 @@
     --footer-bg-color: #f0f0f0;
     --footer-font-color: #000000;
 
-    --block-shadow-color: #c0bdbd;
+    --block-shadow-color: #878787;
 
     --overlay-bg: rgb(87 87 87 / 50%);
 
@@ -55,9 +68,23 @@
       color-scheme: light;
     }
 
+    button {
+      color: var(--font-color-alt);
+
+      &:hover {
+        color: var(--font-color-alt);
+      }
+    }
+
+
   }
 
-  //@media (prefers-color-scheme: dark) {
+  @media (prefers-color-scheme: dark) {
+    html {
+      color-scheme: dark;
+    }
+  }
+
   .dark {
     --font-color: #e5e5e5;
     --font-color-alt: #000000;
@@ -65,6 +92,7 @@
     --font-color-dimmed-darker: #666666;
 
     --bg-color: #222222;
+    --bg-color-darker: #2c2c2c;
 
     --primary-color: #ec4545;
     --primary-color-darker: #c23131;
@@ -73,6 +101,12 @@
     --success-color: #45ec69;
     --warning-color: #ecd345;
     --error-color: #ec4545;
+
+    --button-primary-bg: var(--primary-color);
+    --button-primary-bg-hover: var(--primary-color-darker);
+
+    --button-secondary-bg: var(--secondary-color);
+    --button-secondary-bg-hover: var(--secondary-color-darker);
 
     --color-light-grey: #363636;
     --color-light-grey-dimmed: #414141;
@@ -86,7 +120,7 @@
     --footer-bg-color: #f0f0f0;
     --footer-font-color: #000000;
 
-    --block-shadow-color: #c0bdbd;
+    --block-shadow-color: #303030;
 
     --overlay-bg: rgba(49, 49, 49, 0.7);
 
@@ -115,5 +149,5 @@
 
   }
 
-  //}
+
 }

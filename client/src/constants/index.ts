@@ -9,21 +9,21 @@ export const TEMP_USER = '651bf0065fb59a873e3adc4d';
 export const TASK_STATUSES = {
   queue: 'queue',
   development: 'development',
-  done: 'done'
-};
+  done: 'done',
+} as const;
 
 export const TASK_PRIORITY = {
   low: 'low',
   normal: 'normal',
-  high: 'high'
-};
+  high: 'high',
+} as const;
 
 export const PROJECT_STATUSES = {
   active: 'active',
-  inactive: 'inactive'
-};
+  inactive: 'inactive',
+} as const;
 
 export const ROLES = {
   admin: 'admin',
-  user: 'user'
-};
+  user: 'user',
+} as const;

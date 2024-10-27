@@ -1,0 +1,34 @@
+@import "src/assets/vars";
+@import "src/assets/mixins";
+
+.Login {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.form {
+  width: 100%;
+  max-width: 330px;
+  padding: 15px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 1rem;
+
+  &__input {
+    @include input;
+  }
+}
+
+.submit {
+  margin-top: 1rem;
+  @include button("x");
+}
+
+.error {
+  color: var(--error-color);
+  font-size: 0.8rem;
+  margin-top: 0.5rem;
+}

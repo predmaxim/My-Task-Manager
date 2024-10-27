@@ -1,7 +1,7 @@
 import styles from './styles.module.scss';
 
-export function Loading() {
+export function Loading({ className }: { className?: string }) {
   return (
-    <div className={styles.Loading}>Loading...</div>
+    <div className={`${styles.Loading} ${className}`}>Loading...</div>
   );
 }

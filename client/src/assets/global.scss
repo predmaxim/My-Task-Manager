@@ -123,6 +123,7 @@ h6 {
 #root {
   margin: 0;
   height: 100%;
+  display: grid;
 }
 
 button {
@@ -193,4 +194,18 @@ section {
 
 textarea {
   @include scrollbar;
+}
+
+@media (prefers-color-scheme: dark) {
+  body {
+    background-color: var(--bg-color-darker);
+    color: var(--font-color);
+  }
+}
+
+@media (prefers-color-scheme: light) {
+  body {
+    background-color: var(--bg-color);
+    color: var(--font-color);
+  }
 }

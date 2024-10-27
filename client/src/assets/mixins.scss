@@ -1,3 +1,5 @@
+@use "src/assets/vars";
+
 // Media queries
 @mixin desktop {
   @media only screen and (width <= $desktop) {
@@ -34,43 +36,69 @@
 @mixin button(
   $size: "xl",
   $width: auto,
+  $color: "primary"
 ) {
   //font-size: $base-font;
-  background: var(--color-light-grey);
+  background: var(--button-primary-bg);
   font-size: .9rem;
 
   &:hover {
-    background: var(--color-light-grey-darker);
+    background: var(--button-primary-bg-hover);
   }
 
   @if $size== "xl" {
-    height: 45px;
-    padding: 10px 20px
+    padding: 0.8rem 2rem;
+    font-size: medium;
+    border-radius: $border-radius;
   } @else if $size== "x" {
-    height: 36px;
-    padding: 10px 10px
+    padding: 0.6rem 1.7rem;
+    font-size: medium;
+    border-radius: $border-radius;
   } @else if $size== "l" {
-    height: 24px;
-    padding: 5px 10px;
-    font-size: .88rem;
+    padding: 0.5rem 1.5rem;
+    font-size: small;
+    border-radius: calc($border-radius / 1.5);
   } @else if $size== "s" {
-    height: auto;
-    padding: 0;
-    font-size: .88rem;
-    background: transparent;
-
-    &:hover {
-      background: transparent;
-    }
+    padding: 0.2rem 1rem;
+    font-size: small;
+    border-radius: calc($border-radius / 2);
   }
 
   @if $width== "full" {
     width: 100%;
   }
 
+  @if $color== "primary" {
+    background: var(--button-primary-bg);
+
+    &:hover {
+      background: var(--button-primary-bg-hover);
+    }
+  }
+
+  @if $color== "secondary" {
+    background: var(--button-secondary-bg);
+
+    &:hover {
+      background: var(--button-secondary-bg-hover);
+    }
+  }
+
+  @if $color== "transparent" {
+    color: var(--font-color);
+    background: none;
+
+    &:hover {
+      color: var(--font-color);
+      background: none;
+    }
+  }
+
   width: $width;
-  border-radius: $border-radius;
   transition: $transition;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   position: relative;
   text-align: center;
   cursor: pointer;
@@ -78,7 +106,7 @@
 
 // inputs
 @mixin input {
-  padding: 10.5px;
+  padding: 0.575rem 1rem;
   font-size: 1rem;
   border: 1px solid var(--border-color);
   transition: $transition;
@@ -86,11 +114,11 @@
   background: var(--bg-color);
 
   &:hover,
-  &.active {
-    border-color: var(--border-color-darker);
-  }
-
+  &.active,
+  &:focus,
   &:focus-within {
+    border-color: var(--border-color-darker);
+    background: var(--bg-color-darker);
     outline: none;
   }
 }

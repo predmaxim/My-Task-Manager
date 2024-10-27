@@ -2,46 +2,47 @@ import { FormEventHandler } from 'react';
 import TextareaAutosize from 'react-textarea-autosize';
 import { TASK_PRIORITY, TASK_STATUSES } from '@/constants';
 import { formatDate, upperCaseFirstLetter } from '@/utils/helpers';
-import { TaskPriorityType, TaskStatusType, TaskType } from '@/types';
+import { TaskPopulatedType, TaskStatusType, TaskType } from '@/types';
 import styles from './styles.module.scss';
 
 type TaskFormFields = {
   name: HTMLTextAreaElement;
-  status: HTMLSelectElement;
+  statusId: HTMLSelectElement;
   description?: HTMLTextAreaElement;
-  priority: HTMLSelectElement;
+  priorityId: HTMLSelectElement;
   due?: HTMLInputElement;
   comments?: HTMLTextAreaElement;
   subTasks?: HTMLTextAreaElement;
 };
 
 export type TaskContentType = {
-  task: TaskType;
+  task: TaskPopulatedType;
   onSubmit: (task: Partial<TaskType>) => void;
 };
 
 export function TaskContent({ task, onSubmit }: TaskContentType) {
-  const genDone = (status: TaskStatusType) => {
-    if (status === TASK_STATUSES.done && !task.done) {
+  const genDone = (statusName: TaskStatusType['name']) => {
+    if (statusName === TASK_STATUSES.done && !task.done) {
       return new Date();
-    } else if (status === TASK_STATUSES.done && task.done) {
+    } else if (statusName === TASK_STATUSES.done && task.done) {
       return task.done;
     }
-    return false;
+    return null;
   };
 
   const onSubmitHandler: FormEventHandler<HTMLFormElement & TaskFormFields> = (e) => {
     e.preventDefault();
-    const form: TaskFormFields = e.currentTarget;
+    const form = e.currentTarget;
     onSubmit({
       name: form.name.value,
       description: form.description?.value,
-      status: form.status.value as TaskStatusType,
-      due: form.due && form.due.valueAsDate ? form.due.valueAsDate : false,
-      done: genDone(form.status.value as TaskStatusType),
-      priority: form.priority.value as TaskPriorityType['name'],
-      // comments: form.comments && form.comments?.value,
-      // subTasks: form.subTasks && form.subTasks?.value
+      due: form.due?.valueAsDate || null,
+      done: genDone(form.status.value as TaskStatusType['name']),
+      statusId: form.status.id,
+      priorityId: parseInt(form.priority.id),
+      // comments: form.comments?.value,
+      // files: form.files.value,
+      // subTasks: form?.subTasks.value
     });
   };
 
@@ -61,7 +62,7 @@ export function TaskContent({ task, onSubmit }: TaskContentType) {
         <select
           name="status"
           className={styles.statusSelect}
-          defaultValue={task.status}
+          defaultValue={task.status.name}
         >
           {Object.values(TASK_STATUSES).map((status) => (
             <option
@@ -78,7 +79,7 @@ export function TaskContent({ task, onSubmit }: TaskContentType) {
         <select
           name="priority"
           className={styles.prioritySelect}
-          defaultValue={task.priority}
+          defaultValue={task.priority.name}
         >
           {Object.values(TASK_PRIORITY).map((priority) => (
             <option
@@ -105,7 +106,7 @@ export function TaskContent({ task, onSubmit }: TaskContentType) {
           name="description"
           className={styles.descriptionInput}
           placeholder="Some Description"
-          defaultValue={task.description}
+          defaultValue={task?.description || ''}
         />
       </div>
       <div className={styles.TaskContent__info}>
@@ -116,11 +117,11 @@ export function TaskContent({ task, onSubmit }: TaskContentType) {
               {formatDate(task.created)}
             </span>
           </div>}
-        {task.inWork &&
+        {task.in_work &&
           <div className={styles.inWork}>
             <span className={styles.inWork__title}>In work:</span>
             <span className={styles.inWork__date}>
-              {formatDate(task.inWork)}
+              {formatDate(task?.in_work)}
             </span>
           </div>}
         {task.done &&
@@ -132,16 +133,16 @@ export function TaskContent({ task, onSubmit }: TaskContentType) {
           </div>
         }
       </div>
-      <div className={styles.TaskContent__files}>
-        {task.files?.length
-          ? task.files?.map(file => (
-            <button key={file} type="button" className={`${styles.button} big`}>
-              {file}
-            </button>
-          ))
-          : <button className={styles.addFilesBtn} type="button">+ Add File</button>
-        }
-      </div>
+      {/*<div className={styles.TaskContent__files}>*/}
+      {/*  {task.files?.length*/}
+      {/*    ? task.files?.map(file => (*/}
+      {/*      <button key={file} type="button" className={`${styles.button} big`}>*/}
+      {/*        {file}*/}
+      {/*      </button>*/}
+      {/*    ))*/}
+      {/*    : <button className={styles.addFilesBtn} type="button">+ Add File</button>*/}
+      {/*  }*/}
+      {/*</div>*/}
       <hr className={styles.TaskContent__hr} />
       <div className={styles.TaskContent__comments}>
         <span className={`${styles.label} ${styles['label-comments']}`}>Comment:</span>
@@ -156,25 +157,25 @@ export function TaskContent({ task, onSubmit }: TaskContentType) {
           Comment
         </button>
       </div>
-      <div className={styles.TaskContent__subTasks}>
-        <span className={`${styles.label} ${styles['label-subTasks']}`}>SubTasks:</span>
-        <TextareaAutosize
-          className={styles.subTasks}
-          // placeholder="+ Add Subtask"
-        />
-        {task.subTasks &&
-          <div className={styles.subTasks}>
-            {task.subTasks.map(task => (
-              <button
-                key={task.id}
-                type="button"
-                className="button button-big"
-              >
-                {task.name}
-              </button>
-            ))}
-          </div>}
-      </div>
+      {/*<div className={styles.TaskContent__subTasks}>*/}
+      {/*  <span className={`${styles.label} ${styles['label-subTasks']}`}>SubTasks:</span>*/}
+      {/*  <TextareaAutosize*/}
+      {/*    className={styles.subTasks}*/}
+      {/*    // placeholder="+ Add Subtask"*/}
+      {/*  />*/}
+      {/*  {task.subTasks &&*/}
+      {/*    <div className={styles.subTasks}>*/}
+      {/*      {task.subTasks.map(task => (*/}
+      {/*        <button*/}
+      {/*          key={task.id}*/}
+      {/*          type="button"*/}
+      {/*          className="button button-big"*/}
+      {/*        >*/}
+      {/*          {task.name}*/}
+      {/*        </button>*/}
+      {/*      ))}*/}
+      {/*    </div>}*/}
+      {/*</div>*/}
     </form>
   );
 }

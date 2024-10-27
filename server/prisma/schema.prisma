@@ -10,19 +10,22 @@ datasource db {
 
 generator zod {
   provider = "zod-prisma-types"
-  output   = "../zod-schemas"
+  output   = "../zod-schemas/generated"
+}
+
+generator zod-client {
+  provider = "zod-prisma-types"
+  output   = "../../client/src/zod-schemas/generated"
 }
 
 model User {
   id       Int       @id @default(autoincrement())
-  name     String?
+  name     String
   email    String    @unique
   password String
   avatar   String?
   created  DateTime  @default(now())
   projects Project[]
-  role     Role      @relation(fields: [roleId], references: [id])
-  roleId   Int
 }
 
 model Project {
@@ -41,7 +44,7 @@ model Task {
   name        String
   description String?
   created     DateTime  @default(now())
-  done        Boolean   @default(false)
+  done        DateTime? @default(now())
   priority    Priority  @relation(fields: [priorityId], references: [id])
   priorityId  Int
   status      Status    @relation(fields: [statusId], references: [id])
@@ -52,7 +55,7 @@ model Task {
   projectId   Int
   index       Int       @default(0)
   due         DateTime?
-  in_work     Int?
+  in_work     DateTime? @default(now())
   files       File[]
   children    Task[]    @relation("TaskToTask")
   comments    Comment[]
@@ -77,12 +80,6 @@ model File {
   created DateTime @default(now())
 }
 
-model Role {
-  id   Int    @id @default(autoincrement())
-  name String
-  user User[]
-}
-
 model Priority {
   id    Int    @id @default(autoincrement())
   name  String
@@ -90,8 +87,14 @@ model Priority {
   task  Task[]
 }
 
+enum TASK_STATUSES {
+  queue
+  development
+  done
+}
+
 model Status {
-  id   Int    @id @default(autoincrement())
-  name String
+  id   Int           @id @default(autoincrement())
+  name TASK_STATUSES
   task Task[]
 }
