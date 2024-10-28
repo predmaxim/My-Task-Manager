@@ -1,15 +1,25 @@
 import { z } from 'zod';
 import { PROJECT_STATUSES } from '@/constants';
-import { Comment, Project, StatusSchema, Task, User } from '@/zod-schemas/generated';
-import { TaskPopulatedSchema } from '@/zod-schemas/custom.ts';
+import { Comment, Project, StatusSchema, Task, User } from '../../../server/zod-schemas/generated';
+import {
+  AuthSchema,
+  LoginSchema,
+  RegisterSchema,
+  TaskPopulatedSchema,
+  ThemeSchema,
+  TokensSchema,
+  UserWithoutPassSchema,
+} from '@/zod-schemas/custom.ts';
 
 
 export type PartialUserType = Partial<Pick<User, 'id'>> & Omit<User, 'id'>;
 export type PartialProjectType = Partial<Pick<Project, 'id'>> & Omit<Project, 'id'>;
+export type ProjectType = Project;
 export type TaskInProject = number;
 export type PartialTaskType = Partial<Pick<Task, 'id'>> & Omit<Task, 'id'>;
 export type ProjectStatusType = keyof typeof PROJECT_STATUSES;
 export type PartialCommentType = Partial<Pick<Comment, 'id'>> & Omit<Comment, 'id'>;
+export type CommentType = Comment;
 
 export type TaskMenuActionType = {
   name: 'edit' | 'remove',
@@ -21,29 +31,13 @@ export type TaskUpdateFieldsType =
   & Partial<Exclude<Task, 'id' | 'number' | 'project'>>
 
 
-export type TokenType = {
-  access_token: string,
-  refresh_token: string,
-}
-
-export type AuthType = {
-  user: UserWithoutPassType,
-  token: TokenType
-}
-
-export type LoginType = {
-  email: string,
-  password: string
-}
-
-export type RegisterType = {
-  name: string,
-  email: string,
-  password: string
-}
-
+export type TokensType = z.infer<typeof TokensSchema>
+export type AuthType = z.infer<typeof AuthSchema>
+export type LoginType = z.infer<typeof LoginSchema>
+export type RegisterType = z.infer<typeof RegisterSchema>
 export type TaskPopulatedType = z.infer<typeof TaskPopulatedSchema>;
 export type TaskStatusType = z.infer<typeof StatusSchema>;
 export type TaskType = Task;
 export type UserType = User;
-export type UserWithoutPassType = Omit<User, 'password'>;
+export type UserWithoutPassType = z.infer<typeof UserWithoutPassSchema>
+export type ThemeType = z.infer<typeof ThemeSchema>

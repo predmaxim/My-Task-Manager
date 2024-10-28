@@ -13,7 +13,17 @@ export const HomeLayout = () => (
   </>
 );
 
-export const Layout = () => (
+export const ProjectsLayout = () => (
+  <>
+    <Header />
+    <main className="main">
+      <Outlet />
+    </main>
+    <Footer />
+  </>
+);
+
+export const TasksLayout = () => (
   <>
     <Header />
     <main className="main">

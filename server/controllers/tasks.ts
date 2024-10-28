@@ -3,6 +3,7 @@ import { Request, RequestHandler, Response } from "express";
 import { prisma } from "@/lib/prisma-client";
 import { TaskSchema } from "@/zod-schemas/generated";
 import { z } from "zod";
+import errorHandler from "@/utils/error-handler";
 
 export const getTasks: RequestHandler = async (req: Request, res: Response) => {
   try {
@@ -22,7 +23,8 @@ export const getTasks: RequestHandler = async (req: Request, res: Response) => {
     });
     res.status(200).json({ tasks, total: tasks.length });
   } catch (error) {
-    res.status(500).json({ message: "Something went wrong", error });
+    const errorMessage = errorHandler(error);
+    res.status(500).json({ message: errorMessage });
   }
 };
 
@@ -48,7 +50,8 @@ export const getTask: RequestHandler = async (req: Request, res: Response) => {
 
     res.status(200).json({ task });
   } catch (error) {
-    res.status(403).json({ message: "Forbidden", error });
+    const errorMessage = errorHandler(error);
+    res.status(403).json({ message: errorMessage });
   }
 };
 
@@ -81,7 +84,8 @@ export const createTask: RequestHandler = async (
     });
     res.status(201).json({ task: newTask });
   } catch (error) {
-    res.status(500).json({ message: "Something went wrong", error });
+    const errorMessage = errorHandler(error);
+    res.status(500).json({ message: errorMessage });
   }
 };
 
@@ -102,7 +106,8 @@ export const deleteTask: RequestHandler = async (
 
     res.status(200).json(removedTask);
   } catch (error) {
-    res.status(500).json({ message: "Something went wrong", error });
+    const errorMessage = errorHandler(error);
+    res.status(500).json({ message: errorMessage });
   }
 };
 
@@ -133,6 +138,7 @@ export const updateTask: RequestHandler = async (
 
     res.status(200).json(updatedTask);
   } catch (error) {
-    res.status(500).json({ message: "Something went wrong", error });
+    const errorMessage = errorHandler(error);
+    res.status(500).json({ message: errorMessage });
   }
 };

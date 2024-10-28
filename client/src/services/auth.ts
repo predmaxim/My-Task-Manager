@@ -16,7 +16,7 @@ export const authApi = createApi({
         body,
       }),
     }),
-    register: builder.mutation<AuthType | Error, RegisterType>({
+    register: builder.mutation<AuthType, Omit<RegisterType, 'verifyPassword'>>({
       query: (body) => ({
         url: `auth/register`,
         method: 'POST',

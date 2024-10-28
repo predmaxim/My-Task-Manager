@@ -1,18 +1,24 @@
 import { Request, RequestHandler, Response } from "express";
-import { compareSync, genSaltSync, hashSync } from "bcrypt-ts";
 import jwt from "jsonwebtoken";
 import { prisma } from "@/lib/prisma-client";
 import { z } from "zod";
-import { JWT_ACCESS_TOKEN_EXPIRES, JWT_REFRESH_TOKEN_EXPIRES, JWT_SECRET } from "@/constants";
+import {
+  JWT_ACCESS_TOKEN_EXPIRES,
+  JWT_REFRESH_TOKEN_EXPIRES,
+  JWT_SECRET,
+} from "@/constants";
 import { UserSchema } from "@/zod-schemas/generated";
+import {
+  LoginSchema,
+  RegisterSchema,
+  UserWithoutPassSchema,
+} from "@/zod-schemas/custom";
+import { checkPassword, hashPassword } from "@/utils/password";
+import errorHandler from "@/utils/error-handler";
 
 export const register: RequestHandler = async (req: Request, res: Response) => {
   try {
-    const { name, email, password } = UserSchema.pick({
-      name: true,
-      email: true,
-      password: true,
-    }).parse(req.body);
+    const { name, email, password } = RegisterSchema.parse(req.body);
 
     const isUsed = await prisma.user.findFirst({ where: { email } });
 
@@ -21,8 +27,7 @@ export const register: RequestHandler = async (req: Request, res: Response) => {
       return;
     }
 
-    const salt = genSaltSync(10);
-    const hash = hashSync(password, salt);
+    const hash = hashPassword(password);
 
     const newUser = await prisma.user.create({
       data: {
@@ -32,7 +37,7 @@ export const register: RequestHandler = async (req: Request, res: Response) => {
       },
     });
 
-    const userWithoutPass = UserSchema.omit({password: true}).parse(newUser);
+    const userWithoutPass = UserWithoutPassSchema.parse(newUser);
 
     const access_token = jwt.sign({ id: userWithoutPass.id }, JWT_SECRET, {
       expiresIn: JWT_ACCESS_TOKEN_EXPIRES,
@@ -46,24 +51,20 @@ export const register: RequestHandler = async (req: Request, res: Response) => {
       user: userWithoutPass,
       token: {
         access_token,
-        refresh_token
+        refresh_token,
       },
       message: "Registration completed successfully",
       ok: true,
     });
   } catch (error) {
-    res
-      .status(500)
-      .json({ message: "An error when creating a user", error, ok: false });
+    const errorMessage = errorHandler(error);
+    res.status(500).json({ message: errorMessage, ok: false });
   }
 };
 
 export const login: RequestHandler = async (req: Request, res: Response) => {
   try {
-    const { email, password } = UserSchema.pick({
-      email: true,
-      password: true,
-    }).parse(req.body);
+    const { email, password } = LoginSchema.parse(req.body);
 
     const user = await prisma.user.findFirst({ where: { email } });
 
@@ -72,19 +73,14 @@ export const login: RequestHandler = async (req: Request, res: Response) => {
       return;
     }
 
-    const salt = genSaltSync(10);
-    const hash = hashSync(password, salt);
-    const isPasswordCorrect = compareSync(hash, user.password);
-
-    console.log('hash:', hash);
-    console.log('password:', user.password);
+    const isPasswordCorrect = checkPassword(password, user.password);
 
     if (!isPasswordCorrect) {
       res.status(403).json({ message: "Incorrect password" });
       return;
     }
 
-    const userWithoutPass = UserSchema.omit({ password: true }).parse(user);
+    const userWithoutPass = UserWithoutPassSchema.parse(user);
 
     const access_token = jwt.sign({ id: userWithoutPass.id }, JWT_SECRET, {
       expiresIn: JWT_ACCESS_TOKEN_EXPIRES,
@@ -97,14 +93,15 @@ export const login: RequestHandler = async (req: Request, res: Response) => {
     res.status(200).json({
       token: {
         access_token,
-        refresh_token
+        refresh_token,
       },
       user: userWithoutPass,
       message: "Auth success!",
       ok: true,
     });
   } catch (error) {
-    res.status(403).json({ message: "Auth error!", error, ok: false });
+    const errorMessage = errorHandler(error);
+    res.status(403).json({ message: errorMessage, error, ok: false });
   }
 };
 
@@ -137,7 +134,8 @@ export const getMe: RequestHandler = async (req: Request, res: Response) => {
     // res.status(200).json({ user, token, ok: true });
     res.status(200).json({ user: userWithoutPass, ok: true });
   } catch (error) {
-    res.status(403).json({ message: "Forbidden!", error, ok: false });
+    const errorMessage = errorHandler(error);
+    res.status(403).json({ message: errorMessage, error, ok: false });
   }
 };
 
@@ -172,6 +170,7 @@ export const refresh: RequestHandler = async (req: Request, res: Response) => {
 
     res.status(200).json({ accessToken: newAccessToken, ok: true });
   } catch (error) {
-    res.status(403).json({ message: "Forbidden!", error, ok: false });
+    const errorMessage = errorHandler(error);
+    res.status(403).json({ message: errorMessage, error, ok: false });
   }
 };

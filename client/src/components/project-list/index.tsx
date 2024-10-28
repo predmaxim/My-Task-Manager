@@ -31,10 +31,10 @@ export function ProjectList({ isModalAction }: ProjectListType) {
     dispatch(setSearch(''));
   };
 
-  const removeAction = (projectName: string) => {
-    deleteProject(projectName);
-    toast(`Project "${projectName}" was removed`);
-    if (currentProject && projectName === currentProject.name) {
+  const removeAction = (project: ProjectType) => {
+    deleteProject(project.id);
+    toast(`Project "${project.name}" was removed`);
+    if (project.id === currentProject?.id) {
       navigate(ROUTES.projects);
     }
   };
@@ -62,12 +62,12 @@ export function ProjectList({ isModalAction }: ProjectListType) {
           <ButtonWithIcon
             key={project.id || id}
             className={styles.ProjectButton}
-            icon={project?.icon}
+            icon={project?.icon || ''}
             text={project.name}
             onClick={() => onClickHandler(project)}
             showActions={true}
             actions={{
-              remove: () => removeAction(project.name),
+              remove: () => removeAction(project),
               edit: editAction,
             }}
           />

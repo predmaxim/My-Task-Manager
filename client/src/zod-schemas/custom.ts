@@ -1,4 +1,11 @@
-import { CommentSchema, PrioritySchema, ProjectSchema, StatusSchema, TaskSchema } from '@/zod-schemas/generated';
+import {
+  CommentSchema,
+  PrioritySchema,
+  ProjectSchema,
+  StatusSchema,
+  TaskSchema,
+  UserSchema,
+} from '../../../server/zod-schemas/generated';
 import { z } from 'zod';
 
 export const TaskPopulatedSchema = TaskSchema.extend({
@@ -15,7 +22,29 @@ export const TaskPopulatedSchema = TaskSchema.extend({
   projectId: true,
 });
 
-export const TokenSchema = z.object({
+export const TokensSchema = z.object({
   access_token: z.string(),
   refresh_token: z.string(),
 });
+
+// TODO: change min password length to 6 characters in PasswordSchema
+export const PasswordSchema = z.string().refine(data => data.length >= 2 && data.length <= 100, { message: 'Passwords must contain min 2 and max 100 character(s) ' });
+export const UserWithoutPassSchema = UserSchema.omit({ password: true, created: true });
+export const AuthSchema = z.object({ user: UserWithoutPassSchema, token: TokensSchema });
+
+export const LoginSchema = UserSchema.pick({
+  email: true,
+  password: true,
+}).extend({ password: PasswordSchema });
+
+export const RegisterSchema = UserSchema.pick({
+  email: true,
+  name: true,
+  password: true,
+}).extend({
+  verifyPassword: PasswordSchema,
+  password: PasswordSchema,
+  email: z.string().email(),
+}).refine(data => data.password === data.verifyPassword, { message: 'Passwords do not match' });
+
+export const ThemeSchema = z.enum(['dark', 'light']);

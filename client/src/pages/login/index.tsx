@@ -1,9 +1,10 @@
 import styles from './styles.module.scss';
-import { useLoginMutation } from '@/services/auth.ts';
+import { useLoginMutation } from '@/services/auth';
 import { FormEvent, useState } from 'react';
-import { UserSchema } from '../../../../server/zod-schemas/generated';
 import Input from '@/components/input';
 import { Link } from 'react-router-dom';
+import { LoginSchema } from '@/zod-schemas/custom';
+import { errorHandler } from '@/utils/error-handler.ts';
 
 export function LoginPage() {
   const [login] = useLoginMutation();
@@ -12,24 +13,24 @@ export function LoginPage() {
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const formData = Object.fromEntries(new FormData(e.currentTarget));
-    const { email, password } = UserSchema.pick({
-      email: true,
-      password: true,
-    }).parse(formData);
+    const { email, password } = LoginSchema.parse(formData);
 
     try {
-      const user = await login({ email, password });
+      const authData = await login({ email, password });
+      console.log('LoginPage => handleSubmit => authData.error', authData);
 
-      if (user.error) {
-        console.log(user);
-        setErrors('Invalid email or password');
-        return;
+      if ('error' in authData) {
+        const errorMessage = errorHandler(authData.error);
+        setErrors(errorMessage);
+
+        throw new Error('Invalid email or password');
       }
 
-      console.log('user:', user);
+      // console.log('user:', authData.data.user);
       setErrors(null);
     } catch (error) {
-      console.error(error);
+      const errorMessage = errorHandler(error);
+      console.error(errorMessage);
       setErrors('Invalid email or password');
     }
   };
@@ -40,8 +41,8 @@ export function LoginPage() {
         <Input name="email" type="email" label="Email" className={styles.form__input} required />
         <Input name="password" type="password" label="Password" className={styles.form__input} required />
         <button type="submit" className={styles.submit}>Login</button>
-        {errors && <div className={styles.error}>{errors}</div>}
       </form>
+      {errors && <p className={styles.error}>{errors}</p>}
       <div className={styles.account}>
         <p>No account?</p>
         <Link to="/register" className={styles.accountButton}>Register</Link>

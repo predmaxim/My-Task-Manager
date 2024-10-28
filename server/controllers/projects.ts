@@ -2,6 +2,7 @@ import { Request, RequestHandler, Response } from "express";
 import { prisma } from "@/lib/prisma-client";
 import { ProjectSchema } from "@/zod-schemas/generated";
 import { z } from "zod";
+import errorHandler from "@/utils/error-handler";
 
 export const getProjects: RequestHandler = async (
   req: Request,
@@ -12,7 +13,8 @@ export const getProjects: RequestHandler = async (
     const projects = await prisma.project.findMany();
     res.status(200).json({ projects, total: projects.length });
   } catch (error) {
-    res.json({ message: "Something went wrong", error });
+    const errorMessage = errorHandler(error);
+    res.json({ message: errorMessage });
   }
 };
 
@@ -35,9 +37,8 @@ export const getProject: RequestHandler = async (
 
     res.status(200).json(project);
   } catch (error) {
-    res
-      .status(500)
-      .json({ message: "Something went wrong", error, qwe: req.params });
+    const errorMessage = errorHandler(error);
+    res.status(500).json({ message: errorMessage });
   }
 };
 
@@ -60,7 +61,8 @@ export const createProject: RequestHandler = async (
 
     res.status(201).json(newProject);
   } catch (error) {
-    res.status(500).json({ message: "Something went wrong", error });
+    const errorMessage = errorHandler(error);
+    res.status(500).json({ message: errorMessage });
   }
 };
 
@@ -84,7 +86,8 @@ export const deleteProject: RequestHandler = async (
 
     res.status(200).json(removedProject);
   } catch (error) {
-    res.status(500).json({ message: "Something went wrong", error });
+    const errorMessage = errorHandler(error);
+    res.status(500).json({ message: errorMessage });
   }
 };
 
@@ -109,6 +112,7 @@ export const updateProject: RequestHandler = async (
 
     res.status(404).json({ message: "Project not found" });
   } catch (error) {
-    res.status(500).json({ message: "Something went wrong", error });
+    const errorMessage = errorHandler(error);
+    res.status(500).json({ message: errorMessage });
   }
 };
