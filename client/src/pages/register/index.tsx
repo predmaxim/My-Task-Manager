@@ -7,6 +7,7 @@ import { setAuthData } from '@/lib/features/auth-slice';
 import { useAppDispatch } from '@/lib/store';
 import { UserSchema } from '@/zod-schemas/generated';
 import { TokenSchema } from '@/zod-schemas/custom';
+import { Link } from 'react-router-dom';
 
 export function RegisterPage() {
   const [register, result] = useRegisterMutation();
@@ -57,6 +58,10 @@ export function RegisterPage() {
         {errors && <div className={styles.error}>{errors}</div>}
         <button type="submit" className={styles.submit}>Register</button>
       </form>
+       <div className={styles.account}>
+        <p>Already have an account?</p>
+        <Link to="/login" className={styles.accountButton}>Login</Link>
+      </div>
     </div>
   );
 }
