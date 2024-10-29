@@ -1,2 +1,6 @@
+@import "src/assets/vars";
+@import "src/assets/mixins";
+
 .ThemeSwitcher {
+  @include button($variant: "icon", $color: "secondary", $size: 's');
 }

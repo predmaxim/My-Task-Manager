@@ -6,18 +6,17 @@ import { createPortal } from 'react-dom';
 import { IconType } from 'react-icons';
 import { toast } from 'react-toastify';
 import { useAppSelector } from '@/lib/store';
-import { useCreateProjectMutation, useSetCurrentProjectMutation } from '@/services/projects';
+import { useCreateProjectMutation } from '@/services/projects';
 import './styles.module.scss';
 
 export function CreateNewProject() {
   const [createProject] = useCreateProjectMutation();
-  const [setCurrentProject] = useSetCurrentProjectMutation();
   const [showNewProjectModal, setNewProjectModal] = useState(false);
   const [showIconModal, setShowIconModal] = useState(false);
   const [ProjectIcon, setProjectIcon] = useState<React.JSX.Element>();
   const [inputValue, setInputValue] = useState('');
   const [allIcons, setAllIcons] = useState<ReactNode[]>();
-  const { projects } = useAppSelector((state) => state.projects);
+  const { projects } = useAppSelector((state) => state.projects); 
 
   const onChangeInputHandler = (e: ChangeEvent<HTMLInputElement>) => {
     setInputValue(e.target.value);
@@ -29,7 +28,7 @@ export function CreateNewProject() {
         toast(`Project name "${inputValue}" is busy`);
       } else {
         await createProject({ name: inputValue.trim(), icon: ProjectIcon?.type.name });
-        await setCurrentProject({ id: inputValue.trim(), current: true });
+        // setCurrentProject({ id: inputValue.trim(), current: true });
         setNewProjectModal(false);
         setInputValue('');
         setProjectIcon(undefined);

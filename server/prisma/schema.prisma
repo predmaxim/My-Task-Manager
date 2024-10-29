@@ -13,11 +13,6 @@ generator zod {
   output   = "../zod-schemas/generated"
 }
 
-generator zod-client {
-  provider = "zod-prisma-types"
-  output   = "../../client/src/zod-schemas/generated"
-}
-
 model User {
   id       Int       @id @default(autoincrement())
   name     String
@@ -31,6 +26,7 @@ model User {
 model Project {
   id      Int      @id @default(autoincrement())
   name    String
+  slug    String   @unique
   created DateTime @default(now())
   icon    String?
   color   String?

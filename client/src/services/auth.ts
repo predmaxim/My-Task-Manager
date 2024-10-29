@@ -5,6 +5,7 @@ import { API_URL } from '@/constants';
 export const authApi = createApi({
   reducerPath: 'authApi',
   baseQuery: fetchBaseQuery({ baseUrl: `${API_URL}/` }),
+  tagTypes: ['auth'],
   endpoints: (builder) => ({
     getMe: builder.query<AuthType, void>({
       query: () => `auth/me`,

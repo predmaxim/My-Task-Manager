@@ -6,10 +6,10 @@ import { ProjectList } from '@/components/project-list';
 export function ProjectsPage() {
   return (
     <HelmetProvider>
-      <main className={styles.ProjectsPage}>
         <Helmet>
           <title>Projects - {APP_NAME}</title>
         </Helmet>
+      <main className={styles.ProjectsPage}>
         <div className="container">
           <ProjectList />
         </div>

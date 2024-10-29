@@ -17,7 +17,8 @@ export type ButtonWithIconProps = {
 
 const getIconByName = (iconName: string): IconType => icons.find((el) => el.name === iconName) || icons[0];
 
-export function ButtonWithIcon({
+export function ButtonWithIcon(
+  {
                                  className,
                                  icon = '',
                                  text,

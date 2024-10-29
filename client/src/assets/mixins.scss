@@ -36,7 +36,8 @@
 @mixin button(
   $size: "xl",
   $width: auto,
-  $color: "primary"
+  $color: "primary",
+  $variant: "default"
 ) {
   //font-size: $base-font;
   background: var(--button-primary-bg);
@@ -63,6 +64,14 @@
     font-size: small;
     border-radius: calc($border-radius / 2);
   }
+  
+  @if $variant== "icon" {
+    aspect-ratio: 1;
+    padding: 0.5rem;
+  } @else if $variant== "default" {
+    aspect-ratio: auto;
+    padding: auto;
+  } 
 
   @if $width== "full" {
     width: 100%;

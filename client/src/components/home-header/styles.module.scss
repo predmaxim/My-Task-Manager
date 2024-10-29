@@ -3,9 +3,19 @@
   margin: 0 auto;
   width: fit-content;
   padding: 2rem 0 1rem;
-
+  
   .logoVertical {
     width: 100%;
     height: auto;
   }
+}
+
+.buttonWrap {
+  display: flex;
+  justify-content: center;
+  
+}
+
+.container {
+  display: flex;  
 }

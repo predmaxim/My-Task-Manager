@@ -4,42 +4,36 @@ import { useNavigate, useParams } from 'react-router-dom';
 import styles from './styles.module.scss';
 import { Board } from '@/components/board';
 import { useAppDispatch, useAppSelector } from '@/lib/store';
-import { useSetCurrentProjectMutation } from '@/services/projects';
 import { APP_NAME } from '@/constants';
 import { ROUTES } from '@/router/routes';
+import { setCurrentProject } from '@/lib/features/projects-slice';
 
 export function TasksPage() {
   const { projects } = useAppSelector((state) => state.projects);
-  const { name: projectName } = useParams();
+  const { slug } = useParams();
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
-  const [setCurrentProject] = useSetCurrentProjectMutation();
+  const isAvailable = projects?.find((project) => project.slug === slug);
 
   useEffect(() => {
-    const isAvailable = projects?.some((project) => project.name === projectName);
-    if (isAvailable && projectName) {
-      setCurrentProject({ id: projectName, current: true })
-        .unwrap()
-        .then(() => {
-          // handle success
-        })
-        .catch((error) => {
-          console.log(error);
-        });
-    } else {
-      navigate(ROUTES.projects); // Убедитесь, что маршрут корректен
-    }
-    // else navigate(ROUTES.projects);
-  }, [projectName, dispatch, projects, navigate, setCurrentProject]);
+    if (isAvailable) {
+      dispatch(setCurrentProject(isAvailable.id))
+    }     
+  }, [dispatch, isAvailable]);
+
+  if (!isAvailable) {
+    navigate(ROUTES.projects);
+    return;
+  }
 
   return (
     <HelmetProvider>
       <Helmet>
-        <title>Tasks {projectName} - {APP_NAME}</title>
+        <title>Tasks {slug} - {APP_NAME}</title>
       </Helmet>
       <main className={styles.TasksPage}>
         <div className="container">
-          <Board currentProjectId={projectName || ''} />
+          <Board currentProjectId={isAvailable.id} />
         </div>
       </main>
     </HelmetProvider>

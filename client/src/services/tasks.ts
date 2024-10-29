@@ -5,6 +5,7 @@ import { API_URL } from '@/constants';
 export const tasksApi = createApi({
   reducerPath: 'tasksApi',
   baseQuery: fetchBaseQuery({ baseUrl: `${API_URL}/` }),
+  tagTypes: ['tasks'],
   endpoints: (builder) => ({
     getTasks: builder.query<TaskType[], ProjectType['id']>({
       query: (id) => `tasks/${id}`,

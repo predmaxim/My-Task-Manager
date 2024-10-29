@@ -4,22 +4,22 @@ import { Link } from 'react-router-dom';
 import { ROUTES } from '@/router/routes';
 import { CurrentProjectButton } from '@/components/current-project-button';
 import { ThemeSwitcher } from '@/components/theme-switcher';
+import { useAppSelector } from '@/lib/store';
 import styles from './styles.module.scss';
-import { useAppSelector } from '@/lib/store.ts';
 
 export function ProjectsHeader() {
   const theme = useAppSelector((state) => state.theme.theme);
 
   return (
-    <header className={styles.Header}>
-      <div className="container">
-        <Link to={ROUTES.home} className={styles.Header_logoLink}>
+    <header className={styles.ProjectsHeader}>
+      <div className={styles.container}>
+        <Link to={ROUTES.home} className={styles.logoLink}>
           <img
-            src={theme === 'light' ? logoHorizontal : logoHorizontalWhite} className={styles.Header__logoImg}
+            src={theme === 'light' ? logoHorizontal : logoHorizontalWhite} className={styles.logoImg}
             alt="logo"
           />
         </Link>
-        <div className={styles.Header__buttonWrap}>
+        <div className={styles.buttonWrap}>
           <ThemeSwitcher />
           <CurrentProjectButton />
         </div>
