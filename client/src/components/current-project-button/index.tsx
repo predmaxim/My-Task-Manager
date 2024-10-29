@@ -5,6 +5,7 @@ import { RootState, useAppSelector } from '@/lib/store';
 import { Modal } from '@/components/modal';
 import { ProjectList } from '@/components/project-list';
 import styles from './styles.module.scss';
+import * as Icons from 'react-icons/ri';
 
 export function CurrentProjectButton() {
   const currentProject = useAppSelector((state: RootState) => state.projects.currentProject);
@@ -21,8 +22,8 @@ export function CurrentProjectButton() {
     <div className={styles.CurrentProjectBtnWrap}>
       <ButtonWithIcon
         className={styles.CurrentProjectBtn}
-        icon={currentProject.icon || 'Loading...'}
-        text={`${currentProject.name}` || 'Loading...'}
+        icon={currentProject?.icon ? currentProject.icon as keyof typeof Icons : null}
+        text={currentProject?.name}
         onClick={onClickCurrentProjectBtn}
       />
       {showIconModal && createPortal(

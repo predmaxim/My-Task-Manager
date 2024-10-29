@@ -2,6 +2,7 @@ import { Outlet } from 'react-router-dom';
 import { HomeHeader } from './home-header';
 import { Footer } from './footer';
 import { Header } from './header';
+import { ProjectsHeader } from '@/components/projects-header';
 
 export const HomeLayout = () => (
   <>
@@ -15,7 +16,7 @@ export const HomeLayout = () => (
 
 export const ProjectsLayout = () => (
   <>
-    <Header />
+    <ProjectsHeader />
     <main className="main">
       <Outlet />
     </main>

@@ -13,10 +13,6 @@ $modal-body-max-height: 80vh;
 }
 
 .Modal {
-  .CreateNewProject {
-    width: auto;
-  }
-
   &__overlay {
     position: absolute;
     top: 0;

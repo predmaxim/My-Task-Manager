@@ -5,9 +5,12 @@ import Input from '@/components/input';
 import { Link } from 'react-router-dom';
 import { LoginSchema } from '@/zod-schemas/custom';
 import { errorHandler } from '@/utils/error-handler.ts';
+import { setAuthData } from '@/lib/features/auth-slice.ts';
+import { useAppDispatch } from '@/lib/store.ts';
 
 export function LoginPage() {
   const [login] = useLoginMutation();
+  const dispatch = useAppDispatch();
   const [errors, setErrors] = useState<string | null>(null);
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
@@ -22,11 +25,10 @@ export function LoginPage() {
       if ('error' in authData) {
         const errorMessage = errorHandler(authData.error);
         setErrors(errorMessage);
-
         throw new Error('Invalid email or password');
       }
 
-      // console.log('user:', authData.data.user);
+      dispatch(setAuthData(authData.data));
       setErrors(null);
     } catch (error) {
       const errorMessage = errorHandler(error);

@@ -1,10 +1,8 @@
 import { useEffect } from 'react';
-import { Helmet, HelmetProvider } from 'react-helmet-async';
 import { useNavigate, useParams } from 'react-router-dom';
 import styles from './styles.module.scss';
 import { Board } from '@/components/board';
 import { useAppDispatch, useAppSelector } from '@/lib/store';
-import { APP_NAME } from '@/constants';
 import { ROUTES } from '@/router/routes';
 import { setCurrentProject } from '@/lib/features/projects-slice';
 
@@ -17,8 +15,8 @@ export function TasksPage() {
 
   useEffect(() => {
     if (isAvailable) {
-      dispatch(setCurrentProject(isAvailable.id))
-    }     
+      dispatch(setCurrentProject(isAvailable.id));
+    }
   }, [dispatch, isAvailable]);
 
   if (!isAvailable) {
@@ -27,15 +25,8 @@ export function TasksPage() {
   }
 
   return (
-    <HelmetProvider>
-      <Helmet>
-        <title>Tasks {slug} - {APP_NAME}</title>
-      </Helmet>
-      <main className={styles.TasksPage}>
-        <div className="container">
-          <Board currentProjectId={isAvailable.id} />
-        </div>
-      </main>
-    </HelmetProvider>
+    <div className={`${styles.TasksPage} container`}>
+      <Board currentProjectId={isAvailable.id} />
+    </div>
   );
 }
