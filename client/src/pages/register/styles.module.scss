@@ -41,8 +41,4 @@
 
 .accountButton {
   @include button("s", $color: "secondary");
-
-  &:hover {
-    color: var(--font-color);
-  }
 }

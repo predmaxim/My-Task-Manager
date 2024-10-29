@@ -8,11 +8,11 @@ import { setTheme } from '@/lib/features/theme-slice';
 export function ThemeSwitcher() {
   const dispatch = useDispatch();
   const { theme } = useAppSelector((state) => state.theme);
-  const [icon, setIcon] = useState(theme === 'light' ? 'RiSunFill' : 'RiMoonFill');
+  const [icon, setIcon] = useState(theme === 'light' ? 'RiMoonFill' : 'RiSunFill');
 
   const onClickHandler = () => {
     const newThemeColor = theme === 'light' ? 'dark' : 'light';
-    setIcon(newThemeColor === 'light' ? 'RiSunFill' : 'RiMoonFill');
+    setIcon(newThemeColor === 'light' ? 'RiMoonFill' : 'RiSunFill');
     dispatch(setTheme(newThemeColor));
   };
 
