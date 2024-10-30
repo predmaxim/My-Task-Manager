@@ -6,6 +6,7 @@ import styles from './styles.module.scss';
 import { useAppSelector } from '@/lib/store.ts';
 import { ThemeSwitcher } from '../theme-switcher';
 import { CurrentProjectButton } from '../current-project-button';
+import { ProfileButton } from '../profile-button';
 
 export function HomeHeader() {
   const theme = useAppSelector((state) => state.theme.theme);
@@ -25,6 +26,7 @@ export function HomeHeader() {
         <div className={styles.rightSide}>
           <ThemeSwitcher />
           <CurrentProjectButton />
+          <ProfileButton/>
           {/*<ButtonWithIcon*/}
           {/*  className={styles.CurrentProjectBtn}*/}
           {/*  icon="PiUserFill"*/}

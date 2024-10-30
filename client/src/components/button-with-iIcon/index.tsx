@@ -5,7 +5,7 @@ import { RiDeleteBin6Line, RiPencilLine } from 'react-icons/ri';
 import { IconType } from 'react-icons';
 
 export type ButtonWithIconProps = {
-  className: string;
+  className?: string;
   icon?: keyof typeof Icons | null;
   text?: string;
   onClick: (e: MouseEvent<HTMLButtonElement>) => void;

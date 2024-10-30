@@ -6,6 +6,7 @@ import { CurrentProjectButton } from '@/components/current-project-button';
 import { ThemeSwitcher } from '@/components/theme-switcher';
 import { useAppSelector } from '@/lib/store';
 import styles from './styles.module.scss';
+import { ProfileButton } from '../profile-button';
 
 export function ProjectsHeader() {
   const theme = useAppSelector((state) => state.theme.theme);
@@ -22,6 +23,7 @@ export function ProjectsHeader() {
         <div className={styles.buttonWrap}>
           <ThemeSwitcher />
           <CurrentProjectButton />
+          <ProfileButton/>
         </div>
       </div>
     </header>

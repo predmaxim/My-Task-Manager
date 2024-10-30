@@ -1,0 +1,26 @@
+@import "src/assets/vars";
+@import "src/assets/mixins";
+
+.ProfileButton {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  justify-content: center;
+  height: fit-content;
+  @include button($size: "s", $color: "secondary");
+  padding: 0.5rem;
+}
+
+.avatar {
+  width: 1.4rem;
+  height: 1.4rem;
+  border-radius: 50%;
+  object-fit: cover;
+  object-position: center;
+  // background: #acacac;
+  background-color: var(--color-light-grey-darker);
+}
+
+.name {
+  font-size: 0.8rem;
+}

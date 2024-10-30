@@ -30,8 +30,12 @@ export function Modal(
 
   const activeClass = isActive ? 'active' : '';
 
+  if (!isActive) {
+    return;
+  }
+
   return (
-    isActive && createPortal(
+    createPortal(
       <div className={`${styles.Modal} ${className || ''}`}>
         <div className={`${styles.Modal__overlay} ${activeClass}`} onClick={onClose} />
         <div className={`${styles.Modal__body}  ${activeClass}`} style={{ maxWidth: width }}>
