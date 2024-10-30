@@ -28,34 +28,36 @@ export function Modal(
     width = '600px',
   }: ModalProps) {
 
-  const activeClass = isActive ? 'active' : '';
+  const activeClass = isActive ? styles.active : '';
 
   if (!isActive) {
-    return;
+    return null;
   }
 
   return (
     createPortal(
       <div className={`${styles.Modal} ${className || ''}`}>
-        <div className={`${styles.Modal__overlay} ${activeClass}`} onClick={onClose} />
-        <div className={`${styles.Modal__body}  ${activeClass}`} style={{ maxWidth: width }}>
-          <RiCloseLine onClick={onClose} className={styles.Modal__closeBtn} />
-          <h5 className={styles.Modal__header}>{header}</h5>
-          <div className={styles.Modal__content}>{children}</div>
+        <div className={`${styles.overlay} ${activeClass}`} onClick={onClose} />
+        <div className={`${styles.body}  ${activeClass}`} style={{ maxWidth: width }}>
+          <RiCloseLine onClick={onClose} className={styles.closeBtn} />
+          <h5 className={styles.header}>{header}</h5>
+          <div className={styles.content}>{children}</div>
           {showActionBtns &&
             <div className={styles.actions}>
               <button
-                className={`${styles.Modal__okBtn} button`}
+                className={`${styles.cancelBtn}`}
+                onClick={onClose}
+                type="button"
+              >
+                Cancel
+              </button>
+              <button
+                className={`${styles.okBtn}`}
                 onClick={onOk}
                 form={formId}
                 type="submit"
-              >Ok
-              </button>
-              <button
-                className={`${styles.Modal__cancelBtn} button`}
-                onClick={onClose}
-                type="button"
-              >Cancel
+              >
+                Ok
               </button>
             </div>}
         </div>

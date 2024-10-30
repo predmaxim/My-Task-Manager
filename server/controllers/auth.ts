@@ -1,7 +1,6 @@
 import { Request, RequestHandler, Response } from "express";
 import jwt from "jsonwebtoken";
 import { prisma } from "@/lib/prisma-client";
-import { z } from "zod";
 import {
   JWT_ACCESS_TOKEN_EXPIRES,
   JWT_REFRESH_TOKEN_EXPIRES,
@@ -23,7 +22,7 @@ export const register: RequestHandler = async (req: Request, res: Response) => {
     const isUsed = await prisma.user.findFirst({ where: { email } });
 
     if (isUsed) {
-      res.status(400).json({ message: "This email is busy", ok: false });
+      res.status(400).json({ message: "This email is busy" });
       return;
     }
 
@@ -47,18 +46,21 @@ export const register: RequestHandler = async (req: Request, res: Response) => {
       expiresIn: JWT_REFRESH_TOKEN_EXPIRES,
     });
 
+    res.cookie("access_token", access_token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      maxAge: 15 * 60 * 1000, // в миллисекундах
+    });
+
     res.status(201).json({
       user: userWithoutPass,
-      token: {
-        access_token,
-        refresh_token,
-      },
+      token: refresh_token,
       message: "Registration completed successfully",
       ok: true,
     });
   } catch (error) {
     const errorMessage = errorHandler(error);
-    res.status(500).json({ message: errorMessage, ok: false });
+    res.status(500).json({ message: errorMessage });
   }
 };
 
@@ -69,7 +71,7 @@ export const login: RequestHandler = async (req: Request, res: Response) => {
     const user = await prisma.user.findFirst({ where: { email } });
 
     if (!user) {
-      res.status(404).json({ message: "User not found", ok: false });
+      res.status(404).json({ message: "User not found" });
       return;
     }
 
@@ -90,77 +92,77 @@ export const login: RequestHandler = async (req: Request, res: Response) => {
       expiresIn: JWT_REFRESH_TOKEN_EXPIRES,
     });
 
+    res.cookie("access_token", access_token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      maxAge: 15 * 60 * 1000, // в миллисекундах
+    });
+
     res.status(200).json({
-      token: {
-        access_token,
-        refresh_token,
-      },
+      token: refresh_token,
       user: userWithoutPass,
       message: "Auth success!",
       ok: true,
     });
   } catch (error) {
     const errorMessage = errorHandler(error);
-    res.status(403).json({ message: errorMessage, error, ok: false });
+    res.status(403).json({ message: errorMessage, error });
   }
 };
 
 export const getMe: RequestHandler = async (req: Request, res: Response) => {
   try {
-    const access_token = z
-      .string()
-      .parse(req.headers.authorization)
-      .replace("Bearer ", "");
+    const userId = UserSchema.pick({ id: true }).shape.id.parse(
+      req.query.userId,
+    );
 
-    if (!access_token) {
-      res
-        .status(403)
-        .json({ message: "Forbidden! No access token found", ok: false });
+    if (!userId) {
+      res.status(403).json({ message: "Forbidden! Unauthorized!" });
       return;
     }
 
-    const decoded = UserSchema.pick({ id: true }).parse(
-      jwt.verify(access_token, JWT_SECRET),
-    );
-    const user = await prisma.user.findUnique({ where: { id: decoded.id } });
+    const user = await prisma.user.findUnique({ where: { id: userId } });
 
     if (!user) {
-      res.status(404).json({ message: "User not found!", ok: false });
+      res.status(404).json({ message: "User not found!" });
       return;
     }
 
     const { password: pass, ...userWithoutPass } = user;
-    // const token = jwt.sign({ id: user.id }, JWT_SECRET, { expiresIn: JWT_EXPIRES });
-    // res.status(200).json({ user, token, ok: true });
-    res.status(200).json({ user: userWithoutPass, ok: true });
+    res.status(200).json({ user: userWithoutPass });
   } catch (error) {
     const errorMessage = errorHandler(error);
-    res.status(403).json({ message: errorMessage, error, ok: false });
+    res.status(403).json({ message: errorMessage, error });
   }
 };
 
 export const refresh: RequestHandler = async (req: Request, res: Response) => {
   try {
-    const refreshToken = z
-      .string()
-      .parse(req.headers.authorization)
-      .replace("Bearer ", "");
+    const refreshToken = req.headers.authorization?.replace("Bearer ", "");
 
     if (!refreshToken) {
-      res
-        .status(403)
-        .json({ message: "Forbidden! No refresh token found", ok: false });
+      res.status(403).json({ message: "Forbidden! No refresh token found" });
       return;
     }
 
-    const decoded = UserSchema.pick({ id: true }).parse(
-      jwt.verify(refreshToken, JWT_SECRET),
-    );
+    let decoded;
+    try {
+      decoded = jwt.verify(refreshToken, JWT_SECRET) as jwt.JwtPayload;
+    } catch (error) {
+      if (error instanceof jwt.TokenExpiredError) {
+        res.status(401).json({ message: "Refresh token expired" });
+      } else {
+        res.status(403).json({ message: "Invalid refresh token" });
+      }
+      return;
+    }
 
-    const user = await prisma.user.findUnique({ where: { id: decoded.id } });
+    const userId = UserSchema.pick({ id: true }).shape.id.parse(decoded.id);
+
+    const user = await prisma.user.findUnique({ where: { id: userId } });
 
     if (!user) {
-      res.status(404).json({ message: "User not found!", ok: false });
+      res.status(404).json({ message: "User not found!" });
       return;
     }
 
@@ -168,9 +170,9 @@ export const refresh: RequestHandler = async (req: Request, res: Response) => {
       expiresIn: JWT_ACCESS_TOKEN_EXPIRES,
     });
 
-    res.status(200).json({ accessToken: newAccessToken, ok: true });
+    res.status(200).json({ accessToken: newAccessToken });
   } catch (error) {
     const errorMessage = errorHandler(error);
-    res.status(403).json({ message: errorMessage, error, ok: false });
+    res.status(403).json({ message: errorMessage, error });
   }
 };
