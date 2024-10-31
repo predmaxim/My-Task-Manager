@@ -1,15 +1,15 @@
 import type { PayloadAction } from '@reduxjs/toolkit';
 import { createSlice } from '@reduxjs/toolkit';
-import { AuthType, TokensType, UserWithoutPassType } from '@/types';
+import { AuthType, UserWithoutPassType } from '@/types';
 
 export interface AuthState {
   user: UserWithoutPassType | null;
-  tokens: TokensType | null;
+  token: string | null;
 }
 
 const initialState: AuthState = {
   user: null,
-  tokens: null,
+  token: null,
 };
 
 export const authSlice = createSlice({
@@ -18,11 +18,11 @@ export const authSlice = createSlice({
   reducers: {
     setAuthData: (state, action: PayloadAction<AuthType>) => {
       state.user = action.payload.user;
-      state.tokens = action.payload.token;
+      state.token = action.payload.token;
     },
     logout: (state) => {
       state.user = null;
-      state.tokens = null;
+      state.token = null;
     },
   },
 });

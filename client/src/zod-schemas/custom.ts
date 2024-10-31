@@ -22,15 +22,11 @@ export const TaskPopulatedSchema = TaskSchema.extend({
   projectId: true,
 });
 
-export const TokensSchema = z.object({
-  access_token: z.string(),
-  refresh_token: z.string(),
-});
 
 // TODO: change min password length to 6 characters in PasswordSchema
 export const PasswordSchema = z.string().refine(data => data.length >= 2 && data.length <= 100, { message: 'Passwords must contain min 2 and max 100 character(s) ' });
 export const UserWithoutPassSchema = UserSchema.omit({ password: true, created: true });
-export const AuthSchema = z.object({ user: UserWithoutPassSchema, token: TokensSchema });
+export const AuthSchema = z.object({ user: UserWithoutPassSchema, token: z.string() });
 
 export const LoginSchema = UserSchema.pick({
   email: true,
