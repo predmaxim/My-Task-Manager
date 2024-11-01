@@ -11,12 +11,14 @@ import {
 } from "@/constants";
 import { UserSchema } from "@/zod-schemas/generated";
 import {
+  JwtPayloadSchema,
   LoginSchema,
   RegisterSchema,
   UserWithoutPassSchema,
 } from "@/zod-schemas/custom";
 import errorHandler from "@/utils/error-handler";
 import { compare, hash } from "bcrypt-ts";
+import { z } from "zod";
 
 export const register: RequestHandler = async (req: Request, res: Response) => {
   try {
@@ -53,7 +55,10 @@ export const register: RequestHandler = async (req: Request, res: Response) => {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       maxAge: parseInt(JWT_REFRESH_TOKEN_EXPIRES) * 24 * 60 * 60 * 1000, // в миллисекундах d * h * m * s * ms
-      domain: process.env.NODE_ENV === "production" ? DOMAIN_NAME_PROD : DOMAIN_NAME_DEV,
+      domain:
+        process.env.NODE_ENV === "production"
+          ? DOMAIN_NAME_PROD
+          : DOMAIN_NAME_DEV,
       path: "/api/auth",
     });
 
@@ -100,7 +105,10 @@ export const login: RequestHandler = async (req: Request, res: Response) => {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       maxAge: parseInt(JWT_REFRESH_TOKEN_EXPIRES) * 24 * 60 * 60 * 1000, // в миллисекундах d * h * m * s * ms
-      domain: process.env.NODE_ENV === "production" ? DOMAIN_NAME_PROD : DOMAIN_NAME_DEV,
+      domain:
+        process.env.NODE_ENV === "production"
+          ? DOMAIN_NAME_PROD
+          : DOMAIN_NAME_DEV,
       path: "/api/auth",
     });
 
@@ -143,26 +151,23 @@ export const getMe: RequestHandler = async (req: Request, res: Response) => {
 
 export const refresh: RequestHandler = async (req: Request, res: Response) => {
   try {
-    const refresh_token = req.headers.authorization?.replace("Bearer ", "");
+    const refresh_token = z
+      .string()
+      .optional()
+      .parse(req.cookies[TOKEN_COOKIE_NAME]);
 
     if (!refresh_token) {
       res.status(403).json({ message: "Forbidden! No refresh token found" });
       return;
     }
 
-    let decoded;
-    try {
-      decoded = jwt.verify(refresh_token, JWT_SECRET) as jwt.JwtPayload;
-    } catch (error) {
-      if (error instanceof jwt.TokenExpiredError) {
-        res.status(401).json({ message: "Refresh token expired" });
-      } else {
-        res.status(403).json({ message: "Invalid refresh token" });
-      }
-      return;
-    }
+    const { id: access_token } = JwtPayloadSchema.extend({
+      id: z.string(),
+    }).parse(jwt.verify(refresh_token, JWT_SECRET));
 
-    const userId = UserSchema.pick({ id: true }).shape.id.parse(decoded.id);
+    const { id: userId } = JwtPayloadSchema.extend({ id: z.number() }).parse(
+      jwt.verify(access_token, JWT_SECRET),
+    );
 
     const user = await prisma.user.findUnique({ where: { id: userId } });
 

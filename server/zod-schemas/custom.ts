@@ -18,10 +18,6 @@ export const UserWithoutPassSchema = UserSchema.omit({
   password: true,
   created: true,
 });
-export const AuthSchema = z.object({
-  user: UserWithoutPassSchema,
-  token: z.string(),
-});
 
 export const LoginSchema = UserSchema.pick({
   email: true,
@@ -36,3 +32,15 @@ export const RegisterSchema = UserSchema.pick({
   password: PasswordSchema,
   email: z.string().email(),
 });
+
+export const JwtPayloadSchema = z
+  .object({
+    iss: z.string().optional(),
+    sub: z.string().optional(),
+    aud: z.union([z.string(), z.array(z.string())]).optional(),
+    exp: z.number().optional(),
+    nbf: z.number().optional(),
+    iat: z.number().optional(),
+    jti: z.string().optional(),
+  })
+  .catchall(z.any());
