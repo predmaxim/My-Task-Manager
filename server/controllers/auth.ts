@@ -2,9 +2,12 @@ import { Request, RequestHandler, Response } from "express";
 import jwt from "jsonwebtoken";
 import { prisma } from "@/lib/prisma-client";
 import {
+  DOMAIN_NAME_DEV,
+  DOMAIN_NAME_PROD,
   JWT_ACCESS_TOKEN_EXPIRES,
   JWT_REFRESH_TOKEN_EXPIRES,
   JWT_SECRET,
+  TOKEN_COOKIE_NAME,
 } from "@/constants";
 import { UserSchema } from "@/zod-schemas/generated";
 import {
@@ -46,17 +49,18 @@ export const register: RequestHandler = async (req: Request, res: Response) => {
       expiresIn: JWT_REFRESH_TOKEN_EXPIRES,
     });
 
-    res.cookie("access_token", access_token, {
+    res.cookie(TOKEN_COOKIE_NAME, refresh_token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
-      maxAge: 15 * 60 * 1000, // в миллисекундах
+      maxAge: parseInt(JWT_REFRESH_TOKEN_EXPIRES) * 24 * 60 * 60 * 1000, // в миллисекундах d * h * m * s * ms
+      domain: process.env.NODE_ENV === "production" ? DOMAIN_NAME_PROD : DOMAIN_NAME_DEV,
+      path: "/api/auth",
     });
 
     res.status(201).json({
       user: userWithoutPass,
-      token: refresh_token,
+      token: access_token,
       message: "Registration completed successfully",
-      ok: true,
     });
   } catch (error) {
     const errorMessage = errorHandler(error);
@@ -92,17 +96,18 @@ export const login: RequestHandler = async (req: Request, res: Response) => {
       expiresIn: JWT_REFRESH_TOKEN_EXPIRES,
     });
 
-    res.cookie("access_token", access_token, {
+    res.cookie(TOKEN_COOKIE_NAME, refresh_token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
-      maxAge: 15 * 60 * 1000, // в миллисекундах
+      maxAge: parseInt(JWT_REFRESH_TOKEN_EXPIRES) * 24 * 60 * 60 * 1000, // в миллисекундах d * h * m * s * ms
+      domain: process.env.NODE_ENV === "production" ? DOMAIN_NAME_PROD : DOMAIN_NAME_DEV,
+      path: "/api/auth",
     });
 
     res.status(200).json({
-      token: refresh_token,
       user: userWithoutPass,
+      token: access_token,
       message: "Auth success!",
-      ok: true,
     });
   } catch (error) {
     const errorMessage = errorHandler(error);
@@ -138,16 +143,16 @@ export const getMe: RequestHandler = async (req: Request, res: Response) => {
 
 export const refresh: RequestHandler = async (req: Request, res: Response) => {
   try {
-    const refreshToken = req.headers.authorization?.replace("Bearer ", "");
+    const refresh_token = req.headers.authorization?.replace("Bearer ", "");
 
-    if (!refreshToken) {
+    if (!refresh_token) {
       res.status(403).json({ message: "Forbidden! No refresh token found" });
       return;
     }
 
     let decoded;
     try {
-      decoded = jwt.verify(refreshToken, JWT_SECRET) as jwt.JwtPayload;
+      decoded = jwt.verify(refresh_token, JWT_SECRET) as jwt.JwtPayload;
     } catch (error) {
       if (error instanceof jwt.TokenExpiredError) {
         res.status(401).json({ message: "Refresh token expired" });
@@ -170,7 +175,7 @@ export const refresh: RequestHandler = async (req: Request, res: Response) => {
       expiresIn: JWT_ACCESS_TOKEN_EXPIRES,
     });
 
-    res.status(200).json({ accessToken: newAccessToken });
+    res.status(200).json({ access_token: newAccessToken });
   } catch (error) {
     const errorMessage = errorHandler(error);
     res.status(403).json({ message: errorMessage, error });

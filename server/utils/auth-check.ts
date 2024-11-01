@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import jwt from "jsonwebtoken";
-import { JWT_SECRET } from "@/constants";
+import { JWT_SECRET, TOKEN_COOKIE_NAME } from "@/constants";
 import errorHandler from "@/utils/error-handler";
 import { z } from "zod";
 import { UserSchema } from "@/zod-schemas/generated";
@@ -31,13 +31,21 @@ export const authCheck = (req: Request, res: Response, next: NextFunction) => {
     .catchall(z.any());
 
   try {
+    const refresh_token = req.cookies[TOKEN_COOKIE_NAME];
+
+    if (!refresh_token) {
+      res.status(403).json({ message: "Forbidden! No refresh token found" });
+      return;
+    }
+
     const decoded = JwtPayloadSchema.parse(
       jwt.verify(access_token, JWT_SECRET),
     );
+
     req.query.userId = decoded.id.toString();
     next();
   } catch (error) {
-    if (error instanceof Error && error.name === "TokenExpiredError") {
+    if (error instanceof Error && error.name === "TokenExpiredError") {  
       res.status(401).json({ message: "Token expired" });
     } else {
       const errorMessage = errorHandler(error);
