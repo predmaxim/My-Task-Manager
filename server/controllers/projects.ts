@@ -3,20 +3,18 @@ import { prisma } from "@/lib/prisma-client";
 import { ProjectSchema, UserSchema } from "@/zod-schemas/generated";
 import { z } from "zod";
 import errorHandler from "@/utils/error-handler";
+import { getUserIdFromQuery } from "@/utils/helpers";
 
 export const getProjects: RequestHandler = async (
   req: Request,
   res: Response,
 ) => {
   try {
-    const userId = UserSchema.pick({ id: true }).shape.id.parse(
-      req.query.userId,
-    );
-
-    // TODO: add pagination, sorting
+    const userId = getUserIdFromQuery(req);
     const projects = await prisma.project.findMany({
       where: { userId },
     });
+
     res.status(200).json(projects);
   } catch (error) {
     const errorMessage = errorHandler(error);
@@ -29,10 +27,7 @@ export const getProject: RequestHandler = async (
   res: Response,
 ) => {
   try {
-    const userId = UserSchema.pick({ id: true }).shape.id.parse(
-      req.query.userId,
-    );
-
+    const userId = getUserIdFromQuery(req);
     const id = z.object({ id: z.string() }).parse(req.params).id;
     const projectId = parseInt(id);
 
@@ -55,13 +50,9 @@ export const getProject: RequestHandler = async (
 export const createProject: RequestHandler = async (
   req: Request,
   res: Response,
-) => {
-  console.log(req.query);
+) => {  
   try {
-    const userId = UserSchema.pick({ id: true }).shape.id.parse(
-      req.query.userId,
-    );
-
+    const userId = getUserIdFromQuery(req);
     const project = ProjectSchema.partial({ id: true }).parse(req.body);
     const isAlreadyExists = await prisma.project.findUnique({
       where: { id: project.id, userId },
@@ -88,9 +79,7 @@ export const deleteProject: RequestHandler = async (
   res: Response,
 ) => {
   try {
-    const userId = UserSchema.pick({ id: true }).shape.id.parse(
-      req.query.userId,
-    );
+    const userId = getUserIdFromQuery(req);
 
     const id = ProjectSchema.pick({ id: true }).shape.id.parse(req.params);
 
@@ -116,9 +105,7 @@ export const updateProject: RequestHandler = async (
   res: Response,
 ) => {
   try {
-    const userId = UserSchema.pick({ id: true }).shape.id.parse(
-      req.query.userId,
-    );
+    const userId = getUserIdFromQuery(req);
     const project = ProjectSchema.parse(req.body);
     const existProject = await prisma.project.findFirst({
       where: { id: project.id, userId },

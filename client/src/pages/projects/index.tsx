@@ -10,6 +10,7 @@ export function ProjectsPage() {
   const dispatch = useAppDispatch();
 
   useEffect(() => {
+    console.log('ProjectsPage => projects:', projects);
     if (projects) {
       dispatch(setProjects(projects));
     }
