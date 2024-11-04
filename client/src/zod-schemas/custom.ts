@@ -8,6 +8,15 @@ import {
 } from '../../../server/zod-schemas/generated';
 import { z } from 'zod';
 
+export {
+  CommentSchema,
+  PrioritySchema,
+  ProjectSchema,
+  StatusSchema,
+  TaskSchema,
+  UserSchema,
+};
+
 export const TaskPopulatedSchema = TaskSchema.extend({
   status: StatusSchema,
   parent: z.lazy(() => TaskSchema),

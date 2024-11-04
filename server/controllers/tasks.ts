@@ -4,10 +4,11 @@ import { prisma } from "@/lib/prisma-client";
 import { TaskSchema } from "@/zod-schemas/generated";
 import { z } from "zod";
 import errorHandler from "@/utils/error-handler";
+import { UserWithoutPassSchema } from "@/zod-schemas/custom";
 
 export const getTasks: RequestHandler = async (req: Request, res: Response) => {
   try {
-    // TODO: add pagination, sorting
+    const user = UserWithoutPassSchema.parse(req.user);
     const id = z.object({ projectId: z.string() }).parse(req.query).projectId;
     const tasks = await prisma.task.findMany({
       where: { projectId: parseInt(id) },

@@ -109,7 +109,7 @@ export const login: RequestHandler = async (req: Request, res: Response) => {
         process.env.NODE_ENV === "production"
           ? DOMAIN_NAME_PROD
           : DOMAIN_NAME_DEV,
-      path: "/api/auth",
+      // path: "/api/auth",
     });
 
     res.status(200).json({

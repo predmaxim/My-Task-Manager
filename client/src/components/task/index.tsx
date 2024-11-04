@@ -5,7 +5,7 @@ import { ChangeEvent, KeyboardEvent, MouseEvent, useState } from 'react';
 import { createPortal } from 'react-dom';
 import TextareaAutosize from 'react-textarea-autosize';
 import { formatDate } from '@/utils/helpers';
-import { TaskMenuActionType, TaskStatusType, TaskType } from '@/types';
+import { MenuActionType, TaskStatusType, TaskType } from '@/types';
 import { PopupMenu } from '@/components/popup-menu';
 import styles from './styles.module.scss';
 import { TASK_STATUSES } from '@/constants';
@@ -98,14 +98,16 @@ export function Task({ task: initialTask }: TaskProps) {
     await deleteTask(task.id);
   };
 
-  const actions: TaskMenuActionType[] = [
+  const actions: MenuActionType[] = [
     {
       name: 'edit',
       action: editTask,
+      icon: 'RiPencilLine',
     },
     {
       name: 'remove',
       action: removeTask,
+      icon: 'RiDeleteBin6Line',
     },
   ];
 
@@ -121,6 +123,7 @@ export function Task({ task: initialTask }: TaskProps) {
           className={`${styles.Task__popup} ${activeClassMenu}`}
           actions={actions}
           closeMenu={() => setIsMenuActive(false)}
+          isActive={isMenuActive}
         />}
         <div className={styles.Task_header}>
           <input

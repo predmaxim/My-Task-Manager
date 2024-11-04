@@ -1,24 +1,24 @@
 import { Request, RequestHandler, Response } from "express";
 import { prisma } from "@/lib/prisma-client";
-import { ProjectSchema, UserSchema } from "@/zod-schemas/generated";
-import { z } from "zod";
+import { ProjectSchema } from "@/zod-schemas/generated";
 import errorHandler from "@/utils/error-handler";
-import { getUserIdFromQuery } from "@/utils/helpers";
+import { UserWithoutPassSchema } from "@/zod-schemas/custom";
+import slugify from "slugify-ts";
 
 export const getProjects: RequestHandler = async (
   req: Request,
   res: Response,
 ) => {
   try {
-    const userId = getUserIdFromQuery(req);
+    const user = UserWithoutPassSchema.parse(req.user);
     const projects = await prisma.project.findMany({
-      where: { userId },
+      where: { userId: user.id },
     });
 
     res.status(200).json(projects);
   } catch (error) {
     const errorMessage = errorHandler(error);
-    res.json({ message: errorMessage });
+    res.json({ message: errorMessage, error });
   }
 };
 
@@ -27,12 +27,11 @@ export const getProject: RequestHandler = async (
   res: Response,
 ) => {
   try {
-    const userId = getUserIdFromQuery(req);
-    const id = z.object({ id: z.string() }).parse(req.params).id;
-    const projectId = parseInt(id);
+    const user = UserWithoutPassSchema.parse(req.user);
+    const slug = ProjectSchema.pick({ slug: true }).parse(req.params).slug;
 
     const project = await prisma.project.findFirst({
-      where: { id: projectId, userId },
+      where: { slug, userId: user.id },
     });
 
     if (!project) {
@@ -50,12 +49,14 @@ export const getProject: RequestHandler = async (
 export const createProject: RequestHandler = async (
   req: Request,
   res: Response,
-) => {  
+) => {
   try {
-    const userId = getUserIdFromQuery(req);
-    const project = ProjectSchema.partial({ id: true }).parse(req.body);
-    const isAlreadyExists = await prisma.project.findUnique({
-      where: { id: project.id, userId },
+    const user = UserWithoutPassSchema.parse(req.user);
+    const project = ProjectSchema.pick({ name: true, icon: true }).parse(
+      req.body,
+    );
+    const isAlreadyExists = await prisma.project.findFirst({
+      where: { slug: slugify(project.name), userId: user.id },
     });
 
     if (isAlreadyExists) {
@@ -64,7 +65,7 @@ export const createProject: RequestHandler = async (
     }
 
     const newProject = await prisma.project.create({
-      data: { ...project, userId },
+      data: { ...project, userId: user.id, slug: slugify(project.name) },
     });
 
     res.status(201).json(newProject);
@@ -79,12 +80,11 @@ export const deleteProject: RequestHandler = async (
   res: Response,
 ) => {
   try {
-    const userId = getUserIdFromQuery(req);
-
-    const id = ProjectSchema.pick({ id: true }).shape.id.parse(req.params);
+    const user = UserWithoutPassSchema.parse(req.user);
+    const id = ProjectSchema.pick({ id: true }).parse(req.params).id;
 
     const [removedProject] = await prisma.$transaction([
-      prisma.project.delete({ where: { id, userId } }),
+      prisma.project.delete({ where: { id, userId: user.id } }),
       prisma.task.deleteMany({ where: { projectId: id } }),
     ]);
 
@@ -105,22 +105,23 @@ export const updateProject: RequestHandler = async (
   res: Response,
 ) => {
   try {
-    const userId = getUserIdFromQuery(req);
+    const user = UserWithoutPassSchema.parse(req.user);
     const project = ProjectSchema.parse(req.body);
     const existProject = await prisma.project.findFirst({
-      where: { id: project.id, userId },
+      where: { id: project.id, userId: user.id },
     });
 
-    if (existProject) {
-      const updatedProject = await prisma.project.update({
-        where: { id: project.id, userId },
-        data: req.body,
-      });
-      res.status(200).json(updatedProject);
+    if (!existProject) {
+      res.status(404).json({ message: "Project not found" });
       return;
     }
 
-    res.status(404).json({ message: "Project not found" });
+    const updatedProject = await prisma.project.update({
+      where: { id: project.id, userId: user.id },
+      data: req.body,
+    });
+
+    res.status(200).json(updatedProject);
   } catch (error) {
     const errorMessage = errorHandler(error);
     res.status(500).json({ message: errorMessage });

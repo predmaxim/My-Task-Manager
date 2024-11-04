@@ -9,6 +9,7 @@ import {
   ThemeSchema,
   UserWithoutPassSchema,
 } from '@/zod-schemas/custom.ts';
+import { IconType } from 'react-icons';
 
 
 export type PartialUserType = Partial<Pick<User, 'id'>> & Omit<User, 'id'>;
@@ -20,9 +21,10 @@ export type ProjectStatusType = keyof typeof PROJECT_STATUSES;
 export type PartialCommentType = Partial<Pick<Comment, 'id'>> & Omit<Comment, 'id'>;
 export type CommentType = Comment;
 
-export type TaskMenuActionType = {
+export type MenuActionType = {
   name: 'edit' | 'remove',
-  action: () => void
+  action: () => void,
+  icon: IconType['name']
 };
 
 export type TaskUpdateFieldsType =

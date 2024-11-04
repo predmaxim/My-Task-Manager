@@ -1,11 +1,10 @@
-import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 import { CommentType, PartialCommentType } from '@/types';
-import { API_URL } from '@/constants';
+import { api } from '@/services/api.ts';
 
-export const commentsApi = createApi({
-  reducerPath: 'commentsApi',
-  baseQuery: fetchBaseQuery({ baseUrl: `${API_URL}/` }),
-  tagTypes: ['comments'],
+export const commentsApi = api.injectEndpoints({
+  // reducerPath: 'commentsApi',
+  // baseQuery: fetchBaseQuery({ baseUrl: `${API_URL}/` }),
+  // tagTypes: ['comments'],
   endpoints: (builder) => ({
     getComments: builder.query<CommentType[], void>({
       query: () => `comments/`,

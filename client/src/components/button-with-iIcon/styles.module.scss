@@ -11,80 +11,15 @@
     align-items: center;
     justify-content: center;
     width: 100%;
-    //@include button("xl", 100%);
 
     &__icon {
       font-size: 1.4rem;
     }
 
-    &__text {
+    &__name {
       margin-top: 2px;
       margin-left: 10px;
     }
 
-  }
-
-  .button__actions {
-    position: absolute;
-    top: 50%;
-    right: 0;
-    transform: translateY(-50%);
-    cursor: pointer;
-    animation: smoothIconHide .2s forwards;
-    display: flex;
-    flex-direction: column;
-    border-radius: 0 10px 10px 0;
-    background: var(--color-light-grey-darker);
-
-    .button {
-      @include button("l");
-      padding: 4px 7px;
-      font-size: .9rem;
-      height: auto;
-
-      &:first-child {
-        border-radius: 0 10px 0 0;
-      }
-
-      &:last-child {
-        border-radius: 0 0 10px 0;
-      }
-    }
-  }
-
-  &.active,
-  &:hover {
-    .ProjectButton {
-      margin-left: -15px;
-    }
-
-    .button__actions {
-      z-index: 1;
-      animation: smoothIconShow .2s forwards;
-    }
-  }
-}
-
-@keyframes smoothIconShow {
-  0% {
-    transform: translate(0, -50%);
-    opacity: 0;
-  }
-
-  100% {
-    transform: translate(0, -50%);
-    opacity: 1;
-  }
-}
-
-@keyframes smoothIconHide {
-  100% {
-    transform: translate(0, -50%);
-    opacity: 1;
-  }
-
-  100% {
-    transform: translate(0, -50%);
-    opacity: 0;
   }
 }

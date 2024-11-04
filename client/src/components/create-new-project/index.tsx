@@ -11,9 +11,9 @@ import { setCurrentProject } from '@/lib/features/projects-slice';
 import Input from '@/components/input';
 
 export function CreateNewProject() {
+  const projects = useAppSelector((state) => state.projects.projects);
   const dispatch = useAppDispatch();
   const [createProject] = useCreateProjectMutation();
-  const projects = useAppSelector((state) => state.projects.projects);
 
   const [showNewProjectModal, setNewProjectModal] = useState(false);
   const [showIconModal, setShowIconModal] = useState(false);
@@ -31,7 +31,6 @@ export function CreateNewProject() {
 
   const onOkModal = async () => {
     if (inputValue) {
-      console.log('onOkModal => projects:', projects);
       if (projects?.find((project) => project.name === inputValue)) {
         toast(`Project name "${inputValue}" is busy`);
       } else {
@@ -114,23 +113,21 @@ export function CreateNewProject() {
           })}
         </div>
         <div className={styles.iconModal__nav}>
-          <ButtonWithIcon
+          {iconPage > 0 && <ButtonWithIcon
             className={styles.iconModal__prevBtn}
             icon="RiArrowLeftSLine"
             onClick={() => setIconPage((prev) => {
               return prev - 1 < 0 ? 0 : prev - 1;
             })}
-            showActions={iconPage > 0}
-          />
-          <ButtonWithIcon
+          />}
+          {icons.length > (iconPage + 1) * iconsPerPage && <ButtonWithIcon
             className={styles.iconModal__nextBtn}
             icon="RiArrowRightSLine"
             onClick={() => setIconPage((prev) => {
               const lastPage = icons.length / iconsPerPage - 1;
               return prev + 1 > lastPage ? lastPage : prev + 1;
             })}
-            showActions={icons.length > (iconPage + 1) * iconsPerPage}
-          />
+          />}
         </div>
       </Modal>
     </>
