@@ -20,7 +20,7 @@ export function LoginPage() {
 
     try {
       const authData = await login({ email, password });
-      console.log('LoginPage => handleSubmit => authData.error', authData);
+      console.log('LoginPage => handleSubmit => authData', authData);
 
       if ('error' in authData) {
         const errorMessage = errorHandler(authData.error);

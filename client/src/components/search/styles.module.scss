@@ -6,31 +6,29 @@
 
   &__input {
     width: calc(100% - 25px);
-    @include input;
-    padding: 12.5px;
   }
 
-  .ButtonWithIconWrap {
-    position: absolute;
-    right: 10px;
-    top: 50%;
-    transform: translateY(-50%);
+  //.ButtonWithIconWrap {
+  //  position: absolute;
+  //  right: 10px;
+  //  top: 50%;
+  //  transform: translateY(-50%);
+  //
+  //  .ButtonWithIcon {
+  //    @include button("s");
+  //    opacity: 0;
+  //    color: var(--font-color-dimmed);
+  //
+  //    &:hover {
+  //      color: var(--font-color);
+  //    }
+  //  }
+  //}
 
-    .ButtonWithIcon {
-      @include button("s");
-      opacity: 0;
-      color: var(--font-color-dimmed);
-
-      &:hover {
-        color: var(--font-color);
-      }
-    }
-  }
-
-  &.active {
-    .ButtonWithIcon {
-      @include button("s");
-      opacity: 1;
-    }
-  }
+  //&.active {
+  //  .ButtonWithIcon {
+  //    @include button("s");
+  //    opacity: 1;
+  //  }
+  //}
 }

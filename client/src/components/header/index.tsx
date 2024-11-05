@@ -14,7 +14,7 @@ export function Header() {
 
   return (
     <header className={styles.Header}>
-      <div className="container">
+      <div className={styles.container}>
         <Link to={ROUTES.home} className={styles.Header_logoLink}>
           <img
             src={theme === 'light' ? logoHorizontal : logoHorizontalWhite} className={styles.Header__logoImg}
@@ -25,7 +25,7 @@ export function Header() {
         <div className={styles.Header__buttonWrap}>
           <ThemeSwitcher />
           <CurrentProjectButton />
-          <ProfileButton/>
+          <ProfileButton />
         </div>
       </div>
     </header>

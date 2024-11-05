@@ -2,7 +2,7 @@ import { CreateNewProject } from '@/components/create-new-project';
 import { useAppSelector } from '@/lib/store';
 import { Loading } from '@/components/loading';
 import styles from './styles.module.scss';
-import { ProjectItem } from '@/components/project-item';
+import { ProjectItem } from 'src/components/projects-item';
 
 export type ProjectListType = {
   modalAction?: () => void;
