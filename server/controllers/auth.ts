@@ -178,7 +178,7 @@ export const refresh: RequestHandler = async (req: Request, res: Response) => {
       expiresIn: JWT_ACCESS_TOKEN_EXPIRES,
     });
 
-    res.status(200).json({ access_token: newAccessToken });
+    res.status(200).json(newAccessToken);
   } catch (error) {
     const errorMessage = errorHandler(error);
     res.status(403).json({ message: errorMessage, error });

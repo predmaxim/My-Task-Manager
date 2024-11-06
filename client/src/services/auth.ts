@@ -3,12 +3,14 @@ import { AuthType, LoginType, RegisterType, UserType } from '@/types';
 import { api } from '@/services/api.ts';
 
 export const authApi = api.injectEndpoints({
-  // reducerPath: 'authApi',
-  // baseQuery: fetchBaseQuery({ baseUrl: `${API_URL}/` }),
-  // tagTypes: ['auth'],
   endpoints: (builder) => ({
     getMe: builder.query<UserType, void>({
       query: () => `auth/me`,
+      providesTags: ['auth'],
+    }),
+    refresh: builder.query<string, void>({
+      query: () => `auth/refresh`,
+      providesTags: ['auth'],
     }),
     login: builder.mutation<AuthType, LoginType>({
       query: (body) => ({
@@ -16,9 +18,9 @@ export const authApi = api.injectEndpoints({
         method: 'POST',
         body,
       }),
+      invalidatesTags: ['auth'],
       extraOptions: {
         backoff: () => {
-          // We intentionally error once on login, and this breaks out of retrying. The next login attempt will succeed.
           retry.fail({ fake: 'error' });
         },
       },
@@ -29,6 +31,7 @@ export const authApi = api.injectEndpoints({
         method: 'POST',
         body,
       }),
+      invalidatesTags: ['auth'],
     }),
   }),
 });
@@ -36,5 +39,6 @@ export const authApi = api.injectEndpoints({
 export const {
   useLoginMutation,
   useRegisterMutation,
+  useRefreshQuery,
   useGetMeQuery,
 } = authApi;
