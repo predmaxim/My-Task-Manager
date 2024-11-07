@@ -26,7 +26,7 @@ export function Menu({ className }: { className?: string }) {
   return (
     <div className={`${styles.Menu} ${className}`}>
       <button className={styles.button} onClick={() => setShowMenu(true)}>
-        <PiListBold size={32} />
+        <PiListBold size={38} />
       </button>
       {showMenu && createPortal(
         <>

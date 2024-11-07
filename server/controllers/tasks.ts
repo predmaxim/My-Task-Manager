@@ -3,7 +3,7 @@ import { Request, RequestHandler, Response } from "express";
 import { prisma } from "@/lib/prisma-client";
 import { TaskSchema } from "@/zod-schemas/generated";
 import { z } from "zod";
-import errorHandler from "@/utils/error-handler";
+import { errorHandler } from "@/utils/error-handler";
 import { UserWithoutPassSchema } from "@/zod-schemas/custom";
 
 export const getTasks: RequestHandler = async (req: Request, res: Response) => {

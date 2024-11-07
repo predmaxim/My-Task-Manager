@@ -8,7 +8,7 @@ export const authApi = api.injectEndpoints({
       query: () => `auth/me`,
       providesTags: ['auth'],
     }),
-    refresh: builder.query<string, void>({
+    refresh: builder.query<{ access_token: string }, void>({
       query: () => `auth/refresh`,
       providesTags: ['auth'],
     }),

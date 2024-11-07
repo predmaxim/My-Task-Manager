@@ -1,7 +1,7 @@
 import { Request, RequestHandler, Response } from "express";
 import { prisma } from "@/lib/prisma-client";
 import { ProjectSchema } from "@/zod-schemas/generated";
-import errorHandler from "@/utils/error-handler";
+import { errorHandler } from "@/utils/error-handler";
 import { UserWithoutPassSchema } from "@/zod-schemas/custom";
 import slugify from "slugify-ts";
 
@@ -52,9 +52,9 @@ export const createProject: RequestHandler = async (
 ) => {
   try {
     const user = UserWithoutPassSchema.parse(req.user);
-    const project = ProjectSchema.pick({ name: true, icon: true }).partial({icon: true}).parse(
-      req.body,
-    );
+    const project = ProjectSchema.pick({ name: true, icon: true })
+      .partial({ icon: true })
+      .parse(req.body);
     const isAlreadyExists = await prisma.project.findFirst({
       where: { slug: slugify(project.name), userId: user.id },
     });
