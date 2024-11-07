@@ -52,7 +52,7 @@ export const createProject: RequestHandler = async (
 ) => {
   try {
     const user = UserWithoutPassSchema.parse(req.user);
-    const project = ProjectSchema.pick({ name: true, icon: true }).parse(
+    const project = ProjectSchema.pick({ name: true, icon: true }).partial({icon: true}).parse(
       req.body,
     );
     const isAlreadyExists = await prisma.project.findFirst({
