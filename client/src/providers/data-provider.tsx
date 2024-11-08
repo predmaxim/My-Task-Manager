@@ -1,12 +1,46 @@
 import { ReactNode, useEffect } from 'react';
-import { useAppSelector } from '@/lib/store';
+import { useAppDispatch, useAppSelector } from '@/lib/store';
+import { useGetProjectsQuery } from '@/services/projects.ts';
+import { setProjects } from '@/lib/features/projects-slice.ts';
+import { Loading } from '@/components/loading';
+import { Error } from '@/components/error';
+import { useGetTaskStatusesQuery } from '@/services/task-statuses.ts';
+import { setTaskStatuses } from '@/lib/features/task-statuses-slice.ts';
 
 export const DataProvider = ({ children }: { children: ReactNode }) => {
+  const dispatch = useAppDispatch();
   const theme = useAppSelector((state) => state.theme.theme);
+  const user = useAppSelector((state) => state.auth.user);
+  const { data: projects, isLoading, isError } = useGetProjectsQuery(undefined, {
+    skip: !user,
+  });
+  const { data: tasksStatuses } = useGetTaskStatusesQuery(undefined, {
+    skip: !user,
+  });
 
   useEffect(() => {
     document.body.classList.add(theme);
-  }, [theme]);
 
-  return <>{children}</>;
+    if (projects) {
+      dispatch(setProjects(projects));
+    }
+
+    if (tasksStatuses) {
+      dispatch(setTaskStatuses(tasksStatuses));
+    }
+
+    return () => {
+      document.body.classList.remove(theme);
+    };
+  }, [dispatch, projects, theme]);
+
+  if (isLoading) {
+    return <Loading />;
+  }
+
+  if (isError) {
+    return <Error />;
+  }
+
+  return children;
 };

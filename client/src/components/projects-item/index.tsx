@@ -26,7 +26,7 @@ export function ProjectItem({ project, modalAction }: ProjectItemType) {
 
   const onClickHandler = (project: ProjectType) => {
     modalAction?.();
-    setCurrentProject(project.id);
+    dispatch(setCurrentProject(project.id));
     dispatch(setSearch(''));
     navigate(`${BASE_PROJECT_URL}/${project.slug}`);
   };
@@ -41,14 +41,15 @@ export function ProjectItem({ project, modalAction }: ProjectItemType) {
 
   const editAction = () => {
     updateProject(project);
-    console.log('edit');
   };
+
+
   return (
     <div className={styles.ProjectItem}>
       <ButtonWithIcon
         key={project.id}
         className={styles.ProjectButton}
-        icon={project?.icon as keyof typeof Icons}
+        icon={project.icon ? project.icon as keyof typeof Icons : null}
         text={project.name}
         onClick={() => onClickHandler(project)}
       />

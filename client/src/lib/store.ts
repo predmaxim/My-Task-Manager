@@ -6,12 +6,14 @@ import authReducer from '@/lib/features/auth-slice.ts';
 import commentsReducer from '@/lib/features/comments-slice';
 import searchReducer from '@/lib/features/search-slice';
 import themeReducer from '@/lib/features/theme-slice';
+import taskStatusesReducer from '@/lib/features/task-statuses-slice';
 import { projectsApi } from '@/services/projects';
 import { tasksApi } from '@/services/tasks';
 import { commentsApi } from '@/services/comments';
 import { authApi } from '@/services/auth';
 import { FLUSH, PAUSE, PERSIST, persistReducer, persistStore, PURGE, REGISTER, REHYDRATE } from 'redux-persist';
 import storage from 'redux-persist/lib/storage';
+import { api } from '@/services/api';
 
 const persistConfig = {
   version: 1,
@@ -28,7 +30,6 @@ const themePersistedReducer = persistReducer({
   ...persistConfig,
 }, themeReducer);
 
-
 const store = configureStore({
   reducer: {
     auth: authPersistedReducer,
@@ -37,10 +38,8 @@ const store = configureStore({
     tasks: tasksReducer,
     comments: commentsReducer,
     search: searchReducer,
-    [projectsApi.reducerPath]: projectsApi.reducer,
-    [tasksApi.reducerPath]: tasksApi.reducer,
-    [commentsApi.reducerPath]: commentsApi.reducer,
-    [authApi.reducerPath]: authApi.reducer,
+    taskStatuses: taskStatusesReducer,
+    [api.reducerPath]: api.reducer,
   },
   devTools: process.env.NODE_ENV !== 'production',
   middleware: (getDefaultMiddleware) =>
@@ -48,7 +47,9 @@ const store = configureStore({
       serializableCheck: {
         ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER],
       },
-    }).concat(projectsApi.middleware, tasksApi.middleware, commentsApi.middleware, authApi.middleware),
+    }).concat(
+      api.middleware,
+    ),
 });
 
 export const persistor = persistStore(store);
