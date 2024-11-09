@@ -2,7 +2,7 @@ import { Request, RequestHandler, Response } from "express";
 import { prisma } from "@/lib/prisma-client";
 import { ProjectSchema } from "@/zod-schemas/generated";
 import { errorHandler } from "@/utils/error-handler";
-import { UserWithoutPassSchema } from "@/zod-schemas/custom";
+import { toInt, UserWithoutPassSchema } from "@/zod-schemas/custom";
 import slugify from "slugify-ts";
 
 export const getProjects: RequestHandler = async (
@@ -93,7 +93,7 @@ export const deleteProject: RequestHandler = async (
 ) => {
   try {
     const user = UserWithoutPassSchema.parse(req.user);
-    const id = ProjectSchema.pick({ id: true }).parse(req.params).id;
+    const id = ProjectSchema.shape.id.parse(toInt(req.params));
 
     const [removedProject] = await prisma.$transaction([
       prisma.project.delete({ where: { id, userId: user.id } }),
@@ -117,7 +117,7 @@ export const updateProject: RequestHandler = async (
   res: Response,
 ) => {
   try {
-    const id = ProjectSchema.shape.id.parse(req.params.id);
+    const id = ProjectSchema.shape.id.parse(toInt(req.params.id));
     const project = ProjectSchema.omit({ id: true }).parse(req.body);
     const existProject = await prisma.project.findUnique({
       where: { id },

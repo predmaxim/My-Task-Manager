@@ -3,10 +3,13 @@ import { Request, RequestHandler, Response } from "express";
 import { prisma } from "@/lib/prisma-client";
 import { TaskSchema } from "@/zod-schemas/generated";
 import { errorHandler } from "@/utils/error-handler";
+import { toInt } from "@/zod-schemas/custom";
 
 export const getTasks: RequestHandler = async (req: Request, res: Response) => {
   try {
-    const projectId = TaskSchema.shape.projectId.parse(req.params.projectId);
+    const projectId = TaskSchema.shape.projectId.parse(
+      toInt(req.params.projectId),
+    );
     const tasks = await prisma.task.findMany({
       where: { projectId },
       orderBy: { order: "asc" },
@@ -27,7 +30,7 @@ export const getTasks: RequestHandler = async (req: Request, res: Response) => {
 
 export const getTask: RequestHandler = async (req: Request, res: Response) => {
   try {
-    const id = TaskSchema.shape.id.parse(req.params.id);
+    const id = TaskSchema.shape.id.parse(toInt(req.params.id));
     const task = await prisma.task.findUnique({
       where: { id },
       include: {
@@ -89,7 +92,7 @@ export const deleteTask: RequestHandler = async (
   res: Response,
 ) => {
   try {
-    const id = TaskSchema.shape.id.parse(req.params.id);
+    const id = TaskSchema.shape.id.parse(toInt(req.params.id));
     const removedTask = await prisma.task.delete({
       where: { id },
     });
@@ -111,7 +114,7 @@ export const updateTask: RequestHandler = async (
   res: Response,
 ) => {
   try {
-    const id = TaskSchema.shape.id.parse(req.params.id);
+    const id = TaskSchema.shape.id.parse(toInt(req.params.id));
     const task = TaskSchema.partial({ id: true }).parse(req.body);
     const updatedTask = await prisma.task.update({
       where: { id },
