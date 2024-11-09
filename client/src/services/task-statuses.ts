@@ -5,7 +5,7 @@ import { StatusSchema } from '@/zod-schemas/custom';
 export const taskStatusesApi = api.injectEndpoints({
   endpoints: (builder) => ({
     getTaskStatuses: builder.query<TaskStatusType[], void>({
-      query: () => `task-statuses/`,
+      query: () => `task-statuses`,
       providesTags: (result = []) => [
         ...result.map(({ id }) => ({ type: 'task-statuses', id }) as const),
         { type: 'task-statuses' as const, id: 'LIST' },
@@ -54,7 +54,7 @@ export const taskStatusesApi = api.injectEndpoints({
     updateTaskStatus: builder.mutation<TaskStatusType, TaskStatusType>({
       query: (body) => ({
         url: `task-statuses/${body.id}`,
-        method: 'PUT',
+        method: 'PATCH',
         body,
       }),
       invalidatesTags: (_result, _error, { id }) => [{ type: 'task-statuses', id }],

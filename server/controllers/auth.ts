@@ -139,7 +139,7 @@ export const getMe: RequestHandler = async (req: Request, res: Response) => {
       return;
     }
 
-    const { password: pass, ...userWithoutPass } = user;
+    const userWithoutPass = UserWithoutPassSchema.parse(user);
     res.status(200).json({ user: userWithoutPass });
   } catch (error) {
     const errorMessage = errorHandler(error);
@@ -177,8 +177,9 @@ export const refresh: RequestHandler = async (req: Request, res: Response) => {
     const newAccessToken = jwt.sign({ id: user.id }, JWT_SECRET, {
       expiresIn: JWT_ACCESS_TOKEN_EXPIRES,
     });
- 
-    res.status(200).json({ access_token: newAccessToken });
+    
+    const userWithoutPass = UserWithoutPassSchema.parse(user);
+    res.status(200).json({ token: newAccessToken, user: userWithoutPass });
   } catch (error) {
     const errorMessage = errorHandler(error);
     res.status(403).json({ message: errorMessage, error });

@@ -1,8 +1,6 @@
 import { prisma } from "@/lib/prisma-client";
 import { Request, RequestHandler, Response } from "express";
 import { errorHandler } from "@/utils/error-handler";
-import { z } from "zod";
-import { TASK_STATUSES } from "@/constants";
 import { StatusSchema } from "@/zod-schemas/generated";
 
 export const getTaskStatuses: RequestHandler = async (
@@ -10,7 +8,11 @@ export const getTaskStatuses: RequestHandler = async (
   res: Response,
 ) => {
   try {
-    const taskStatuses = await prisma.status.findMany();
+    const projectId = StatusSchema.shape.projectId.parse(req.params.projectId);
+
+    const taskStatuses = await prisma.status.findMany({
+      where: { projectId },
+    });
     res.status(200).json(taskStatuses);
   } catch (error) {
     const errorMessage = errorHandler(error);
@@ -23,7 +25,7 @@ export const getTaskStatus: RequestHandler = async (
   res: Response,
 ) => {
   try {
-    const id = StatusSchema.pick({ id: true }).shape.id.parse(req.params.id);
+    const id = StatusSchema.shape.id.parse(req.params.id);
     const taskStatus = await prisma.status.findUnique({
       where: { id },
     });
@@ -45,9 +47,10 @@ export const createTaskStatus: RequestHandler = async (
   res: Response,
 ) => {
   try {
-    const name = z.nativeEnum(TASK_STATUSES).parse(req.body.name);
+    const name = StatusSchema.shape.name.parse(req.body.name);
+    const projectId = StatusSchema.shape.projectId.parse(req.params.projectId);
     const taskStatus = await prisma.status.create({
-      data: { name },
+      data: { name, projectId },
     });
 
     res.status(201).json(taskStatus);
@@ -62,10 +65,8 @@ export const updateTaskStatus: RequestHandler = async (
   res: Response,
 ) => {
   try {
-    const id = StatusSchema.pick({ id: true }).shape.id.parse(req.params.id);
-    const name = StatusSchema.pick({ name: true }).shape.name.parse(
-      req.body.name,
-    );
+    const id = StatusSchema.shape.id.parse(req.params.id);
+    const name = StatusSchema.shape.name.parse(req.body.name);
     const taskStatus = await prisma.status.update({
       where: { id },
       data: { name },
@@ -83,7 +84,7 @@ export const deleteTaskStatus: RequestHandler = async (
   res: Response,
 ) => {
   try {
-    const id = StatusSchema.pick({ id: true }).shape.id.parse(req.params.id);
+    const id = StatusSchema.shape.id.parse(req.params.id);
     await prisma.status.delete({
       where: { id },
     });

@@ -20,19 +20,20 @@ model User {
   password String    @db.Char(60)
   avatar   String?
   created  DateTime  @default(now())
-  projects Project[]
+  projects Project[] @relation("UserToProjects")
 }
 
 model Project {
-  id      Int      @id @default(autoincrement())
-  name    String
-  slug    String   @unique
-  created DateTime @default(now())
-  icon    String?
-  color   String?
-  tasks   Task[]
-  user    User     @relation(fields: [userId], references: [id])
-  userId  Int
+  id       Int      @id @default(autoincrement())
+  name     String
+  slug     String   @unique
+  created  DateTime @default(now())
+  icon     String?
+  color    String?
+  tasks    Task[]
+  statuses Status[]
+  user     User     @relation("UserToProjects", fields: [userId], references: [id])
+  userId   Int
 }
 
 model Task {
@@ -49,12 +50,12 @@ model Task {
   parentId    Int?
   project     Project   @relation(fields: [projectId], references: [id])
   projectId   Int
-  index       Int       @default(0)
+  order       Int       @default(0)
   due         DateTime?
-  in_work     DateTime? @default(now())
+  inWork      DateTime? @default(now())
   files       File[]
   children    Task[]    @relation("TaskToTask")
-  comments    Comment[]
+  comments    Comment[] @relation("CommentToTask")
 }
 
 model Comment {
@@ -63,7 +64,7 @@ model Comment {
   parent   Comment?  @relation("CommentToComment", fields: [parentId], references: [id])
   parentId Int?
   children Comment[] @relation("CommentToComment")
-  task     Task      @relation(fields: [taskId], references: [id])
+  task     Task      @relation("CommentToTask", fields: [taskId], references: [id])
   taskId   Int
   created  DateTime  @default(now())
 }
@@ -83,14 +84,10 @@ model Priority {
   task  Task[]
 }
 
-enum TASK_STATUSES {
-  queue
-  development
-  done
-}
-
 model Status {
-  id   Int           @id @default(autoincrement())
-  name TASK_STATUSES
-  task Task[]
+  id        Int     @id @default(autoincrement())
+  name      String
+  task      Task[]
+  project   Project @relation(fields: [projectId], references: [id])
+  projectId Int
 }

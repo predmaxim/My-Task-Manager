@@ -2,27 +2,23 @@
 import { Request, RequestHandler, Response } from "express";
 import { prisma } from "@/lib/prisma-client";
 import { TaskSchema } from "@/zod-schemas/generated";
-import { z } from "zod";
 import { errorHandler } from "@/utils/error-handler";
-import { UserWithoutPassSchema } from "@/zod-schemas/custom";
 
 export const getTasks: RequestHandler = async (req: Request, res: Response) => {
   try {
-    const user = UserWithoutPassSchema.parse(req.user);
-    const id = z.object({ projectId: z.string() }).parse(req.query).projectId;
+    const projectId = TaskSchema.shape.projectId.parse(req.params.projectId);
     const tasks = await prisma.task.findMany({
-      where: { projectId: parseInt(id) },
-      orderBy: { index: "asc" },
+      where: { projectId },
+      orderBy: { order: "asc" },
       include: {
         status: true,
         parent: true,
         children: true,
-        project: true,
         priority: true,
         comments: true,
       },
     });
-    res.status(200).json({ tasks, total: tasks.length });
+    res.status(200).json(tasks);
   } catch (error) {
     const errorMessage = errorHandler(error);
     res.status(500).json({ message: errorMessage });
@@ -31,14 +27,13 @@ export const getTasks: RequestHandler = async (req: Request, res: Response) => {
 
 export const getTask: RequestHandler = async (req: Request, res: Response) => {
   try {
-    const id = z.object({ id: z.string() }).parse(req.query).id;
+    const id = TaskSchema.shape.id.parse(req.params.id);
     const task = await prisma.task.findUnique({
-      where: { id: parseInt(id) },
+      where: { id },
       include: {
         status: true,
         parent: true,
         children: true,
-        project: true,
         priority: true,
         comments: true,
       },
@@ -49,7 +44,7 @@ export const getTask: RequestHandler = async (req: Request, res: Response) => {
       return;
     }
 
-    res.status(200).json({ task });
+    res.status(200).json(task);
   } catch (error) {
     const errorMessage = errorHandler(error);
     res.status(403).json({ message: errorMessage });
@@ -61,12 +56,12 @@ export const createTask: RequestHandler = async (
   res: Response,
 ) => {
   try {
-    const task = TaskSchema.parse(req.body);
+    const task = TaskSchema.omit({ id: true }).parse(req.body);
 
     await prisma.task.updateMany({
       where: { statusId: task.statusId },
       data: {
-        index: {
+        order: {
           increment: 1,
         },
       },
@@ -78,12 +73,11 @@ export const createTask: RequestHandler = async (
         status: true,
         parent: true,
         children: true,
-        project: true,
         priority: true,
         comments: true,
       },
     });
-    res.status(201).json({ task: newTask });
+    res.status(201).json(newTask);
   } catch (error) {
     const errorMessage = errorHandler(error);
     res.status(500).json({ message: errorMessage });
@@ -95,9 +89,9 @@ export const deleteTask: RequestHandler = async (
   res: Response,
 ) => {
   try {
-    const id = z.object({ id: z.string() }).parse(req.query).id;
+    const id = TaskSchema.shape.id.parse(req.params.id);
     const removedTask = await prisma.task.delete({
-      where: { id: parseInt(id) },
+      where: { id },
     });
 
     if (!removedTask) {
@@ -117,16 +111,15 @@ export const updateTask: RequestHandler = async (
   res: Response,
 ) => {
   try {
-    const id = z.object({ id: z.string() }).parse(req.query).id;
+    const id = TaskSchema.shape.id.parse(req.params.id);
     const task = TaskSchema.partial({ id: true }).parse(req.body);
     const updatedTask = await prisma.task.update({
-      where: { id: parseInt(id) },
+      where: { id },
       data: task,
       include: {
         status: true,
         parent: true,
         children: true,
-        project: true,
         priority: true,
         comments: true,
       },

@@ -6,11 +6,6 @@ import authReducer from '@/lib/features/auth-slice.ts';
 import commentsReducer from '@/lib/features/comments-slice';
 import searchReducer from '@/lib/features/search-slice';
 import themeReducer from '@/lib/features/theme-slice';
-import taskStatusesReducer from '@/lib/features/task-statuses-slice';
-import { projectsApi } from '@/services/projects';
-import { tasksApi } from '@/services/tasks';
-import { commentsApi } from '@/services/comments';
-import { authApi } from '@/services/auth';
 import { FLUSH, PAUSE, PERSIST, persistReducer, persistStore, PURGE, REGISTER, REHYDRATE } from 'redux-persist';
 import storage from 'redux-persist/lib/storage';
 import { api } from '@/services/api';
@@ -18,7 +13,7 @@ import { api } from '@/services/api';
 const persistConfig = {
   version: 1,
   storage,
-  blacklist: [projectsApi.reducerPath, tasksApi.reducerPath, commentsApi.reducerPath, authApi.reducerPath],
+  // blacklist: [api.reducerPath],
 };
 
 const authPersistedReducer = persistReducer({
@@ -38,7 +33,6 @@ const store = configureStore({
     tasks: tasksReducer,
     comments: commentsReducer,
     search: searchReducer,
-    taskStatuses: taskStatusesReducer,
     [api.reducerPath]: api.reducer,
   },
   devTools: process.env.NODE_ENV !== 'production',

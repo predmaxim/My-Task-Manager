@@ -10,16 +10,16 @@ import {
 const router = Router();
 
 // Get Task Statuses
-// http://localhost:5000/api/task-statuses
-router.post("/api/task-statuses", getTaskStatuses);
+// http://localhost:5000/api/task-statuses/:projectId
+router.get("/api/task-statuses/:projectId", getTaskStatuses);
 
 // Get Task Status
 // http://localhost:5000/api/task-statuses/:id
 router.get("/api/task-statuses/:id", getTaskStatus);
 
 // Create Task Status
-// http://localhost:5000/api/task-statuses
-router.post("/api/task-statuses", createTaskStatus);
+// http://localhost:5000/api/task-statuses/:projectId
+router.post("/api/task-statuses/:projectId", createTaskStatus);
 
 // Update Task Status
 // http://localhost:5000/api/task-statuses/:id
@@ -27,6 +27,6 @@ router.patch("/api/task-statuses/:id", updateTaskStatus);
 
 // Delete Task Status
 // http://localhost:5000/api/task-statuses/:id
-router.get("/api/task-statuses:id", deleteTaskStatus);
+router.get("/api/task-statuses/:id", deleteTaskStatus);
 
 export default router;
