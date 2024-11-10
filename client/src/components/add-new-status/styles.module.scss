@@ -1,0 +1,32 @@
+@import "src/assets/vars";
+@import "src/assets/mixins";
+
+.AddNewStatus {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  padding: 1rem;
+  border-radius: $border-radius;
+  background: var(--color-light-grey);
+  min-width: 18rem;
+  height: fit-content;
+}
+
+.buttonGroup {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.addButton {
+  @include button($size: "l", $color: "secondary");
+}
+
+.okButton {
+  @include button($size: "l", $color: "primary");
+}
+
+.cancelButton {
+  @include button($size: "l", $color: "secondary");
+}

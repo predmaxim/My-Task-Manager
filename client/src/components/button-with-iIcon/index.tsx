@@ -20,12 +20,10 @@ export function ButtonWithIcon(
   const ButtonIcon = Icons[icon as keyof typeof Icons];
 
   return (
-    <div className={styles.ButtonWithIconWrap}>
-      <button className={`${styles.ButtonWithIcon} ${className}`} onClick={onClick}>
-        {icon && !icon.toLowerCase().includes('loading') &&
-          <ButtonIcon className={styles.ButtonWithIcon__icon} />}
-        {text && <span className={styles.ButtonWithIcon__text}>{text}</span>}
-      </button>
-    </div>
+    <button className={`${styles.ButtonWithIcon} ${className}`} onClick={onClick}>
+      {icon && !icon.toLowerCase().includes('loading') &&
+        <ButtonIcon className={styles.ButtonWithIcon__icon} />}
+      {text && <span className={styles.ButtonWithIcon__text}>{text}</span>}
+    </button>
   );
 }

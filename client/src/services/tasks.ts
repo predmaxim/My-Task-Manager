@@ -1,11 +1,11 @@
-import { PartialTaskType, ProjectType, TaskType } from '@/types';
+import { PartialTaskType, PopulatedTaskType, ProjectType } from '@/types';
 import { api } from '@/services/api.ts';
-import { TaskSchema } from '@/zod-schemas/custom.ts';
+import { TaskPopulatedSchema } from '@/zod-schemas/custom.ts';
 
 export const tasksApi = api.injectEndpoints({
   endpoints: (builder) => ({
-    getTasks: builder.query<TaskType[], ProjectType['id']>({
-      query: (id) => `tasks/${id}`,
+    getTasks: builder.query<PopulatedTaskType[], ProjectType['id']>({
+      query: (projectId) => `tasks/${projectId}`,
       providesTags: (result = []) => [
         ...result.map(({ id }) => ({ type: 'tasks', id }) as const),
         { type: 'tasks' as const, id: 'LIST' },
@@ -19,8 +19,7 @@ export const tasksApi = api.injectEndpoints({
           await cacheDataLoaded;
           const listener = (event: MessageEvent) => {
             const data = JSON.parse(event.data);
-            console.log('Received data:', data);
-            const parsedData = TaskSchema.array().safeParse(data);
+            const parsedData = TaskPopulatedSchema.array().safeParse(data);
             if (parsedData.success) {
               updateCachedData((draft) => {
                 draft.push(...parsedData.data);
@@ -39,27 +38,35 @@ export const tasksApi = api.injectEndpoints({
         ws.close();
       },
     }),
-    getTask: builder.query<TaskType, TaskType['id']>({
+    getTask: builder.query<PopulatedTaskType, PopulatedTaskType['id']>({
       query: (id) => `tasks/${id}`,
       providesTags: (_result, _error, id) => [{ type: 'tasks', id }],
     }),
-    createTask: builder.mutation<TaskType, PartialTaskType>({
-      query: (body) => ({
+    createTask: builder.mutation<PopulatedTaskType, PartialTaskType>({
+      query: (taskFields) => ({
         url: `tasks/`,
         method: 'POST',
-        body,
+        body: taskFields,
       }),
       invalidatesTags: [{ type: 'tasks', id: 'LIST' }],
     }),
-    updateTask: builder.mutation<TaskType, TaskType>({
-      query: (body) => ({
-        url: `tasks/${body.id}`,
+    updateTask: builder.mutation<PopulatedTaskType, PopulatedTaskType>({
+      query: (task) => ({
+        url: `tasks/${task.id}`,
         method: 'PATCH',
-        body,
+        body: task,
       }),
       invalidatesTags: (_result, _error, { id }) => [{ type: 'tasks', id }],
     }),
-    deleteTask: builder.mutation<void, TaskType['id']>({
+    updateTasks: builder.mutation<PopulatedTaskType[], { projectId: ProjectType['id']; tasks: PopulatedTaskType[] }>({
+      query: ({ projectId, tasks }) => ({
+        url: `tasks/${projectId}`,
+        method: 'PUT',
+        body: tasks,
+      }),
+      invalidatesTags: (_result, _error, { projectId }) => [{ type: 'tasks', id: projectId }],
+    }),
+    deleteTask: builder.mutation<void, PopulatedTaskType['id']>({
       query: (id) => ({
         url: `tasks/${id}`,
         method: 'DELETE',
@@ -78,4 +85,5 @@ export const {
   useDeleteTaskMutation,
   useCreateTaskMutation,
   useUpdateTaskMutation,
+  useUpdateTasksMutation,
 } = tasksApi;

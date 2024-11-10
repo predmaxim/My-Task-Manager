@@ -1,6 +1,5 @@
 import {
   CommentSchema,
-  PrioritySchema,
   ProjectSchema,
   StatusSchema,
   TaskSchema,
@@ -8,27 +7,29 @@ import {
 } from '../../../server/zod-schemas/generated';
 import { z } from 'zod';
 
+const PRIORITIES = z.enum(['low', 'normal', 'high', 'critical']);
+
 export {
   CommentSchema,
-  PrioritySchema,
   ProjectSchema,
   StatusSchema,
   TaskSchema,
   UserSchema,
 };
 
+export const TaskStatusPopulatedSchema = StatusSchema.partial({ id: true });
+
 export const TaskPopulatedSchema = TaskSchema.extend({
   status: StatusSchema,
   parent: z.lazy(() => TaskSchema),
   children: z.array(z.lazy(() => TaskSchema)),
   project: ProjectSchema,
-  priority: PrioritySchema,
+  priority: PRIORITIES,
   comments: CommentSchema.array(),
-}).omit({
-  parentId: true,
-  priorityId: true,
-  statusId: true,
-  projectId: true,
+});
+
+export const ProjectPopulatedSchema = ProjectSchema.extend({
+  statuses: StatusSchema.array(),
 });
 
 

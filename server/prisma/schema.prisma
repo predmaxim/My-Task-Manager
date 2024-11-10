@@ -37,25 +37,24 @@ model Project {
 }
 
 model Task {
-  id          Int       @id @default(autoincrement())
+  id          Int           @id @default(autoincrement())
   name        String
   description String?
-  created     DateTime  @default(now())
-  done        DateTime? @default(now())
-  priority    Priority  @relation(fields: [priorityId], references: [id])
-  priorityId  Int
-  status      Status    @relation(fields: [statusId], references: [id])
+  created     DateTime      @default(now())
+  done        DateTime?     @default(now())
+  priority    PriorityLevel
   statusId    Int
-  parent      Task?     @relation("TaskToTask", fields: [parentId], references: [id])
+  status      Status        @relation("TaskToStatus", fields: [statusId], references: [id])
+  parent      Task?         @relation("TaskToTask", fields: [parentId], references: [id])
   parentId    Int?
-  project     Project   @relation(fields: [projectId], references: [id])
+  project     Project       @relation(fields: [projectId], references: [id])
   projectId   Int
-  order       Int       @default(0)
+  order       Int           @default(0)
   due         DateTime?
-  inWork      DateTime? @default(now())
+  inWork      DateTime?     @default(now())
   files       File[]
-  children    Task[]    @relation("TaskToTask")
-  comments    Comment[] @relation("CommentToTask")
+  children    Task[]        @relation("TaskToTask")
+  comments    Comment[]     @relation("CommentToTask")
 }
 
 model Comment {
@@ -77,17 +76,17 @@ model File {
   created DateTime @default(now())
 }
 
-model Priority {
-  id    Int    @id @default(autoincrement())
-  name  String
-  color String
-  task  Task[]
+enum PriorityLevel {
+  low
+  normal
+  high
+  critical
 }
 
 model Status {
   id        Int     @id @default(autoincrement())
   name      String
-  task      Task[]
-  project   Project @relation(fields: [projectId], references: [id])
+  tasks     Task[]  @relation("TaskToStatus")
   projectId Int
+  project   Project @relation(fields: [projectId], references: [id])
 }

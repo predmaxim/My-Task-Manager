@@ -3,4 +3,6 @@
 
 .ThemeSwitcher {
   @include button($variant: "icon", $color: "ghost", $size: "x");
+  width: fit-content;
+  height: fit-content;
 }

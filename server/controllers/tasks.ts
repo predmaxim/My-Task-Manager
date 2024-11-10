@@ -6,22 +6,21 @@ import { errorHandler } from "@/utils/error-handler";
 import { toInt } from "@/zod-schemas/custom";
 
 export const getTasks: RequestHandler = async (req: Request, res: Response) => {
+  const projectId = TaskSchema.shape.projectId.parse(
+    toInt(req.params.projectId),
+  );
+  const tasks = await prisma.task.findMany({
+    where: { projectId },
+    orderBy: { order: "asc" },
+    include: {
+      status: true,
+      parent: true,
+      children: true,
+      comments: true,
+    },
+  });
+  res.status(200).json(tasks);
   try {
-    const projectId = TaskSchema.shape.projectId.parse(
-      toInt(req.params.projectId),
-    );
-    const tasks = await prisma.task.findMany({
-      where: { projectId },
-      orderBy: { order: "asc" },
-      include: {
-        status: true,
-        parent: true,
-        children: true,
-        priority: true,
-        comments: true,
-      },
-    });
-    res.status(200).json(tasks);
   } catch (error) {
     const errorMessage = errorHandler(error);
     res.status(500).json({ message: errorMessage });
@@ -37,7 +36,6 @@ export const getTask: RequestHandler = async (req: Request, res: Response) => {
         status: true,
         parent: true,
         children: true,
-        priority: true,
         comments: true,
       },
     });
@@ -76,7 +74,6 @@ export const createTask: RequestHandler = async (
         status: true,
         parent: true,
         children: true,
-        priority: true,
         comments: true,
       },
     });
@@ -123,7 +120,6 @@ export const updateTask: RequestHandler = async (
         status: true,
         parent: true,
         children: true,
-        priority: true,
         comments: true,
       },
     });
@@ -134,6 +130,27 @@ export const updateTask: RequestHandler = async (
     }
 
     res.status(200).json(updatedTask);
+  } catch (error) {
+    const errorMessage = errorHandler(error);
+    res.status(500).json({ message: errorMessage });
+  }
+};
+
+export const updateTasks: RequestHandler = async (
+  req: Request,
+  res: Response,
+) => {
+  try {
+    const projectId = TaskSchema.shape.projectId.parse(
+      toInt(req.params.projectId),
+    );
+    const tasks = TaskSchema.array().parse(req.body);
+    const newTasks = await prisma.task.updateMany({
+      where: { projectId },
+      data: tasks,
+    });
+
+    res.status(200).json(newTasks);
   } catch (error) {
     const errorMessage = errorHandler(error);
     res.status(500).json({ message: errorMessage });

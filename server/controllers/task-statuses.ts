@@ -50,12 +50,9 @@ export const createTaskStatus: RequestHandler = async (
   res: Response,
 ) => {
   try {
-    const name = StatusSchema.shape.name.parse(req.body.name);
-    const projectId = StatusSchema.shape.projectId.parse(
-      toInt(req.params.projectId),
-    );
+    const status = StatusSchema.omit({ id: true }).parse(req.body);
     const taskStatus = await prisma.status.create({
-      data: { name, projectId },
+      data: status,
     });
 
     res.status(201).json(taskStatus);

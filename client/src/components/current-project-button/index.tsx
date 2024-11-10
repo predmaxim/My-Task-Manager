@@ -9,9 +9,10 @@ import * as Icons from 'react-icons/ri';
 
 export function CurrentProjectButton() {
   const currentProject = useAppSelector((state: RootState) => state.projects.currentProject);
+  const user = useAppSelector((state: RootState) => state.auth.user);
   const [showIconModal, setShowIconModal] = useState(false);
 
-  if (!currentProject) {
+  if (!currentProject || !user) {
     return;
   }
 

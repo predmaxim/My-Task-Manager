@@ -18,8 +18,8 @@ router.get("/api/task-statuses/:projectId", getTaskStatuses);
 router.get("/api/task-statuses/:id", getTaskStatus);
 
 // Create Task Status
-// http://localhost:5000/api/task-statuses/:projectId
-router.post("/api/task-statuses/:projectId", createTaskStatus);
+// http://localhost:5000/api/task-statuses
+router.post("/api/task-statuses", createTaskStatus);
 
 // Update Task Status
 // http://localhost:5000/api/task-statuses/:id

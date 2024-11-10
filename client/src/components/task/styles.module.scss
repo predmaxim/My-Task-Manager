@@ -10,14 +10,14 @@
   min-height: 24px;
   flex: none;
 
-  .Task-header {
+  &__header {
     display: flex;
-    gap: 0 5px;
+    gap: 0 0.5rem;
     align-items: flex-start;
-    line-height: 1.2;
+    line-height: 1.5;
   }
 
-  .Task-footer {
+  &__footer {
     display: flex;
     gap: 0 10px;
     flex-wrap: wrap;
@@ -92,8 +92,13 @@
     padding: 3px 0 0 6px;
     overflow-wrap: anywhere;
     transition: $transition;
-    line-height: 1.2;
-
+    line-height: 1.5;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
   }
 
   &:hover {

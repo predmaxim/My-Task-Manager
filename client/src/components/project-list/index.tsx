@@ -19,7 +19,7 @@ export function ProjectList({ modalAction }: ProjectListType) {
     <div className={styles.ProjectList}>
       <CreateNewProject />
       {projects?.length ? (
-        <div className={styles.ProjectList__container}>
+        <div className={styles.list}>
           {projects.map((project) => (
             <ProjectItem project={project} key={project.id} modalAction={modalAction} />
           ))}

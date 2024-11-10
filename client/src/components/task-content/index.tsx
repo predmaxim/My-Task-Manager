@@ -2,7 +2,7 @@ import { FormEventHandler } from 'react';
 import TextareaAutosize from 'react-textarea-autosize';
 import { TASK_PRIORITY, TASK_STATUSES } from '@/constants';
 import { formatDate, upperCaseFirstLetter } from '@/utils/helpers';
-import { TaskPopulatedType, TaskStatusType, TaskType } from '@/types';
+import { PopulatedTaskType, TaskStatusType, TaskType } from '@/types';
 import styles from './styles.module.scss';
 
 type TaskFormFields = {
@@ -16,7 +16,7 @@ type TaskFormFields = {
 };
 
 export type TaskContentType = {
-  task: TaskPopulatedType;
+  task: PopulatedTaskType;
   onSubmit: (task: Partial<TaskType>) => void;
 };
 
@@ -117,11 +117,11 @@ export function TaskContent({ task, onSubmit }: TaskContentType) {
               {formatDate(task.created)}
             </span>
           </div>}
-        {task.in_work &&
+        {task.inWork &&
           <div className={styles.inWork}>
             <span className={styles.inWork__title}>In work:</span>
             <span className={styles.inWork__date}>
-              {formatDate(task?.in_work)}
+              {formatDate(task?.inWork)}
             </span>
           </div>}
         {task.done &&

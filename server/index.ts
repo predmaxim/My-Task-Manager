@@ -6,6 +6,7 @@ import projectRoute from "./routes/projects";
 import taskRoute from "./routes/tasks";
 import commentRoute from "./routes/comments";
 import authRoute from "./routes/auth";
+import taskStatuses from "./routes/task-statuses";
 import { authCheck } from "@/utils/auth-check";
 import cookieParser from "cookie-parser";
 
@@ -27,6 +28,7 @@ app.use(authRoute);
 app.use(projectRoute);
 app.use(taskRoute);
 app.use(commentRoute);
+app.use(taskStatuses);
 
 const start = () => {
   try {

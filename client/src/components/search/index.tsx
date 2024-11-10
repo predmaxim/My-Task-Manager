@@ -35,11 +35,11 @@ export function Search({ className }: SearchProps) {
         value={query}
         onChange={onChangeHandler}
       />
-      <ButtonWithIcon
-        className="close-btn"
+      {query && <ButtonWithIcon
+        className={styles.clearButton}
         onClick={onClear}
         icon="RiCloseLine"
-      />
+      />}
     </div>
   );
 }

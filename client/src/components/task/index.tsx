@@ -5,18 +5,17 @@ import { ChangeEvent, KeyboardEvent, MouseEvent, useState } from 'react';
 import { createPortal } from 'react-dom';
 import TextareaAutosize from 'react-textarea-autosize';
 import { formatDate } from '@/utils/helpers';
-import { MenuActionType, TaskStatusType, TaskType } from '@/types';
+import { MenuActionType, PopulatedTaskType } from '@/types';
 import { PopupMenu } from '@/components/popup-menu';
 import styles from './styles.module.scss';
-import { TASK_STATUSES } from '@/constants';
 import { useDeleteTaskMutation, useUpdateTaskMutation } from '@/services/tasks';
 
 export type TaskProps = {
-  task: TaskType
+  task: PopulatedTaskType
 };
 
 export function Task({ task: initialTask }: TaskProps) {
-  const [task, setTask] = useState<TaskType>(initialTask);
+  const [task, setTask] = useState<PopulatedTaskType>(initialTask);
   const [showModal, setShowModal] = useState(false);
   const [isEdit, setIsEdit] = useState(false);
   const [isMenuActive, setIsMenuActive] = useState(false);
@@ -24,8 +23,8 @@ export function Task({ task: initialTask }: TaskProps) {
   const [updateTask] = useUpdateTaskMutation();
   const [deleteTask] = useDeleteTaskMutation();
 
-  const updateTaskHandler = (taskFieldsToUpdate: Partial<TaskType>) => {
-    const updatedTask: TaskType = {
+  const updateTaskHandler = (taskFieldsToUpdate: Partial<PopulatedTaskType>) => {
+    const updatedTask: PopulatedTaskType = {
       ...task,
       ...taskFieldsToUpdate,
     };
@@ -38,7 +37,7 @@ export function Task({ task: initialTask }: TaskProps) {
   const onDone = () => {
     updateTaskHandler({
       done: task.done ? null : new Date(),
-      status: task.done ? TASK_STATUSES.queue as TaskStatusType['name'] : 'done',
+      status: undefined,
     });
   };
 
@@ -80,7 +79,7 @@ export function Task({ task: initialTask }: TaskProps) {
     }
   };
 
-  const onSubmitForm = (updatedTask: Partial<TaskType>) => {
+  const onSubmitForm = (updatedTask: Partial<PopulatedTaskType>) => {
     updateTaskHandler({ ...task, ...updatedTask });
     setShowModal(false);
   };
@@ -125,7 +124,7 @@ export function Task({ task: initialTask }: TaskProps) {
           closeMenu={() => setIsMenuActive(false)}
           isActive={isMenuActive}
         />}
-        <div className={styles.Task_header}>
+        <div className={styles.Task__header}>
           <input
             className={styles.Task__checkbox}
             type="checkbox"
@@ -136,7 +135,7 @@ export function Task({ task: initialTask }: TaskProps) {
           />
           <div className={styles.TaskNameWrap}>
             <div
-              className={`Task__name`}
+              className={styles.Task__name}
             >
               {!isEdit
                 ? <>
@@ -191,7 +190,7 @@ export function Task({ task: initialTask }: TaskProps) {
             className={styles.TaskContentModal}
             isActive={true}
             onClose={() => setShowModal(false)}
-            header={`#${task.number} - ${task.name}`}
+            header={`#${task.id} - ${task.name}`}
             width="930px"
             formId="TaskContentForm"
           >

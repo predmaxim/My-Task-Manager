@@ -4,6 +4,7 @@ import { ButtonWithIcon } from '@/components/button-with-iIcon';
 import styles from './styles.module.scss';
 import { useAppSelector } from '@/lib/store';
 import { setTheme } from '@/lib/features/theme-slice';
+import * as Icons from 'react-icons/ri';
 
 export function ThemeSwitcher() {
   const dispatch = useDispatch();
@@ -20,7 +21,7 @@ export function ThemeSwitcher() {
     <ButtonWithIcon
       className={styles.ThemeSwitcher}
       onClick={onClickHandler}
-      icon={icon}
+      icon={icon as keyof typeof Icons}
     />
 
   );

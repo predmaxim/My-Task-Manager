@@ -32,10 +32,8 @@
   }
 }
 
-// buttons
 @mixin button(
   $size: "xl",
-  $width: auto,
   $color: "primary",
   $variant: "default"
 ) {
@@ -81,10 +79,6 @@
     aspect-ratio: auto;
   }
 
-  @if $width== "full" {
-    width: 100%;
-  }
-
   @if $color== "primary" {
     background: var(--button-primary-bg);
     color: var(--button-secondary-color);
@@ -125,14 +119,14 @@
     }
   }
 
-  width: $width;
+  width: 100%;
   transition: $transition;
   display: flex;
   align-items: center;
   justify-content: center;
-  position: relative;
   text-align: center;
   cursor: pointer;
+  gap: 0.5rem
 }
 
 // inputs

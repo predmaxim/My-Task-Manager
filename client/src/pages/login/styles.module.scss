@@ -24,7 +24,7 @@
 
 .submit {
   margin-top: 1rem;
-  @include button("x");
+  @include button($size: "x");
 }
 
 .error {
@@ -41,4 +41,6 @@
 
 .accountButton {
   @include button("s", $color: "secondary");
+  width: fit-content;
+  height: fit-content;
 }

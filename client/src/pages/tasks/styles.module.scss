@@ -1,3 +1,11 @@
+@import "src/assets/vars";
+@import "src/assets/mixins";
+
 .TasksPage {
-  grid-area: main;
+  padding-top: 2rem;
+  height: calc(100% - 2rem);
+
+  @media screen and (width <= $tablet) {
+    padding-top: 0;
+  }
 }
