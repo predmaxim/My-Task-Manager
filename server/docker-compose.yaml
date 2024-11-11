@@ -2,7 +2,6 @@ services:
   postgres_db:
     image: postgres:alpine
     container_name: postgres_mtm
-    #    restart: always
     environment:
       POSTGRES_USER: ${DB_USER}
       POSTGRES_PASSWORD: ${DB_PASSWORD}
@@ -14,6 +13,5 @@ services:
   adminer_mtm:
     image: adminer
     container_name: adminer_mtm
-    restart: always
     ports:
       - "8080:8080"
