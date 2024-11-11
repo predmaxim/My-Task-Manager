@@ -39,7 +39,7 @@ export function TaskContent({ task, onSubmit }: TaskContentType) {
       due: form.due?.valueAsDate || null,
       done: genDone(form.status.value as TaskStatusType['name']),
       statusId: form.status.id,
-      priorityId: parseInt(form.priority.id),
+      priority: form.priority.value as keyof typeof TASK_PRIORITY,
       // comments: form.comments?.value,
       // files: form.files.value,
       // subTasks: form?.subTasks.value
@@ -79,7 +79,7 @@ export function TaskContent({ task, onSubmit }: TaskContentType) {
         <select
           name="priority"
           className={styles.prioritySelect}
-          defaultValue={task.priority.name}
+          defaultValue={task.priority}
         >
           {Object.values(TASK_PRIORITY).map((priority) => (
             <option

@@ -8,52 +8,26 @@ import {
   useSensor,
   useSensors,
 } from '@dnd-kit/core';
-import { arrayMove, SortableContext, useSortable, verticalListSortingStrategy } from '@dnd-kit/sortable';
+import { arrayMove, horizontalListSortingStrategy, SortableContext } from '@dnd-kit/sortable';
 import { useGetTasksQuery, useUpdateTasksMutation } from '@/services/tasks';
 import { upperCaseFirstLetter } from '@/utils/helpers';
-import { PopulatedProjectType, PopulatedTaskType, TaskStatusType } from '@/types';
+import { ColumnType, PopulatedProjectType, TaskStatusType } from '@/types';
 import styles from './styles.module.scss';
-import { ButtonWithIcon } from '@/components/button-with-iIcon';
 import { useAppDispatch, useAppSelector } from '@/lib/store';
-import { CreateNewTask } from '@/components/create-new-task';
-import { Task } from '@/components/task';
-import { Loading } from '@/components/loading';
 import { setTasks } from '@/lib/features/tasks-slice.ts';
 import { AddNewStatus } from '@/components/add-new-status';
+import { Column } from '@/components/column';
 
-export type ColumnType = {
-  id: TaskStatusType['id'];
-  title: TaskStatusType['name'];
-  tasks: PopulatedTaskType[];
-};
-
-export type BoardType = {
-  currentProject: PopulatedProjectType;
-};
-
-export function SortableItem({ id, task }: { id: string, task: PopulatedTaskType }) {
-  const { attributes, listeners, setNodeRef, transform, transition } = useSortable({ id });
-
-  const style = {
-    transform: transform ? `translate3d(${transform.x}px, ${transform.y}px, 0)` : undefined,
-    transition,
-  };
-
-  return (
-    <div ref={setNodeRef} style={style} {...attributes} {...listeners}>
-      <Task task={task} />
-    </div>
-  );
-}
-
-export function Board({ currentProject }: BoardType) {
-  const dispatch = useAppDispatch();
+export function Board({ currentProject }: { currentProject: PopulatedProjectType }) {
   const [updateTasks] = useUpdateTasksMutation();
-  const { data: tasks = [], isLoading: tasksLoading } = useGetTasksQuery(currentProject.id, {
+  const dispatch = useAppDispatch();
+  const tasks = useAppSelector((state) => state.tasks.tasks);
+  const query = useAppSelector((state) => state.search.query);
+  const [board, setBoard] = useState<ColumnType[]>([]);
+  const { data: tasksData = [], currentData: tasksCurrentData } = useGetTasksQuery(currentProject.id, {
     skip: !currentProject.statuses.length,
   });
-  const query = useAppSelector((state) => state.search.query);
-  
+
   const sensors = useSensors(
     useSensor(MouseSensor),
     useSensor(TouchSensor),
@@ -61,25 +35,35 @@ export function Board({ currentProject }: BoardType) {
 
   const genColumn = useCallback((status: TaskStatusType): ColumnType => {
     const newQuery = new RegExp(query.toLowerCase());
-    const tasksByStatus = tasks
-    .filter(task => task.status.id === status.id && (task.name.toLowerCase().match(newQuery)))
-    .sort((a, b) => a.order - b.order);
-    
+    const tasksByStatus = currentProject.tasks
+      ?.filter(task => task.statusId === status.id && (task.name.toLowerCase().match(newQuery)))
+      .sort((a, b) => a.order - b.order);
+
     return {
       id: status.id,
-      title: status.name,
-      tasks: tasksByStatus,
+      title: upperCaseFirstLetter(status.name),
+      tasks: tasksByStatus || [],
     };
-  }, [query, tasks]);
-  
-  const [board, setBoard] = useState<ColumnType[]>(currentProject.statuses?.map((status) => genColumn(status)) || []);
-  // useEffect(() => {
-  //   setBoard(currentProject.statuses?.map((status) => genColumn(status)) || []);
-  // }, [currentProject]);
+  }, [query, currentProject.tasks]);
+
+  useEffect(() => {
+    const newBoard = tasks?.map((status) => genColumn(status)) || [];
+    if (newBoard.length) {
+      setBoard(newBoard);
+    }
+  }, [genColumn, currentProject, tasks]);
 
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event;
     if (!over) return;
+
+    if (typeof active.id === 'string' && typeof over.id === 'string' && active.id.startsWith('column-') && over.id.startsWith('column-')) {
+      const activeIndex = board.findIndex(column => `column-${column.id}` === active.id);
+      const overIndex = board.findIndex(column => `column-${column.id}` === over.id);
+      const newBoard = arrayMove(board, activeIndex, overIndex);
+      setBoard(newBoard);
+      return;
+    }
 
     const activeColumn = board.find(column => column.tasks.some(task => task.id === active.id));
     const overColumn = board.find(column => column.tasks.some(task => task.id === over.id));
@@ -95,7 +79,7 @@ export function Board({ currentProject }: BoardType) {
       setBoard(newBoard);
     } else {
       const [movedTask] = activeColumn.tasks.splice(activeIndex, 1);
-      movedTask.status.id = overColumn.id;
+      movedTask.statusId = overColumn.id;
       overColumn.tasks.splice(overIndex, 0, movedTask);
 
       const newBoard = board.map(column => {
@@ -117,41 +101,14 @@ export function Board({ currentProject }: BoardType) {
     updateTasks({ projectId: currentProject.id, tasks: newTasks });
   };
 
-  if (tasksLoading) {
-    return <Loading />;
-  }
-
   return (
     <div className={styles.Board}>
       <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
-        {board.map((column: ColumnType) => (
-          <div className={`${styles.column} ${styles[`column-${column.title}`]}`} key={`column-${column.id}`}>
-            <div className={styles.column__header}>
-              <div className={styles.column__title}>{upperCaseFirstLetter(column.title)}</div>
-              <ButtonWithIcon
-                className={styles.column__menuBtn}
-                onClick={() => console.log('onClickMenu')}
-                icon="RiMore2Line"
-              />
-              <div className={styles.column__CreateNewTask}>
-                {currentProject && (
-                  <CreateNewTask project={currentProject} taskStatus={{
-                    id: column.id,
-                    name: column.title,
-                    projectId: currentProject.id,
-                  }} />
-                )}
-              </div>
-            </div>
-            <div className={styles.column__body}>
-              <SortableContext items={column.tasks} strategy={verticalListSortingStrategy}>
-                {column.tasks.map((task: PopulatedTaskType) => (
-                  <SortableItem key={task.id} id={task.id.toString()} task={task} />
-                ))}
-              </SortableContext>
-            </div>
-          </div>
-        ))}
+        <SortableContext items={board.map(column => `column-${column.id}`)} strategy={horizontalListSortingStrategy}>
+          {board.map((column: ColumnType) => (
+            <Column key={column.id} column={column} currentProject={currentProject} />
+          ))}
+        </SortableContext>
       </DndContext>
       <AddNewStatus />
     </div>

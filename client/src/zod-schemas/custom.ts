@@ -17,7 +17,7 @@ export {
   UserSchema,
 };
 
-export const TaskStatusPopulatedSchema = StatusSchema.partial({ id: true });
+export const TaskStatusPartialSchema = StatusSchema.partial({ id: true });
 
 export const TaskPopulatedSchema = TaskSchema.extend({
   status: StatusSchema,
@@ -30,6 +30,7 @@ export const TaskPopulatedSchema = TaskSchema.extend({
 
 export const ProjectPopulatedSchema = ProjectSchema.extend({
   statuses: StatusSchema.array(),
+  tasks: TaskSchema.array(),
 });
 
 
@@ -54,3 +55,9 @@ export const RegisterSchema = UserSchema.pick({
 }).refine(data => data.password === data.verifyPassword, { message: 'Passwords do not match' });
 
 export const ThemeSchema = z.enum(['dark', 'light']);
+
+export const ColumnSchema = z.object({
+  id: z.number(),
+  title: z.string(),
+  tasks: TaskSchema.array(),
+});
