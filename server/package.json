@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "npx prisma generate && docker compose --env-file=.env up -d && tsx watch --ignore './data' index.ts"
+    "start": "docker compose --env-file=.env up -d && tsx watch --ignore './data' index.ts",
+    "migrate": "npx prisma generate && npx prisma migrate dev"
   },
   "keywords": [],
   "author": "",
