@@ -1,0 +1,197 @@
+html {
+  font-size: $base-font;
+  line-height: 1.7;
+}
+
+html,
+body {
+  max-width: 100vw;
+  overflow-x: hidden;
+  margin: 0;
+  height: 100%;
+}
+
+body {
+  color: var(--font-color);
+  background: var(--bg-color);
+  transition: .3s;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+  transition: $transition;
+
+  &:hover {
+    color: var(--primary-color)
+  }
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-weight: 700;
+  margin: 0 0 3rem;
+  line-height: 1.2;
+}
+
+h1 {
+  font-size: 2.5rem;
+}
+
+h2 {
+  font-size: 2.2rem;
+  margin-bottom: 3rem;
+}
+
+h3 {
+  font-size: 2rem;
+}
+
+h4 {
+  font-size: 1.6rem;
+}
+
+h5 {
+  font-size: 1.2rem;
+}
+
+h6 {
+  font-size: 1rem;
+}
+
+@media screen and (width <=$notebook) {
+  h1 {
+    font-size: 2.6rem;
+  }
+
+  h2 {
+    font-size: 2.4rem;
+  }
+
+  h3 {
+    font-size: 2rem;
+  }
+}
+
+@media screen and (width <=$tablet) {
+  h1 {
+    font-size: 2.4rem;
+  }
+
+  h2 {
+    font-size: 2.2rem;
+  }
+
+  h3 {
+    font-size: 1.8rem;
+  }
+
+}
+
+@media screen and (width <=$mobile) {
+  h1 {
+    font-size: 2rem;
+  }
+
+  h2 {
+    font-size: 1.6rem;
+  }
+
+  h3 {
+    font-size: 1.4rem;
+  }
+
+  h4 {
+    font-size: 1.2rem;
+  }
+
+  h5 {
+    font-size: 1rem;
+  }
+
+  h6 {
+    font-size: 1rem;
+  }
+}
+
+button {
+  background: none;
+  line-height: 1.2;
+}
+
+button,
+input {
+  outline: none;
+  border: none;
+  transition: $transition;
+  border-radius: $border-radius;
+}
+
+.container {
+  margin: 0 auto;
+  max-width: $desktop;
+  padding: $paddings-container-desktop;
+
+  @media screen and (width <=$notebook) {
+    max-width: $notebook;
+    padding: $paddings-container-notebook;
+  }
+
+  @media screen and (width <=$tablet) {
+    max-width: $tablet;
+    padding: $paddings-container-tablet;
+  }
+
+  @media screen and (width <=$tablet-900) {
+    max-width: $tablet-900;
+    padding: $paddings-container-tablet-900;
+  }
+
+  @media screen and (width <=$mobile) {
+    max-width: $mobile;
+    padding: $paddings-container-mobile;
+  }
+}
+
+.main {
+  grid-area: main;
+}
+
+section {
+  padding: $section-paddings-l 0;
+
+  @media screen and (width <=$mobile) {
+    padding: $section-paddings-s 0;
+  }
+}
+
+.overlay {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  background-color: #ffffffd1;
+  z-index: 100;
+  transition: .3s;
+
+  .spinner {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+  }
+}
+
+.disabled {
+  display: none !important;
+}
+
+.hidden {
+  opacity: 0 !important;
+  visibility: hidden !important;
+}
