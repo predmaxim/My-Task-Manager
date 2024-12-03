@@ -5,7 +5,9 @@ export function Header() {
   return (
     <header className="Header">
       <div className="container">
-        <img src={logoHorizontal} alt="logoHorizontal" />
+        <a href="/">
+          <img src={logoHorizontal} alt="logoHorizontal" />
+        </a>
       </div>
     </header >
   );
