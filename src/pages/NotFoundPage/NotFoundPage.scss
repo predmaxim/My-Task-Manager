@@ -1,1 +1,17 @@
-.notFoundPage {}
+.NotFoundPage {
+  grid-area: main;
+  padding-top: 4rem;
+
+  &__link,
+  &__header {
+    margin: auto;
+    width: fit-content;
+  }
+
+  &__link {
+    display: flex;
+    gap: 5px;
+    align-items: center;
+    margin-top: 1rem;
+  }
+}
