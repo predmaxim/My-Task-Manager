@@ -1,5 +1,5 @@
 import './MainHeader.scss';
-import logoVertical from 'assets/img/logoVertical.svg';
+import logoVertical from 'src/assets/img/logoVertical.svg';
 
 export function MainHeader() {
   return (

@@ -1,0 +1,4 @@
+errsec
+mqwprym5kaz618aK
+mongodb+srv://errsec:mqwprym5kaz618aK@cluster0.huzyqov.mongodb.net/
+

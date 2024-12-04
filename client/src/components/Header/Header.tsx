@@ -1,5 +1,5 @@
 import './Header.scss';
-import logoHorizontal from 'assets/img/logoHorizontal.svg';
+import logoHorizontal from 'src/assets/img/logoHorizontal.svg';
 
 export function Header() {
   return (

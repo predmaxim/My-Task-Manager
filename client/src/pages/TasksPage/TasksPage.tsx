@@ -1,4 +1,4 @@
-import { Header } from 'components';
+import { Header } from 'src/components';
 import './TasksPage.scss';
 
 export default function TasksPage() {

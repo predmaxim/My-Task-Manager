@@ -1,7 +1,7 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import { TasksPage } from 'pages/TasksPage';
-import { ProjectsPage } from 'pages/ProjectsPage';
-import { NotFoundPage } from 'pages/NotFoundPage';
+import { TasksPage } from 'src/pages/TasksPage';
+import { ProjectsPage } from 'src/pages/ProjectsPage';
+import { NotFoundPage } from 'src/pages/NotFoundPage';
 import { ROUTES } from './routes';
 
 export function Router() {
