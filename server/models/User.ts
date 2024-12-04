@@ -1,6 +1,6 @@
 import mongoose from 'mongoose';
 import bcrypt from 'bcryptjs';
-import { UserType } from 'src/utils/types';
+import { UserType } from '../types';
 
 const UserSchema = new mongoose.Schema<UserType>({
   name: {
@@ -28,8 +28,10 @@ const UserSchema = new mongoose.Schema<UserType>({
     default: Date.now,
   },
   lastVisit: Date,
-  projectsID: [Number]
-});
+  projects: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Project' }],
+},
+  { timestamps: true }
+);
 
 UserSchema.pre('save', async function (next) {
   if (!this.isModified('password')) {

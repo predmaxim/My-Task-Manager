@@ -1,15 +1,16 @@
 import mongoose from 'mongoose';
-import { ProjectType } from 'src/utils/types';
+import { ProjectType } from '../types';
 
 const ProjectSchema = new mongoose.Schema<ProjectType>({
-    id: Number,
     name: String,
     status: String,
     created: Date,
-    user: Number,
+    user: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
     icon: String,
     color: String,
-    tasks: [Number],
-});
+    tasks: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Task' }],
+},
+    { timestamps: true },
+);
 
 export default mongoose.models.Project || mongoose.model<ProjectType>('Project', ProjectSchema);
