@@ -1,0 +1,13 @@
+[
+  {
+    "id": 1,
+    "name": "Admin",
+    "email": "qwe@qwe.ru",
+    "pass": "pass",
+    "avatarURL": "https://www.pinclipart.com/picdir/big/165-1653686_female-user-icon-png-download-user-colorful-icon.png",
+    "projectsID": [
+      1,
+      2
+    ]
+  }
+]
