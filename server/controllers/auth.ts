@@ -13,7 +13,7 @@ export const register = async (req: Request, res: Response) => {
     const isUsed = await User.findOne({ username });
 
     if (isUsed) {
-      return res.json({ message: 'This username is already busy' });
+      return res.status(400).json({ message: 'This username is already busy' });
     }
 
     const salt = bcrypt.genSaltSync(10);
@@ -23,10 +23,10 @@ export const register = async (req: Request, res: Response) => {
 
     await newUser.save();
 
-    res.json({ newUser, token, message: 'Registration completed successfully' });
+    res.status(201).json({ newUser, token, message: 'Registration completed successfully' });
 
   } catch (error) {
-    res.json({ message: 'An error when creating a user' });
+    res.status(500).json({ message: 'An error when creating a user', error });
   }
 }
 
@@ -37,21 +37,21 @@ export const login = async (req: Request, res: Response) => {
     const user = await User.findOne({ username });
 
     if (!user) {
-      return res.json({ message: 'User not found' });
+      return res.status(404).json({ message: 'User not found' });
     }
 
     const isPasswordCorrect = await bcrypt.compare(password, user.password);
 
     if (!isPasswordCorrect) {
-      return res.json({ message: 'Incorrect password' });
+      return res.status(403).json({ message: 'Incorrect password' });
     }
 
     const token = jwt.sign({ id: user._id }, JWT_SECRET, { expiresIn: JWT_EXPIRES });
 
-    res.json({ token, user, message: 'Auth ok' });
+    res.status(200).json({ token, user, message: 'Auth ok' });
 
   } catch (error) {
-    res.json({ message: 'Auth error' });
+    res.status(403).json({ message: 'Auth error', error });
   }
 }
 
@@ -61,14 +61,14 @@ export const getMe = async (req: Request, res: Response) => {
     const user = await User.findById(req.query.userId);
 
     if (!user) {
-      return res.json({ message: 'User not found' });
+      return res.status(404).json({ message: 'User not found' });
     }
 
     const token = jwt.sign({ id: user._id }, JWT_SECRET, { expiresIn: JWT_EXPIRES });
 
-    res.json({ user, token });
+    res.status(200).json({ user, token });
 
   } catch (error) {
-    res.json({ message: 'Forbidden' });
+    res.status(403).json({ message: 'Forbidden', error });
   }
 }
