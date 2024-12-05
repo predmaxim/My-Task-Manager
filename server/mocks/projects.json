@@ -5,6 +5,7 @@
   "created": 1696329635849,
   "user": "651bf0065fb59a873e3adc4d",
   "color": "#f06292",
+  "icon": "RiPlantLine",
   "tasks": []
   },
   {
@@ -13,6 +14,7 @@
     "created": 1696329935849,
     "user": "651bf0065fb59a873e3adc4d",
     "color": "#f06662",
+    "icon": "RiBox2Fill",
     "tasks": []
   }
 ]
