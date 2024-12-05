@@ -1,19 +1,19 @@
 import { Router } from 'express';
 import { register, login, getMe } from '../controllers/auth';
-import { checkAuth } from '../utils/checkAuth';
+// import { authCheck } from '../utils/authCheck';
 
 const router = Router();
 
 // Register
 // http://localhost:5000/api/auth/register
-router.post('/register', register);
+router.post('/api/auth/register', register);
 
 // Login
 // http://localhost:5000/api/auth/login
-router.post('/login', login);
+router.post('/api/auth/login', login);
 
 // Get Me
 // http://localhost:5000/api/auth/me
-router.get('/me', checkAuth, getMe);
+router.get('/api/auth/me', getMe);
 
 export default router;

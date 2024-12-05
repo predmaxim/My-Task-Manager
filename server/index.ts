@@ -25,11 +25,10 @@ app.use(express.json());
 app.use(express.static('uploads'));
 
 // Routes
-app.get("/", (req: Request, res: Response) => res.send('⚡️ App is work'));
-app.use('/api/auth', authRoute);
-app.use('/api/projects', projectRoute);
-app.use('/api/tasks', taskRoute);
-app.use('/api/comments', commentRoute);
+app.use(authRoute);
+app.use(projectRoute);
+app.use(taskRoute);
+app.use(commentRoute);
 
 const start = async () => {
   try {
