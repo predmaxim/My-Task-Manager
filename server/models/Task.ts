@@ -2,21 +2,22 @@ import mongoose from 'mongoose';
 import { TaskType } from '../types';
 
 const TaskSchema = new mongoose.Schema<TaskType>({
-  subsequence: Number,
+  isSubtask: Number || {
+    order: Number
+  },
   name: String,
   description: String,
   created: Date,
-  done: Number,
+  done: Boolean || Date,
   priority: String,
   status: String,
   user: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
-  parentTask: { type: mongoose.Schema.Types.ObjectId, ref: 'Task' },
+  parentTask: Boolean || { type: mongoose.Schema.Types.ObjectId, ref: 'Task' },
   project: { type: mongoose.Schema.Types.ObjectId, ref: 'Project' },
   due: Date,
   inWork: Date,
   comments: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Comment' }],
-  subtasksId: [Number],
-  filesURL: [String],
+  files: [String],
 },
   { timestamps: true }
 );
