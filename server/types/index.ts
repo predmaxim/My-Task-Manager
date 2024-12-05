@@ -3,11 +3,11 @@ export type UserType = {
   name: string,
   email: string,
   password: string,
-  avatarURL: string,
-  role: string,
   created: Date,
   lastVisit: Date,
-  projects: ProjectType[]
+  avatarURL?: string,
+  role?: string,
+  projects?: ProjectType[]
 }
 
 export type ProjectType = {
@@ -16,42 +16,56 @@ export type ProjectType = {
   status: ProjectStatusType,
   created: Date,
   user: UserType,
-  icon: string,
-  color: string,
-  tasks: TaskType[],
+  icon?: string,
+  color?: string,
+  tasks?: TaskType[],
 }
 
 export type TaskType = {
   _id: string,
-  subsequence: number,
+  isSubtask: false | {
+    order: number
+  },
   name: string,
-  description: string,
+  description?: string,
   created: Date,
-  done: number,
-  priority: string,
-  status: TaskStatusType,
+  done?: boolean | Date,
+  priority?: string,
+  status?: TaskStatusType,
   user: UserType,
-  parentTask: TaskType,
+  parentTask?: false | TaskType,
   project: ProjectType,
-  due: Date,
-  inWork: Date,
-  subtasksId: [],
-  filesURL: [],
-  comments: CommentType[]
+  due?: Date,
+  inWork?: Date,
+  files?: [FileType],
+  comments?: CommentType[]
 }
 
 export type TaskStatusType = {
   _id: string,
   name: string,
-  color: string,
+  color?: string,
+}
+
+export type FileType = {
+  src: string
 }
 
 export type ProjectStatusType = {
   _id: string,
-  name: string
+  name: 'Active' | 'Inactive'
 }
 
 export type CommentType = {
+  _id: string,
   comment: string,
-  author: UserType
+  author: UserType,
+  task: TaskType,
+  parent: boolean | CommentType
+}
+
+export type RoleType = {
+  _id: string,
+  title: string,
+  users?: UserType[],
 }
