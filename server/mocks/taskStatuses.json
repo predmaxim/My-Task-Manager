@@ -1,16 +1,13 @@
 [
   {
-    "id": 1,
     "name": "high",
     "color": "#ff0000"
   },
   {
-    "id": 2,
     "name": "normal",
     "color": "#ffeb3b"
   },
   {
-    "id": 3,
     "name": "low",
     "color": "#60ff46"
   }
