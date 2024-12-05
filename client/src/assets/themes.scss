@@ -13,12 +13,12 @@
 
   // LIGHT THEME
   --font-color: #333333;
-  --font-color-alt: #ffffff;
-  --font-color-dimmed: #a4a4a4;
+  --font-color-alt: #000000;
+  --font-color-dimmed: #999999;
   --font-color-dimmed-darker: #666666;
   --bg-color: #ffffff;
-  --primary-color: #C1405D;
-  --primary-color-darker: #902F45;
+  --primary-color: #EDEDED;
+  --primary-color-darker: #e2e2e2;
   --secondary-color: #2B2B2B;
   --secondary-color-grey: #505050;
   --green-color: #1AA662;
@@ -28,6 +28,8 @@
   --footer-bg-color: #F0F0F0;
   --footer-font-color: #000000;
   --block-shadow-color: #c0bdbd;
+
+  --overlay-bg: rgb(87 87 87 / 50%);
 
   ::-webkit-input-placeholder {
     color: var(--font-color-dimmed)
