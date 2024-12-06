@@ -6,7 +6,7 @@ export function MainHeader() {
     <header className="MainHeader">
       <div className="container">
         <a href="/">
-          <img src={logoVertical} alt="logoVertical" />
+          <img src={logoVertical} className="logoVertical" alt="logoVertical" width={239} height={169} />
         </a>
       </div>
     </header >
