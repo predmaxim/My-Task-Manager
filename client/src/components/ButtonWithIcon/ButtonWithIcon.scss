@@ -1,0 +1,25 @@
+@import 'src/assets/vars';
+
+.ButtonWithIcon {
+  display: flex;
+  gap: 10px;
+  padding: 10px 20px;
+  background: var(--primary-color);
+  border-radius: 10px;
+  transition: 0.3s;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+
+  &:hover {
+    background: var(--primary-color-darker);
+  }
+
+  &__icon {
+    font-size: 1.4rem;
+  }
+
+  &__text {
+    margin-top: 2px;
+  }
+}
