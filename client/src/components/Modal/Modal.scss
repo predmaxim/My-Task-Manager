@@ -1,6 +1,7 @@
 @import 'src/assets/vars.scss';
 
 $modal-padding: 30px;
+$modal-body-max-height: 80vh;
 
 @media screen and (width <=$tablet) {
   $modal-padding: 20px;
@@ -20,15 +21,25 @@ $modal-padding: 30px;
     background-color: var(--overlay-bg);
     z-index: 3;
     transition: 0.3s;
+    animation: smoothAppearanceOverlayHide .2s forwards;
+
+    &.active {
+      animation: smoothAppearanceOverlayShow .2s forwards;
+    }
+  }
+
+  &__header {
+    margin-top: -14px;
   }
 
   &__body {
     position: absolute;
-    top: 10%;
+    top: 10vh;
     left: 50%;
     padding: $modal-padding;
     width: calc(100% - $modal-padding * 4);
     max-width: 600px;
+    max-height: $modal-body-max-height;
     background: var(--bg-color);
     border-radius: $border-radius;
     visibility: hidden;
@@ -36,11 +47,42 @@ $modal-padding: 30px;
     transform: translateY(-999vh);
     opacity: 0;
     z-index: -100;
+    overflow: hidden;
 
     &.active {
       visibility: visible;
       z-index: 3;
       animation: smoothAppearanceShow .2s forwards;
+    }
+  }
+
+  &__content {
+    overflow-y: auto;
+    max-height: calc($modal-body-max-height - $modal-padding * 2 - 50px);
+  }
+
+  .actions {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    padding-top: 30px;
+  }
+
+  &__okBtn {
+    width: 80px;
+  }
+
+  &__okBtn,
+  &__cancelBtn {
+    padding: 10px 20px;
+    background: var(--primary-color);
+    border-radius: 10px;
+    text-align: center;
+    transition: 0.3s;
+    cursor: pointer;
+
+    &:hover {
+      background: var(--primary-color-darker);
     }
   }
 
@@ -73,6 +115,26 @@ $modal-padding: 30px;
 
   100% {
     transform: translate(-50%, -100%);
+    opacity: 0;
+  }
+}
+
+@keyframes smoothAppearanceOverlayShow {
+  0% {
+    opacity: 0;
+  }
+
+  100% {
+    opacity: 1;
+  }
+}
+
+@keyframes smoothAppearanceOverlayHide {
+  100% {
+    opacity: 1;
+  }
+
+  100% {
     opacity: 0;
   }
 }
