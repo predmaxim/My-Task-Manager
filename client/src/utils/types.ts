@@ -4,10 +4,10 @@ export type LanguageType = 'ru' | 'en';
 export type GlobalStateType = {
   theme: ThemeType,
   language: LanguageType,
-}
+};
 
 export type UserType = {
-  _id: string,
+  _id?: string,
   name: string,
   email: string,
   password: string,
@@ -16,21 +16,21 @@ export type UserType = {
   avatarURL?: string,
   role?: string,
   projects?: ProjectType[]
-}
+};
 
 export type ProjectType = {
-  _id: string,
+  _id?: string,
   name: string,
   status: ProjectStatusType,
   created: Date,
-  user: UserType,
+  user?: UserType,
   icon?: string,
   color?: string,
   tasks?: TaskType[],
-}
+};
 
 export type TaskType = {
-  _id: string,
+  _id?: string,
   isSubtask: false | {
     order: number
   },
@@ -47,33 +47,29 @@ export type TaskType = {
   inWork?: Date,
   files?: [FileType],
   comments?: CommentType[]
-}
+};
 
 export type TaskStatusType = {
-  _id: string,
   name: string,
   color?: string,
-}
+};
 
 export type FileType = {
   src: string
-}
+};
 
-export type ProjectStatusType = {
-  _id: string,
-  name: 'Active' | 'Inactive'
-}
+export type ProjectStatusType = 'active' | 'inactive';
 
 export type CommentType = {
-  _id: string,
+  _id?: string,
   comment: string,
   author: UserType,
   task: TaskType,
   parent: boolean | CommentType
-}
+};
 
 export type RoleType = {
-  _id: string,
+  _id?: string,
   title: string,
   users?: UserType[],
-}
+};
