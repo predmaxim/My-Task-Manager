@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import { icons } from './icons';
+import { icons } from 'src/components/icons';
 import './ButtonWithIcon.scss';
 
 export type ButtonWithIconProps = {
@@ -10,7 +10,7 @@ export type ButtonWithIconProps = {
 }
 
 export function ButtonWithIcon({ className, icon, text, onClick }: ButtonWithIconProps) {
-  const BtnIcon = useMemo(() => icons.filter((el) => `${el.name}` === icon)[0], [icon]);
+  const BtnIcon = useMemo(() => icons.filter((el) => el.name === icon)[0], [icon]);
 
   return (
     <button className={`ButtonWithIcon ${className}`} onClick={onClick}>

@@ -2,9 +2,10 @@ import { useCallback, useEffect, useState } from 'react';
 import axios from 'axios';
 import { nanoid } from 'nanoid';
 import { ProjectType } from 'src/utils/types';
-import { Loading } from '../Loading';
+import { Loading } from 'src/components/Loading';
+import { ButtonWithIcon } from 'src/components/ButtonWithIcon';
+import { BASE_URL } from 'src/utils/constants';
 import './ProjectList.scss';
-import { ButtonWithIcon } from '../ButtonWithIcon';
 
 export function ProjectList() {
   const [projects, setProjects] = useState<ProjectType[]>([])
@@ -13,8 +14,9 @@ export function ProjectList() {
 
   const getProjects = useCallback(async () => {
     try {
-      const URL = `${process.env.REACT_APP_SERVER_URL}:${process.env.REACT_APP_SERVER_PORT}/api/projects`;
-      const { data }: { data: { projects: ProjectType[] } } = await axios.get(URL);
+      const { data }: {
+        data: { projects: ProjectType[] }
+      } = await axios.get(`${BASE_URL}/api/projects`);
 
       setProjects(data.projects);
       setIsLoading(false);
