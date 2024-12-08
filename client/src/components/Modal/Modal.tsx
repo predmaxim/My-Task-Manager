@@ -29,14 +29,14 @@ export function Modal({ className, isActive, children, onOk, onClose, header, fo
           showActionBtns &&
           <div className="actions">
             <button
-              className="Modal__okBtn"
+              className="Modal__okBtn button"
               onClick={onOk}
               type="submit"
               form={formId}
             >Ok
             </button>
             <button
-              className="Modal__cancelBtn"
+              className="Modal__cancelBtn button"
               onClick={onClose}
               type="button"
             >Cancel

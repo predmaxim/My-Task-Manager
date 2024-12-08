@@ -13,7 +13,7 @@ export function ButtonWithIcon({ className, icon, text, onClick }: ButtonWithIco
   const BtnIcon = useMemo(() => icons.filter((el) => el.name === icon)[0], [icon]);
 
   return (
-    <button className={`ButtonWithIcon ${className}`} onClick={onClick}>
+    <button className={`ButtonWithIcon button ${className}`} onClick={onClick}>
       {
         icon &&
         <BtnIcon className="ButtonWithIcon__icon" />
