@@ -10,7 +10,7 @@ key = 'Cookie'
 disabled = true
 
 [auth.bearer]
-token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MzEsImlhdCI6MTczMDcyMTkwNiwiZXhwIjoxNzMwNzIyODA2fQ.mnitwyAIzbzXwna2IK9n1BpXmAhFdhRA65m26GpazV8'
+token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiaWF0IjoxNzMzNjgxNjI5LCJleHAiOjE3MzM2ODI1Mjl9.GfAJJGFP-25tTMRd0nE9okPaDQZLQB_-L96f9YY0w6E'
 
 [body]
 type = 'JSON'

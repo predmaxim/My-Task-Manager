@@ -1,116 +1,180 @@
-import { useCallback, useEffect, useState } from 'react';
-import {
-  closestCenter,
-  DndContext,
-  DragEndEvent,
-  MouseSensor,
-  TouchSensor,
-  useSensor,
-  useSensors,
-} from '@dnd-kit/core';
-import { arrayMove, horizontalListSortingStrategy, SortableContext } from '@dnd-kit/sortable';
-import { useGetTasksQuery, useUpdateTasksMutation } from '@/services/tasks';
-import { upperCaseFirstLetter } from '@/utils/helpers';
-import { ColumnType, PopulatedProjectType, TaskStatusType } from '@/types';
+import { useCallback, useEffect } from 'react';
+import { DndContext, DragEndEvent, DragOverEvent, PointerSensor, useSensor, useSensors } from '@dnd-kit/core';
+import { arrayMove, rectSortingStrategy, SortableContext } from '@dnd-kit/sortable';
+import { restrictToParentElement } from '@dnd-kit/modifiers';
+import { useUpdateTaskMutation } from '@/services/tasks-service.ts';
+import { TaskStatus } from '@/components/board/task-status';
+import { AddNewStatus } from '@/components/board/add-new-status';
+import { ProjectType, TaskStatusType } from '@/types';
+import { Loading } from '@/components/layout/loading';
+import { useGetTaskStatusesQuery, useUpdateTaskStatusesMutation } from '@/services/task-statuses-service.ts';
+import { useAppDispatch, useAppSelector } from '@/lib/store.ts';
+import { setTaskStatuses } from '@/lib/features/task-statuses-slice';
 import styles from './styles.module.scss';
-import { useAppDispatch, useAppSelector } from '@/lib/store';
-import { setTasks } from '@/lib/features/tasks-slice.ts';
-import { AddNewStatus } from '@/components/add-new-status';
-import { Column } from '@/components/column';
 
-export function Board({ currentProject }: { currentProject: PopulatedProjectType }) {
-  const [updateTasks] = useUpdateTasksMutation();
+type BoardProps = {
+  projectId: ProjectType['id'];
+}
+
+const groupTasksByStatus = (statuses: TaskStatusType[], searchQuery: string): TaskStatusType[] => {
+  if (!statuses) {
+    return [];
+  }
+
+  const query = new RegExp(searchQuery.toLowerCase().trim());
+  const grouped = statuses.map((status) => ({
+    ...status,
+    tasks: status.tasks.filter(task =>
+      // task.statusId === status.id &&
+      (task.name.match(query) || task.id.toString().match(query)))
+      .sort((a, b) => a.order - b.order),
+  })).sort((a, b) => a.order - b.order);
+
+  return grouped;
+};
+
+export function Board({ projectId }: BoardProps) {
   const dispatch = useAppDispatch();
-  const tasks = useAppSelector((state) => state.tasks.tasks);
-  const query = useAppSelector((state) => state.search.query);
-  const [board, setBoard] = useState<ColumnType[]>([]);
-  const { data: tasksData = [], currentData: tasksCurrentData } = useGetTasksQuery(currentProject.id, {
-    skip: !currentProject.statuses.length,
-  });
+  const [updateTask] = useUpdateTaskMutation();
+  const [updateTaskStatuses] = useUpdateTaskStatusesMutation();
 
-  const sensors = useSensors(
-    useSensor(MouseSensor),
-    useSensor(TouchSensor),
-  );
-
-  const genColumn = useCallback((status: TaskStatusType): ColumnType => {
-    const newQuery = new RegExp(query.toLowerCase());
-    const tasksByStatus = currentProject.tasks
-      ?.filter(task => task.statusId === status.id && (task.name.toLowerCase().match(newQuery)))
-      .sort((a, b) => a.order - b.order);
-
-    return {
-      id: status.id,
-      title: upperCaseFirstLetter(status.name),
-      tasks: tasksByStatus || [],
-    };
-  }, [query, currentProject.tasks]);
+  const { data: taskStatuses, isLoading: isTaskStatusesLoading } = useGetTaskStatusesQuery(projectId);
+  const statuses = useAppSelector(state => state.statuses.taskStatuses);
+  const searchQuery = useAppSelector(state => state.search.query);
 
   useEffect(() => {
-    const newBoard = tasks?.map((status) => genColumn(status)) || [];
-    if (newBoard.length) {
-      setBoard(newBoard);
+    if (taskStatuses) {
+      const newStatuses = groupTasksByStatus(taskStatuses, searchQuery);
+      dispatch(setTaskStatuses(newStatuses));
     }
-  }, [genColumn, currentProject, tasks]);
+  }, [taskStatuses, dispatch, searchQuery]);
 
-  const handleDragEnd = (event: DragEndEvent) => {
+  const sensors = useSensors(
+    useSensor(PointerSensor, {
+      activationConstraint: {
+        distance: 5,
+      },
+    }),
+  );
+
+  const handleDragOver = useCallback((event: DragOverEvent) => {
     const { active, over } = event;
-    if (!over) return;
 
-    if (typeof active.id === 'string' && typeof over.id === 'string' && active.id.startsWith('column-') && over.id.startsWith('column-')) {
-      const activeIndex = board.findIndex(column => `column-${column.id}` === active.id);
-      const overIndex = board.findIndex(column => `column-${column.id}` === over.id);
-      const newBoard = arrayMove(board, activeIndex, overIndex);
-      setBoard(newBoard);
+    if (!over) {
       return;
     }
 
-    const activeColumn = board.find(column => column.tasks.some(task => task.id === active.id));
-    const overColumn = board.find(column => column.tasks.some(task => task.id === over.id));
+    if (
+      active.data.current?.type === 'task' &&
+      over.data.current?.type === 'status'
+    ) {
+      const task = active.data.current.task;
+      const newStatusId = over.data.current.statusId;
+      if (task.statusId !== newStatusId) {
+        updateTask({
+          ...task,
+          statusId: newStatusId,
+        });
+      }
+    }
+  }, [updateTask]);
 
-    if (!activeColumn || !overColumn) return;
+  const handleDragEnd = useCallback(async (event: DragEndEvent) => {
+    const { active, over } = event;
 
-    const activeIndex = activeColumn.tasks.findIndex(task => task.id === active.id);
-    const overIndex = overColumn.tasks.findIndex(task => task.id === over.id);
-
-    if (activeColumn.id === overColumn.id) {
-      const newTasks = arrayMove(activeColumn.tasks, activeIndex, overIndex);
-      const newBoard = board.map(column => column.id === activeColumn.id ? { ...column, tasks: newTasks } : column);
-      setBoard(newBoard);
-    } else {
-      const [movedTask] = activeColumn.tasks.splice(activeIndex, 1);
-      movedTask.statusId = overColumn.id;
-      overColumn.tasks.splice(overIndex, 0, movedTask);
-
-      const newBoard = board.map(column => {
-        if (column.id === activeColumn.id) return { ...column, tasks: activeColumn.tasks };
-        if (column.id === overColumn.id) return { ...column, tasks: overColumn.tasks };
-        return column;
-      });
-
-      setBoard(newBoard);
+    if (!over || !statuses) {
+      return;
     }
 
-    const newTasks = [activeColumn, overColumn]
-      .flatMap(column => column.tasks)
-      .map((task, index) => {
-        return { ...task, order: index };
-      });
+    if (active.data.current?.type === 'status') {
+      const oldIndex = statuses.findIndex(status => status.id === active.id);
+      const newIndex = statuses.findIndex(status => status.id === over.id);
 
-    dispatch(setTasks(newTasks));
-    updateTasks({ projectId: currentProject.id, tasks: newTasks });
-  };
+      if (newIndex < 0 || newIndex >= statuses.length) {
+        return;
+      }
+
+      if (oldIndex !== newIndex) {
+        const newStatuses = arrayMove(statuses, oldIndex, newIndex);
+        dispatch(setTaskStatuses(newStatuses));
+
+        const updatedStatuses = newStatuses.map((status, index) => ({
+          ...status,
+          order: index,
+        }));
+        await updateTaskStatuses(updatedStatuses);
+      }
+    }
+
+    if (active.data.current?.type === 'task') {
+      const oldColumnIndex = statuses.findIndex(status => status.id === active.data.current?.columnId);
+      const newColumnIndex = statuses.findIndex(status => status.id === over.data.current?.columnId);
+
+      if (oldColumnIndex === -1 || newColumnIndex === -1) {
+        return;
+      }
+
+      const oldTaskIndex = statuses[oldColumnIndex].tasks.findIndex(task => task.id === active.id);
+      const newTaskIndex = statuses[newColumnIndex].tasks.findIndex(task => task.id === over.id);
+
+      if (oldTaskIndex === -1) {
+        return;
+      }
+
+      const newStatuses = statuses.map(status => ({
+        ...status,
+        tasks: status.tasks.slice(),
+      }));
+
+      const [movedTask] = newStatuses[oldColumnIndex].tasks.splice(oldTaskIndex, 1);
+
+      if (oldColumnIndex === newColumnIndex) {
+        newStatuses[newColumnIndex].tasks.splice(newTaskIndex, 0, movedTask);
+      } else {
+        newStatuses[newColumnIndex].tasks.splice(newTaskIndex, 0, {
+          ...movedTask,
+          statusId: newStatuses[newColumnIndex].id,
+        });
+      }
+
+      newStatuses[oldColumnIndex].tasks = newStatuses[oldColumnIndex].tasks.map((task, index) => ({
+        ...task,
+        order: index,
+      }));
+
+      newStatuses[newColumnIndex].tasks = newStatuses[newColumnIndex].tasks.map((task, index) => ({
+        ...task,
+        order: index,
+      }));
+
+      dispatch(setTaskStatuses(newStatuses));
+      await updateTaskStatuses(newStatuses);
+    }
+  }, [dispatch, statuses, updateTaskStatuses]);
+
+  if (isTaskStatusesLoading) {
+    return <Loading />;
+  }
+
+  if (!statuses || statuses.length === 0) {
+    return <AddNewStatus projectId={projectId} />;
+  }
 
   return (
-    <div className={styles.Board}>
-      <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
-        <SortableContext items={board.map(column => `column-${column.id}`)} strategy={horizontalListSortingStrategy}>
-          {board.map((column: ColumnType) => (
-            <Column key={column.id} column={column} currentProject={currentProject} />
+    <DndContext
+      sensors={sensors}
+      onDragEnd={handleDragEnd}
+      onDragOver={handleDragOver}
+      modifiers={[restrictToParentElement]}
+    >
+      <SortableContext items={statuses.map(status => status.id)} strategy={rectSortingStrategy}>
+        <div className={styles.Board}>
+          {statuses.map(status => (
+            <TaskStatus key={status.id} status={status} />
           ))}
-        </SortableContext>
-      </DndContext>
-      <AddNewStatus />
-    </div>
+          <AddNewStatus projectId={projectId} />
+        </div>
+      </SortableContext>
+    </DndContext>
   );
 }

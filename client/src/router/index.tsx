@@ -1,13 +1,13 @@
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import { ROUTES } from './routes';
-import { HomeLayout, ProjectsLayout, TasksLayout } from '@/components/layouts';
-import { TasksPage } from '@/pages/tasks';
-import { NotFoundPage } from '@/pages/not-found';
-import { HomePage } from '@/pages/home';
-import { ProjectsPage } from '@/pages/projects';
-import { LoginPage } from '@/pages/login';
-import { RegisterPage } from '@/pages/register';
-import { MePage } from '@/pages/me';
+import { HomeLayout, ProjectsLayout, TasksLayout } from '@/components/layout';
+import { TasksPage } from 'src/pages/tasks-page';
+import { NotFoundPage } from 'src/pages/not-found-page';
+import { HomePage } from 'src/pages/home-page';
+import { ProjectsPage } from 'src/pages/projects-page';
+import { LoginPage } from 'src/pages/login-page';
+import { RegisterPage } from 'src/pages/register-page';
+import { MePage } from 'src/pages/me-page';
 import { useAppSelector } from '@/lib/store.ts';
 
 export function Router() {

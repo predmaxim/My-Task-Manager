@@ -22,7 +22,7 @@ export const CommentScalarFieldEnumSchema = z.enum(['id','content','parentId','t
 
 export const FileScalarFieldEnumSchema = z.enum(['id','src','taskId','created']);
 
-export const StatusScalarFieldEnumSchema = z.enum(['id','name','projectId']);
+export const StatusScalarFieldEnumSchema = z.enum(['id','name','projectId','order']);
 
 export const SortOrderSchema = z.enum(['asc','desc']);
 
@@ -125,6 +125,7 @@ export const StatusSchema = z.object({
   id: z.number().int(),
   name: z.string(),
   projectId: z.number().int(),
+  order: z.number().int(),
 })
 
 export type Status = z.infer<typeof StatusSchema>
@@ -334,6 +335,7 @@ export const StatusSelectSchema: z.ZodType<Prisma.StatusSelect> = z.object({
   id: z.boolean().optional(),
   name: z.boolean().optional(),
   projectId: z.boolean().optional(),
+  order: z.boolean().optional(),
   tasks: z.union([z.boolean(),z.lazy(() => TaskFindManyArgsSchema)]).optional(),
   project: z.union([z.boolean(),z.lazy(() => ProjectArgsSchema)]).optional(),
   _count: z.union([z.boolean(),z.lazy(() => StatusCountOutputTypeArgsSchema)]).optional(),
@@ -741,6 +743,7 @@ export const StatusWhereInputSchema: z.ZodType<Prisma.StatusWhereInput> = z.obje
   id: z.union([ z.lazy(() => IntFilterSchema),z.number() ]).optional(),
   name: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
   projectId: z.union([ z.lazy(() => IntFilterSchema),z.number() ]).optional(),
+  order: z.union([ z.lazy(() => IntFilterSchema),z.number() ]).optional(),
   tasks: z.lazy(() => TaskListRelationFilterSchema).optional(),
   project: z.union([ z.lazy(() => ProjectRelationFilterSchema),z.lazy(() => ProjectWhereInputSchema) ]).optional(),
 }).strict();
@@ -749,6 +752,7 @@ export const StatusOrderByWithRelationInputSchema: z.ZodType<Prisma.StatusOrderB
   id: z.lazy(() => SortOrderSchema).optional(),
   name: z.lazy(() => SortOrderSchema).optional(),
   projectId: z.lazy(() => SortOrderSchema).optional(),
+  order: z.lazy(() => SortOrderSchema).optional(),
   tasks: z.lazy(() => TaskOrderByRelationAggregateInputSchema).optional(),
   project: z.lazy(() => ProjectOrderByWithRelationInputSchema).optional()
 }).strict();
@@ -763,6 +767,7 @@ export const StatusWhereUniqueInputSchema: z.ZodType<Prisma.StatusWhereUniqueInp
   NOT: z.union([ z.lazy(() => StatusWhereInputSchema),z.lazy(() => StatusWhereInputSchema).array() ]).optional(),
   name: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
   projectId: z.union([ z.lazy(() => IntFilterSchema),z.number().int() ]).optional(),
+  order: z.union([ z.lazy(() => IntFilterSchema),z.number().int() ]).optional(),
   tasks: z.lazy(() => TaskListRelationFilterSchema).optional(),
   project: z.union([ z.lazy(() => ProjectRelationFilterSchema),z.lazy(() => ProjectWhereInputSchema) ]).optional(),
 }).strict());
@@ -771,6 +776,7 @@ export const StatusOrderByWithAggregationInputSchema: z.ZodType<Prisma.StatusOrd
   id: z.lazy(() => SortOrderSchema).optional(),
   name: z.lazy(() => SortOrderSchema).optional(),
   projectId: z.lazy(() => SortOrderSchema).optional(),
+  order: z.lazy(() => SortOrderSchema).optional(),
   _count: z.lazy(() => StatusCountOrderByAggregateInputSchema).optional(),
   _avg: z.lazy(() => StatusAvgOrderByAggregateInputSchema).optional(),
   _max: z.lazy(() => StatusMaxOrderByAggregateInputSchema).optional(),
@@ -785,6 +791,7 @@ export const StatusScalarWhereWithAggregatesInputSchema: z.ZodType<Prisma.Status
   id: z.union([ z.lazy(() => IntWithAggregatesFilterSchema),z.number() ]).optional(),
   name: z.union([ z.lazy(() => StringWithAggregatesFilterSchema),z.string() ]).optional(),
   projectId: z.union([ z.lazy(() => IntWithAggregatesFilterSchema),z.number() ]).optional(),
+  order: z.union([ z.lazy(() => IntWithAggregatesFilterSchema),z.number() ]).optional(),
 }).strict();
 
 export const UserCreateInputSchema: z.ZodType<Prisma.UserCreateInput> = z.object({
@@ -1138,6 +1145,7 @@ export const FileUncheckedUpdateManyInputSchema: z.ZodType<Prisma.FileUncheckedU
 
 export const StatusCreateInputSchema: z.ZodType<Prisma.StatusCreateInput> = z.object({
   name: z.string(),
+  order: z.number().int().optional(),
   tasks: z.lazy(() => TaskCreateNestedManyWithoutStatusInputSchema).optional(),
   project: z.lazy(() => ProjectCreateNestedOneWithoutStatusesInputSchema)
 }).strict();
@@ -1146,11 +1154,13 @@ export const StatusUncheckedCreateInputSchema: z.ZodType<Prisma.StatusUncheckedC
   id: z.number().int().optional(),
   name: z.string(),
   projectId: z.number().int(),
+  order: z.number().int().optional(),
   tasks: z.lazy(() => TaskUncheckedCreateNestedManyWithoutStatusInputSchema).optional()
 }).strict();
 
 export const StatusUpdateInputSchema: z.ZodType<Prisma.StatusUpdateInput> = z.object({
   name: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  order: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
   tasks: z.lazy(() => TaskUpdateManyWithoutStatusNestedInputSchema).optional(),
   project: z.lazy(() => ProjectUpdateOneRequiredWithoutStatusesNestedInputSchema).optional()
 }).strict();
@@ -1159,23 +1169,27 @@ export const StatusUncheckedUpdateInputSchema: z.ZodType<Prisma.StatusUncheckedU
   id: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
   name: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   projectId: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+  order: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
   tasks: z.lazy(() => TaskUncheckedUpdateManyWithoutStatusNestedInputSchema).optional()
 }).strict();
 
 export const StatusCreateManyInputSchema: z.ZodType<Prisma.StatusCreateManyInput> = z.object({
   id: z.number().int().optional(),
   name: z.string(),
-  projectId: z.number().int()
+  projectId: z.number().int(),
+  order: z.number().int().optional()
 }).strict();
 
 export const StatusUpdateManyMutationInputSchema: z.ZodType<Prisma.StatusUpdateManyMutationInput> = z.object({
   name: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  order: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
 }).strict();
 
 export const StatusUncheckedUpdateManyInputSchema: z.ZodType<Prisma.StatusUncheckedUpdateManyInput> = z.object({
   id: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
   name: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   projectId: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+  order: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
 }).strict();
 
 export const IntFilterSchema: z.ZodType<Prisma.IntFilter> = z.object({
@@ -1656,29 +1670,34 @@ export const FileSumOrderByAggregateInputSchema: z.ZodType<Prisma.FileSumOrderBy
 export const StatusCountOrderByAggregateInputSchema: z.ZodType<Prisma.StatusCountOrderByAggregateInput> = z.object({
   id: z.lazy(() => SortOrderSchema).optional(),
   name: z.lazy(() => SortOrderSchema).optional(),
-  projectId: z.lazy(() => SortOrderSchema).optional()
+  projectId: z.lazy(() => SortOrderSchema).optional(),
+  order: z.lazy(() => SortOrderSchema).optional()
 }).strict();
 
 export const StatusAvgOrderByAggregateInputSchema: z.ZodType<Prisma.StatusAvgOrderByAggregateInput> = z.object({
   id: z.lazy(() => SortOrderSchema).optional(),
-  projectId: z.lazy(() => SortOrderSchema).optional()
+  projectId: z.lazy(() => SortOrderSchema).optional(),
+  order: z.lazy(() => SortOrderSchema).optional()
 }).strict();
 
 export const StatusMaxOrderByAggregateInputSchema: z.ZodType<Prisma.StatusMaxOrderByAggregateInput> = z.object({
   id: z.lazy(() => SortOrderSchema).optional(),
   name: z.lazy(() => SortOrderSchema).optional(),
-  projectId: z.lazy(() => SortOrderSchema).optional()
+  projectId: z.lazy(() => SortOrderSchema).optional(),
+  order: z.lazy(() => SortOrderSchema).optional()
 }).strict();
 
 export const StatusMinOrderByAggregateInputSchema: z.ZodType<Prisma.StatusMinOrderByAggregateInput> = z.object({
   id: z.lazy(() => SortOrderSchema).optional(),
   name: z.lazy(() => SortOrderSchema).optional(),
-  projectId: z.lazy(() => SortOrderSchema).optional()
+  projectId: z.lazy(() => SortOrderSchema).optional(),
+  order: z.lazy(() => SortOrderSchema).optional()
 }).strict();
 
 export const StatusSumOrderByAggregateInputSchema: z.ZodType<Prisma.StatusSumOrderByAggregateInput> = z.object({
   id: z.lazy(() => SortOrderSchema).optional(),
-  projectId: z.lazy(() => SortOrderSchema).optional()
+  projectId: z.lazy(() => SortOrderSchema).optional(),
+  order: z.lazy(() => SortOrderSchema).optional()
 }).strict();
 
 export const ProjectCreateNestedManyWithoutUserInputSchema: z.ZodType<Prisma.ProjectCreateNestedManyWithoutUserInput> = z.object({
@@ -2479,12 +2498,14 @@ export const TaskCreateManyProjectInputEnvelopeSchema: z.ZodType<Prisma.TaskCrea
 
 export const StatusCreateWithoutProjectInputSchema: z.ZodType<Prisma.StatusCreateWithoutProjectInput> = z.object({
   name: z.string(),
+  order: z.number().int().optional(),
   tasks: z.lazy(() => TaskCreateNestedManyWithoutStatusInputSchema).optional()
 }).strict();
 
 export const StatusUncheckedCreateWithoutProjectInputSchema: z.ZodType<Prisma.StatusUncheckedCreateWithoutProjectInput> = z.object({
   id: z.number().int().optional(),
   name: z.string(),
+  order: z.number().int().optional(),
   tasks: z.lazy(() => TaskUncheckedCreateNestedManyWithoutStatusInputSchema).optional()
 }).strict();
 
@@ -2577,6 +2598,7 @@ export const StatusScalarWhereInputSchema: z.ZodType<Prisma.StatusScalarWhereInp
   id: z.union([ z.lazy(() => IntFilterSchema),z.number() ]).optional(),
   name: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
   projectId: z.union([ z.lazy(() => IntFilterSchema),z.number() ]).optional(),
+  order: z.union([ z.lazy(() => IntFilterSchema),z.number() ]).optional(),
 }).strict();
 
 export const UserUpsertWithoutProjectsInputSchema: z.ZodType<Prisma.UserUpsertWithoutProjectsInput> = z.object({
@@ -2609,13 +2631,15 @@ export const UserUncheckedUpdateWithoutProjectsInputSchema: z.ZodType<Prisma.Use
 
 export const StatusCreateWithoutTasksInputSchema: z.ZodType<Prisma.StatusCreateWithoutTasksInput> = z.object({
   name: z.string(),
+  order: z.number().int().optional(),
   project: z.lazy(() => ProjectCreateNestedOneWithoutStatusesInputSchema)
 }).strict();
 
 export const StatusUncheckedCreateWithoutTasksInputSchema: z.ZodType<Prisma.StatusUncheckedCreateWithoutTasksInput> = z.object({
   id: z.number().int().optional(),
   name: z.string(),
-  projectId: z.number().int()
+  projectId: z.number().int(),
+  order: z.number().int().optional()
 }).strict();
 
 export const StatusCreateOrConnectWithoutTasksInputSchema: z.ZodType<Prisma.StatusCreateOrConnectWithoutTasksInput> = z.object({
@@ -2789,6 +2813,7 @@ export const StatusUpdateToOneWithWhereWithoutTasksInputSchema: z.ZodType<Prisma
 
 export const StatusUpdateWithoutTasksInputSchema: z.ZodType<Prisma.StatusUpdateWithoutTasksInput> = z.object({
   name: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  order: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
   project: z.lazy(() => ProjectUpdateOneRequiredWithoutStatusesNestedInputSchema).optional()
 }).strict();
 
@@ -2796,6 +2821,7 @@ export const StatusUncheckedUpdateWithoutTasksInputSchema: z.ZodType<Prisma.Stat
   id: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
   name: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   projectId: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+  order: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
 }).strict();
 
 export const TaskUpsertWithoutChildrenInputSchema: z.ZodType<Prisma.TaskUpsertWithoutChildrenInput> = z.object({
@@ -3366,7 +3392,8 @@ export const TaskCreateManyProjectInputSchema: z.ZodType<Prisma.TaskCreateManyPr
 
 export const StatusCreateManyProjectInputSchema: z.ZodType<Prisma.StatusCreateManyProjectInput> = z.object({
   id: z.number().int().optional(),
-  name: z.string()
+  name: z.string(),
+  order: z.number().int().optional()
 }).strict();
 
 export const TaskUpdateWithoutProjectInputSchema: z.ZodType<Prisma.TaskUpdateWithoutProjectInput> = z.object({
@@ -3418,18 +3445,21 @@ export const TaskUncheckedUpdateManyWithoutProjectInputSchema: z.ZodType<Prisma.
 
 export const StatusUpdateWithoutProjectInputSchema: z.ZodType<Prisma.StatusUpdateWithoutProjectInput> = z.object({
   name: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  order: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
   tasks: z.lazy(() => TaskUpdateManyWithoutStatusNestedInputSchema).optional()
 }).strict();
 
 export const StatusUncheckedUpdateWithoutProjectInputSchema: z.ZodType<Prisma.StatusUncheckedUpdateWithoutProjectInput> = z.object({
   id: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
   name: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  order: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
   tasks: z.lazy(() => TaskUncheckedUpdateManyWithoutStatusNestedInputSchema).optional()
 }).strict();
 
 export const StatusUncheckedUpdateManyWithoutProjectInputSchema: z.ZodType<Prisma.StatusUncheckedUpdateManyWithoutProjectInput> = z.object({
   id: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
   name: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  order: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
 }).strict();
 
 export const FileCreateManyTaskInputSchema: z.ZodType<Prisma.FileCreateManyTaskInput> = z.object({

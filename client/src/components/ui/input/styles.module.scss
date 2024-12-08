@@ -1,0 +1,68 @@
+@import "../../../assets/vars";
+@import "../../../assets/mixins";
+
+.inputContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  width: 100%;
+}
+
+.inputWrapper {
+  position: relative;
+  display: flex;
+  width: 100%;
+  flex-direction: column;
+}
+
+.input {
+  @include input;
+  padding: 0.8rem;
+  border: 1px solid var(--font-color);
+  border-radius: 4px;
+  background-color: var(--bg-color);
+
+  &.inputBordered {
+    border: 1px solid var(--border-color);
+  }
+
+  &:not(:placeholder-shown) {
+    background-color: var(--bg-color-darker);
+  }
+}
+
+.label {
+  //position: absolute;
+  //top: 0.5rem;
+  //left: 0.5rem;
+  //font-size: 0.875rem;
+  color: #666666;
+  transition: $transition;
+
+  //&:hover,
+  //.input:hover + &,
+  //.input:focus + &,
+  //.input:not(:placeholder-shown) + & {
+  //  top: -0.75rem;
+  //  font-size: 0.75rem;
+  //}
+}
+
+.required {
+  font-size: 0.875rem;
+  color: var(--primary-color);
+}
+
+.btn {
+  @include button("x", $color: "transparent");
+  position: absolute;
+  top: 2rem;
+  right: 0.2rem;
+  padding: 0.4rem;
+  width: fit-content;
+  height: fit-content;
+}
+
+.passwordShift {
+  padding-right: 2rem !important;
+}

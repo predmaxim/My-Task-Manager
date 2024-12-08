@@ -1,0 +1,56 @@
+@import "../../../assets/vars";
+@import "../../../assets/mixins";
+
+.Header {
+  padding: 2rem 0 1.5rem;
+
+  &__buttonWrap {
+    grid-area: buttons;
+    display: flex;
+    gap: 1rem;
+
+    @media screen and (width <=$mobile) {
+      flex: 1;
+    }
+  }
+
+  .container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 3rem;
+
+    @media screen and (width <=$tablet) {
+      gap: 2rem;
+      display: grid;
+      grid-template-areas:
+          "logo buttons"
+          "search search";
+    }
+
+    @media screen and (width <=$mobile) {
+      gap: 1rem;
+      grid-template-areas:
+          "logo logo"
+          "buttons buttons"
+          "search search";
+    }
+  }
+
+  &__logoImg {
+    grid-area: logo;
+    width: 100%;
+    height: auto;
+  }
+
+  &__search {
+    grid-area: search;
+    flex: 1;
+    min-width: 15rem;
+
+    @media screen and (width <=$mobile) {
+      order: 1;
+      min-width: 15rem;
+    }
+  }
+}

@@ -1,0 +1,14 @@
+@import "src/assets/vars";
+@import "src/assets/mixins";
+
+.TaskCard {
+  background: var(--bg-color);
+  border-radius: $border-radius;
+  box-shadow: var(--box-shadow);
+  // transition: transform 0.1s ease, box-shadow 0.1s ease;
+
+  &.dragging {
+    transform: scale(1);
+    z-index: 1000;
+  }
+}

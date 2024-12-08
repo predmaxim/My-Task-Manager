@@ -55,9 +55,3 @@ export const RegisterSchema = UserSchema.pick({
 }).refine(data => data.password === data.verifyPassword, { message: 'Passwords do not match' });
 
 export const ThemeSchema = z.enum(['dark', 'light']);
-
-export const ColumnSchema = z.object({
-  id: z.number(),
-  title: z.string(),
-  tasks: TaskSchema.array(),
-});
