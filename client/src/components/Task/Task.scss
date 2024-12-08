@@ -1,0 +1,73 @@
+@import 'src/assets/vars';
+
+.Task {
+  background: var(--color-light-grey-darker);
+  padding: 13px;
+  border-radius: $border-radius;
+  cursor: pointer;
+
+  .Task-header {
+    display: flex;
+    gap: 0 10px;
+    align-items: flex-start;
+    line-height: 1.2;
+  }
+
+  .Task-footer {
+    display: flex;
+    gap: 0 10px;
+    flex-wrap: wrap;
+    font-size: 0.9rem;
+    color: var(--font-color-dimmed);
+    margin: 10px 0 0 30px;
+  }
+
+  &__checkbox {
+    cursor: pointer;
+  }
+
+  &__name {
+    flex: 1;
+  }
+
+  &__editBtn.button {
+    padding: 5px;
+    gap: 0;
+    height: fit-content;
+    border-radius: 5px;
+
+    .ButtonWithIcon__icon {
+      font-size: 0.8rem;
+    }
+  }
+
+  &__data {}
+
+  &__due {
+
+
+    .due {
+      display: flex;
+      gap: 5px;
+
+      &__title {
+        font-weight: 700;
+      }
+
+      &__date {}
+    }
+  }
+
+  &__done {
+    .done {
+      display: flex;
+      gap: 5px;
+
+      &__title {
+        font-weight: 700;
+      }
+
+      &__date {}
+    }
+  }
+}
