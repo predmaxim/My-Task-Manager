@@ -1,3 +1,5 @@
+import { ROLES } from './constants';
+import { PROJECT_STATUSES, TASK_PRIORITY, TASK_STATUSES } from 'src/utils/constants';
 export type ThemeType = 'dark' | 'light';
 export type LanguageType = 'ru' | 'en';
 
@@ -31,15 +33,17 @@ export type ProjectType = {
 
 export type TaskType = {
   _id?: string,
+  number: number,
   isSubtask: false | {
     order: number
   },
   name: string,
   description?: string,
   created: Date,
-  done?: boolean | Date,
+  done?: Date,
   priority?: string,
   status?: TaskStatusType,
+  lastStatus?: TaskStatusType,
   user: UserType,
   parentTask?: false | TaskType,
   project: ProjectType,
@@ -49,16 +53,20 @@ export type TaskType = {
   comments?: CommentType[]
 };
 
-export type TaskStatusType = {
-  name: string,
+export type ProjectStatusType = keyof typeof PROJECT_STATUSES;
+
+export type RoleType = keyof typeof ROLES;
+
+export type TaskStatusType = keyof typeof TASK_STATUSES;
+
+export type TaskPriorityType = {
+  name: keyof typeof TASK_PRIORITY,
   color?: string,
 };
 
 export type FileType = {
   src: string
 };
-
-export type ProjectStatusType = 'active' | 'inactive';
 
 export type CommentType = {
   _id?: string,
@@ -68,8 +76,8 @@ export type CommentType = {
   parent: boolean | CommentType
 };
 
-export type RoleType = {
-  _id?: string,
-  title: string,
-  users?: UserType[],
+export type TasksFilteredByStatusType = {
+  queue: TaskType[],
+  development: TaskType[],
+  done: TaskType[],
 };
