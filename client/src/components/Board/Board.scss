@@ -1,0 +1,64 @@
+@import 'src/assets/vars';
+
+.Board {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 30px 20px;
+
+  @media screen and (width <=$tablet) {
+    grid-template-columns: 1fr;
+  }
+
+  .column {
+    border-radius: $border-radius;
+    background: var(--color-light-grey);
+    // overflow: hidden;
+    min-height: calc(80vh - 60px);
+
+    @media screen and (width <=$tablet) {
+      min-height: auto;
+    }
+
+    &__header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 20px;
+      border-radius: $border-radius $border-radius 0 0;
+      // background: var(--2-column-header-color);
+    }
+
+    // &:first-child .column__header {
+    //   background: var(--1-column-header-color);
+    // }
+
+    // &:last-child .column__header {
+    //   background: var(--3-column-header-color);
+    // }
+
+    &__title {
+      font-weight: 700;
+      font-size: 1.2rem;
+    }
+
+    &__newTaskBtn {
+      background: none;
+      padding: 0;
+      height: auto;
+
+      &:hover {
+        background: none;
+        padding: 0;
+        color: var(--primary-color);
+      }
+    }
+
+    &__body {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      padding: 15px;
+    }
+  }
+
+}
