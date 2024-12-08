@@ -26,6 +26,8 @@
     "zod-prisma-types": "^3.1.8"
   },
   "devDependencies": {
+    "eslint": "^9.15.0",
+    "eslint-plugin-unused-imports": "^4.1.4",
     "@types/cookie-parser": "^1.4.7",
     "@types/cors": "^2.8.17",
     "@types/express": "^5.0.0",
