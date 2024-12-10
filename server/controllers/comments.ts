@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import Comment from '../models/Comment';
 import Task from '../models/Task';
-import { CommentType } from '@/types';
+import { CommentType } from '../utils/types';
 
 export const createComment = async (req: Request, res: Response) => {
   try {

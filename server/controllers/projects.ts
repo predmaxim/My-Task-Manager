@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { ProjectType } from '../types';
+import { ProjectType } from '../utils/types';
 import Project from '../models/Project';
 
 export const getProjects = async (req: Request, res: Response) => {
