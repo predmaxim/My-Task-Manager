@@ -1,14 +1,17 @@
+import { useNavigate, useParams } from 'react-router-dom';
 import { TaskType } from 'src/utils/types';
 import { ButtonWithIcon } from 'src/components/ButtonWithIcon';
 import useGetTasks from 'src/utils/hooks/useGetTasks';
 import { Loading } from 'src/components/Loading';
 import { upperCaseFirstLetter } from 'src/utils/helpers';
+import { Task } from 'src/components/Task';
 import './Board.scss';
-import { Task } from '../Task';
 
 export function Board() {
-  const [tasks, isLoading] = useGetTasks();
+  const navigate = useNavigate();
 
+  const { name } = useParams();
+  const [tasks, isLoading] = useGetTasks(name);
 
   const columnsProps = [
     {
