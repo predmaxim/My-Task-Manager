@@ -19,3 +19,14 @@
     font-weight: 700;
   }
 }
+
+.Modal {
+  .ProjectsPage {
+    .container {
+      padding: 0;
+      .ProjectList{
+        max-width: none;
+      }
+    }
+  }
+}
