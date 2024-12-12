@@ -1,5 +1,6 @@
-import { ROLES } from './constants';
-import { PROJECT_STATUSES, TASK_PRIORITY, TASK_STATUSES } from './constants';
+import { ThunkAction, ThunkDispatch } from 'redux-thunk';
+import { RootState } from '../store';
+import { PROJECT_STATUSES, ROLES, TASK_PRIORITY, TASK_STATUSES } from './constants';
 
 export type ThemeType = 'dark' | 'light';
 export type LanguageType = 'ru' | 'en';
@@ -18,7 +19,7 @@ export type UserType = {
   created: Date,
   lastVisit: Date,
   avatarURL?: string,
-  projects?: ProjectType[]
+  projects?: ProjectType['_id'][]
 };
 
 export type ProjectType = {
@@ -26,35 +27,34 @@ export type ProjectType = {
   name: string,
   status: ProjectStatusType,
   created: Date,
-  user?: UserType,
+  user?: UserType['_id'],
+  current?: boolean,
   icon?: string,
   color?: string,
-  tasks?: TaskType[],
+  tasks?: TaskType['_id'][],
 };
 
 export type TaskType = {
   _id?: string,
   number: number,
   name: string,
-  user: UserType,
-  project: string,
   created: Date,
+  user: UserType['_id'],
+  project: ProjectType['name']
+  status: TaskStatusType,
+  lastStatus: TaskStatusType,
   description?: string,
-  done?: Date,
+  done?: false | Date,
   priority?: TaskPriorityType,
-  status?: TaskStatusType,
-  lastStatus?: TaskStatusType,
   parent?: string,
-  due?: Date,
-  inWork?: Date,
+  due?: false | Date,
+  inWork?: false | Date,
   files?: FileType[],
-  comments?: CommentType[]
+  comments?: CommentType[],
 };
 
 export type ProjectStatusType = keyof typeof PROJECT_STATUSES;
-
 export type RoleType = keyof typeof ROLES;
-
 export type TaskStatusType = keyof typeof TASK_STATUSES;
 
 export type TaskPriorityType = {
@@ -68,12 +68,10 @@ export type CommentType = {
   _id?: string,
   comment: string,
   author: UserType,
-  task: string,
   parent?: string
 };
 
-export type TasksFilteredByStatusType = {
-  queue: TaskType[],
-  development: TaskType[],
-  done: TaskType[],
-};
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export type AnyType = any;
+export type ThunkDispatchType = ThunkDispatch<RootState, AnyType, AnyType>
+export type ThunkActionType = ThunkAction<AnyType, RootState, AnyType, AnyType>
