@@ -1,4 +1,6 @@
-export const BASE_URL = `${process.env.REACT_APP_SERVER_URL}:${process.env.REACT_APP_SERVER_PORT}`;
+export const SERVER_URL = 'http://localhost';
+export const SERVER_PORT = '5000';
+export const BASE_URL = `${SERVER_URL}:${SERVER_PORT}`;
 
 export const TASK_STATUSES = {
   queue: 'queue',
