@@ -1,0 +1,95 @@
+// Media queries
+@mixin desktop {
+  @media only screen and (width <= $desktop) {
+    @content;
+  }
+}
+
+@mixin tablet {
+  @media only screen and (width <= $tablet) {
+    @content;
+  }
+}
+
+@mixin mobile {
+  @media only screen and (width <= $mobile) {
+    @content;
+  }
+}
+
+// animation
+@mixin fade($type) {
+  @if $type== "hide" {
+    visibility: hidden;
+    opacity: 0;
+    transition: visibility 1s, opacity 1s;
+  } @else if $type== "show" {
+    visibility: visible;
+    opacity: 1;
+    transition: visibility 1s, opacity 1s;
+  }
+}
+
+// buttons
+@mixin button(
+  $size,
+  $width,
+) {
+  @if not $size {
+    $size: "xl";
+  }
+  @if $size== "xl" {
+    height: 45px;
+    padding: 10px 20px
+  } @else if $size== "x" {
+    height: 45px;
+    padding: 10px 20px
+  } @else if $size== "l" {
+    height: 45px;
+    padding: 10px 20px
+  } @else if $size== "s" {
+    height: 45px;
+    padding: 10px 20px
+  }
+
+  @if not $width {
+    $width: auto;
+  } @else if $width== "full" {
+    width: 100%;
+  }
+  position: relative;
+  width: $width;
+  background: var(--color-light-grey);
+  border-radius: $border-radius;
+  text-align: center;
+  transition: $transition;
+  font-size: $base-font;
+  cursor: pointer;
+
+  &:hover {
+    background: var(--color-light-grey-darker);
+  }
+}
+
+// inputs
+
+// textarea
+
+// input placeholder
+@mixin input-placeholder {
+  &.placeholder {
+    @content;
+  }
+  &:-moz-placeholder {
+    @content;
+  }
+  &::-moz-placeholder {
+    @content;
+  }
+  &:-ms-input-placeholder {
+    @content;
+  }
+  &::-webkit-input-placeholder {
+    @content;
+  }
+}
