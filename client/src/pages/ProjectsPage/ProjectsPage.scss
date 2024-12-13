@@ -1,7 +1,11 @@
-@import 'src/assets/vars.scss';
+@import "assets/vars.scss";
 
 .ProjectsPage {
   grid-area: main;
+
+  .CreateNewProject {
+    width: auto;
+  }
 
   .container {
     padding-top: 50px;
@@ -12,19 +16,14 @@
       padding-bottom: 20px;
     }
   }
-
-  &__project-header {
-    text-align: center;
-    font-size: 1.2rem;
-    font-weight: 700;
-  }
 }
 
 .Modal {
   .ProjectsPage {
     .container {
       padding: 0;
-      .ProjectList{
+
+      .ProjectList {
         max-width: none;
       }
     }
