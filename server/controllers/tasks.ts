@@ -1,21 +1,19 @@
 // import jwt from 'jsonwebtoken';
 import { Request, Response } from 'express';
-import { ProjectType, TaskType } from '../utils/types';
 import Task from '../models/Task';
+import { TaskType } from '../utils/types';
 
 export const getTasks = async (req: Request, res: Response) => {
   try {
     const projectName = req.params.projectName;
-    const tasks = await Task.find<TaskType[]>({ project: projectName }).sort('created');
 
-    if (!tasks.length) {
-      return res.status(404).json({ message: 'There are no tasks' });
-    }
-
-    res.status(200).json({ tasks });
+    const tasks: TaskType[] =
+      await Task.find<TaskType>({ project: projectName }).sort('-created');
+    const total = tasks.length;
+    res.status(200).json({ tasks, total });
 
   } catch (error) {
-    res.status(500).json({ message: 'Something went wrong', error })
+    res.status(500).json({ message: 'Something went wrong', error });
   }
 };
 
@@ -36,23 +34,25 @@ export const getTask = async (req: Request, res: Response) => {
 
 export const createTask = async (req: Request, res: Response) => {
   try {
-    const { projectId, task }: { projectId: string, task: TaskType } = req.body;
+    const task: TaskType = req.body;
 
-    if (!task.name)
+    if (!task.name) {
       return res.status(400).json({ message: 'Task name cannot be empty' });
-
-    const newTask = new Task({ task });
-    await newTask.save();
-
-    try {
-      await Task.findByIdAndUpdate(projectId, {
-        $push: { comments: newTask._id }
-      });
-    } catch (error) {
-      console.log(error);
+    }
+    if (!task.project) {
+      return res.status(400).json({ message: 'Task project cannot be empty' });
+    }
+    if (!task.status) {
+      return res.status(400).json({ message: 'Task status cannot be empty' });
+    }
+    if (!task.number) {
+      return res.status(400).json({ message: 'Task number cannot be be empty' });
     }
 
-    res.status(201).json(newTask);
+    const newTask = new Task({ ...task, created: new Date() });
+    await newTask.save();
+
+    res.status(201).json({ task: newTask });
 
   } catch (error) {
     res.status(500).json({ message: 'Something went wrong', error });
@@ -61,33 +61,26 @@ export const createTask = async (req: Request, res: Response) => {
 
 export const deleteTask = async (req: Request, res: Response) => {
   try {
-    const task = await Task.findById<TaskType>(req.params.id);
-
-    if (task) {
-      const removedTask = await Task.findByIdAndDelete<TaskType>(req.params.id);
-      res.status(200).json({ removedTask });
+    const removedTask = await Task.findByIdAndDelete<TaskType>(req.params.id);
+    if (removedTask) {
+      res.status(200).json(removedTask);
     } else {
-      return res.status(404).json({ message: 'Task not found' });
+      res.status(404).json({ message: 'Task not found' });
     }
-
-
   } catch (error) {
-    res.status(403).json({ message: 'Forbidden', error });
+    res.status(500).json({ message: 'Something went wrong', error });
   }
 };
 
 export const updateTask = async (req: Request, res: Response) => {
   try {
-    const task = await Task.findById<TaskType>(req.params.id);
-
-    if (task) {
-      const updatedTask = await Task.findByIdAndUpdate<TaskType>(req.params.id, req.body);
-      res.status(200).json({ updatedTask });
-    } else {
+    try {
+      const updatedTask = await Task.findByIdAndUpdate<TaskType>(req.params.id, req.body).sort('created');
+      res.status(200).json(updatedTask);
+    } catch (err) {
       return res.status(404).json({ message: 'Task not found' });
     }
-
   } catch (error) {
-    res.status(403).json({ message: 'Forbidden', error });
+    res.status(500).json({ message: 'Something went wrong', error });
   }
 };
