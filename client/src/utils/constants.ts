@@ -1,4 +1,9 @@
-export const BASE_URL = `${process.env.REACT_APP_SERVER_URL}:${process.env.REACT_APP_SERVER_PORT}`;
+export const SERVER_URL = 'http://localhost';
+export const SERVER_PORT = '5000';
+export const BASE_URL = `${SERVER_URL}:${SERVER_PORT}`;
+export const BASE_PROJECT_URL = '/project';
+export const APP_NAME = 'MyTaskManager';
+export const TEMP_USER = '651bf0065fb59a873e3adc4d';
 
 export const TASK_STATUSES = {
   queue: 'queue',
