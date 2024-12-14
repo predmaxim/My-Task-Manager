@@ -44,16 +44,9 @@ export function Task({ task }: TaskProps) {
     setIsEdit
   ] = useState<boolean>(!taskName);
 
-  const saveTask = () => {
-    const updatedTask: TaskType = {
-      ...task,
-      name: taskName,
-      done: taskDone,
-      status: taskStatus,
-      lastStatus: taskLastStatus
-    };
+  const saveTask = (taskFieldsToUpdate: Partial<TaskType>) => {
     taskName.trim()
-      ? dispatch(updateTaskThunk(updatedTask))
+      ? dispatch(updateTaskThunk({ _id: task._id, ...taskFieldsToUpdate } as TaskType))
       : dispatch(deleteTaskThunk(task._id));
   };
 
@@ -70,26 +63,17 @@ export function Task({ task }: TaskProps) {
       ? taskStatus
       : TASK_STATUSES.queue as TaskStatusType
     );
-
   };
 
   const onClickDone = (e: MouseEvent<HTMLInputElement>) => e.stopPropagation();
 
-  const onInputDone = () => {
-    // if (!taskDone) {
-    //   setTaskDone(new Date);
-    //   setTaskStatus(TASK_STATUSES.done as TaskStatusType);
-    // } else {
-    //   setTaskDone(undefined);
-    //   setTaskStatus(taskLastStatus);
-    // }
-    // setTaskLastStatus(taskStatus !== TASK_STATUSES.done as TaskStatusType
-    //   ? taskStatus
-    //   : TASK_STATUSES.queue as TaskStatusType
-    // );
-    queueMicrotask(saveTask);
-    // saveTask();
-  };
+  const onInputDone = () => queueMicrotask(() =>
+    saveTask({
+      ...task,
+      done: taskDone,
+      status: taskStatus,
+      lastStatus: taskLastStatus
+    }));
 
   //edit
   const onClickEditBtn = (e: MouseEvent<HTMLButtonElement>) => {
@@ -100,7 +84,7 @@ export function Task({ task }: TaskProps) {
   const saveName = () => {
     if (taskName.trim() !== task.name) {
       setTaskName(taskName.trim());
-      saveTask();
+      saveTask({ ...task, name: taskName.trim() });
     } else {
       setTaskName(task.name);
     }
@@ -144,8 +128,9 @@ export function Task({ task }: TaskProps) {
     }
   };
 
-  const onOkModal = () => {
-    saveTask();
+  const onSubmitForm = (updatedTask: Partial<TaskType>) => {
+    setShowTaskModal(false);
+    saveTask({ ...task, ...updatedTask });
   };
 
   return (
@@ -199,7 +184,7 @@ export function Task({ task }: TaskProps) {
                 <div className="due">
                   <span className="due__title">due:</span>
                   <span className="due__date">
-                    {formatDate(task.due, { year: 'numeric', month: 'numeric', day: 'numeric' })}
+                    {formatDate(task.due)}
                   </span>
                 </div>
               </div>}
@@ -208,7 +193,7 @@ export function Task({ task }: TaskProps) {
                 <div className="done">
                   <span className="done__title">done:</span>
                   <span className="done__date">
-                    {formatDate(taskDone, { year: 'numeric', month: 'numeric', day: 'numeric' })}
+                    {formatDate(taskDone)}
                   </span>
                 </div>
               </div>}
@@ -220,11 +205,14 @@ export function Task({ task }: TaskProps) {
             className="TaskContentModal"
             isActive={true}
             onClose={() => onActionModal(setShowTaskModal, false)}
-            onOk={onOkModal}
-            header="Add New Project"
+            header={`#${task.number} - ${task.name}`}
             width="930px"
+            formId="TaskContentForm"
           >
-            <TaskContent task={{ ...task, done: taskDone, name: taskName }} />
+            <TaskContent
+              task={{ ...task, done: taskDone, name: taskName }}
+              onSubmit={onSubmitForm}
+            />
           </Modal>,
           document.body
         )}

@@ -1,4 +1,5 @@
 @import "assets/vars";
+@import "assets/mixins";
 
 .Task {
   background: var(--color-light-grey-darker);
@@ -99,9 +100,7 @@
 
   &__menuBtn.button,
   &__editBtn.button {
-    height: fit-content;
-    border-radius: 8px;
-    background-color: transparent;
+    @include button("s");
 
     .ButtonWithIcon__icon {
       font-size: 1rem;
