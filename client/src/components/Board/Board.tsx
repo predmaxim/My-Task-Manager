@@ -1,58 +1,86 @@
-import { useNavigate, useParams } from 'react-router-dom';
-import { TaskType } from 'src/utils/types';
-import { ButtonWithIcon } from 'src/components/ButtonWithIcon';
-import useGetTasks from 'src/utils/hooks/useGetTasks';
-import { Loading } from 'src/components/Loading';
-import { upperCaseFirstLetter } from 'src/utils/helpers';
-import { Task } from 'src/components/Task';
+import { ButtonWithIcon } from 'components/ButtonWithIcon';
+import { CreateNewTask } from 'components/CreateNewTask/CreateNewTask';
+import { Task } from 'components/Task';
+import { nanoid } from 'nanoid';
+import { useCallback, useLayoutEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { RootState } from 'store';
+import { getTasksFromDbThunk } from 'store/asyncActions/getTasksFromDbThunk';
+import { TaskReducerStateType } from 'store/reducers/taskReducer';
+import { TASK_STATUSES } from 'utils/constants';
+import { upperCaseFirstLetter } from 'utils/helpers';
+import { TaskStatusType, TaskType, ThunkDispatchType } from 'utils/types';
+import { Loading } from '../Loading';
 import './Board.scss';
 
-export function Board() {
-  const navigate = useNavigate();
+export type BoardType = {
+  currentProjectName: string | undefined
+}
 
-  const { name } = useParams();
-  const [tasks, isLoading] = useGetTasks(name);
+export type ColumnType = {
+  title: TaskStatusType,
+  onClickMenu: () => void,
+  currentColumnTasks: TaskType[],
+  total: number
+}
 
-  const columnsProps = [
-    {
-      title: 'queue',
-      onClickNewBtn: () => { console.log('new queue task') },
-      tasks: tasks?.queue
-    },
-    {
-      title: 'development',
-      onClickNewBtn: () => { console.log('new development task') },
-      tasks: tasks?.development
-    },
-    {
-      title: 'done',
-      onClickNewBtn: () => { console.log('new done task') },
-      tasks: tasks?.done
-    }
-  ];
+export function Board({ currentProjectName }: BoardType) {
+  const dispatch: ThunkDispatchType = useDispatch();
+  const { tasks, isLoading }: TaskReducerStateType = useSelector((state: RootState) => state.tasks);
+
+  const genColumn = (status: TaskStatusType): ColumnType => {
+    const tasksByStatus: TaskType[] = tasks.filter((task: TaskType) => task.status === status);
+    return {
+      title: status,
+      onClickMenu: () => console.log('menu'),
+      currentColumnTasks: tasksByStatus,
+      total: tasksByStatus.length
+    };
+  };
+
+  const columns: ColumnType[] = (Object.keys(TASK_STATUSES) as TaskStatusType[])
+    .map((status: TaskStatusType) => genColumn(status));
+
+  const getAllTasks = useCallback(
+    () => {
+      currentProjectName && dispatch(getTasksFromDbThunk(currentProjectName));
+    }, [currentProjectName, dispatch]);
+
+  useLayoutEffect(() => getAllTasks(), [getAllTasks]);
 
   return (
-    isLoading
-      ? <Loading />
-      : <div className={`Board`}>
-        {columnsProps.map(({ title, onClickNewBtn, tasks }) => {
-          return (
-            <div className={`column column-${title}`} key={title}>
-              <div className="column__header">
-                <div className="column__title">{upperCaseFirstLetter(title)}</div>
-                <ButtonWithIcon
-                  className="column__newTaskBtn"
-                  onClick={onClickNewBtn}
-                  icon="RiAddLine"
-                  text="New Task"
-                />
-              </div>
-              <div className="column__body">
-                {tasks && tasks.map((task: TaskType) => <Task {...task} key={task._id} />)}
-              </div>
+    <div className={`Board`}>
+      {columns.map(({ title, onClickMenu, currentColumnTasks }: ColumnType) => {
+        return (
+          <div className={`column column-${title}`} key={title}>
+            <div className="column__header">
+              <div className="column__title">{upperCaseFirstLetter(title)}</div>
+              <ButtonWithIcon
+                className="column__menuBtn"
+                onClick={onClickMenu}
+                icon="RiMore2Line"
+              />
             </div>
-          )
-        })}
-      </div>
+            <div className="column__CreateNewTask">
+              {currentProjectName &&
+                <CreateNewTask
+                  projectName={currentProjectName}
+                  taskStatus={title}
+                />}
+            </div>
+            <div className="column__body">
+              {isLoading
+                ? <Loading />
+                : currentColumnTasks.map((task: TaskType) =>
+                  <Task
+                    task={task}
+                    key={nanoid()}
+                  />)
+              }
+            </div>
+          </div>
+        );
+      })}
+    </div>
   );
 }
