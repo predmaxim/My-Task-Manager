@@ -9,16 +9,29 @@ export type ModalProps = {
   onOk?: () => void,
   header: string,
   formId?: string,
-  showActionBtns?: boolean
+  showActionBtns?: boolean,
+  width?: string
 }
 
-export function Modal({ className, isActive, children, onOk, onClose, header, formId, showActionBtns = true }: ModalProps) {
+export function Modal(
+  {
+    className,
+    isActive,
+    children,
+    onOk,
+    onClose,
+    header,
+    formId,
+    showActionBtns = true,
+    width = '600px'
+  }: ModalProps) {
+
   const activeClass = isActive ? 'active' : '';
 
   return (
     <div className={`Modal ${className}`}>
       <div className={`Modal__overlay ${activeClass}`} onClick={onClose} />
-      <div className={`Modal__body  ${activeClass}`}>
+      <div className={`Modal__body  ${activeClass}`} style={{ maxWidth: width }}>
 
         <RiCloseLine onClick={onClose} className="Modal__closeBtn" />
 
@@ -47,5 +60,4 @@ export function Modal({ className, isActive, children, onOk, onClose, header, fo
       </div>
     </div>
   );
-};
-
+}
