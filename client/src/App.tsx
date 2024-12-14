@@ -1,8 +1,6 @@
-import { Router } from './router';
-import './assets/entries.scss';
+import 'assets/entries.scss';
+import { Router } from 'router';
 
-function App() {
+export default function App() {
   return <Router />;
 }
-
-export default App;
