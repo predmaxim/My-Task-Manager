@@ -2,7 +2,7 @@ export { Header } from './Header';
 export { HomeHeader } from './HomeHeader';
 export { Footer } from './Footer';
 export { Loading } from './Loading';
-export { NewProject } from './NewProject';
+export { CreateNewProject } from './CreateNewProject';
 export { ButtonWithIcon } from './ButtonWithIcon';
 export { Modal } from './Modal';
 export { Search } from './Search';

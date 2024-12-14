@@ -1,11 +1,10 @@
-@import 'src/assets/vars.scss';
+@import "assets/vars.scss";
 
-.NewProject {
+.CreateNewProject {
   margin: auto;
-  margin-bottom: 50px
 }
 
-.NewProjectForm {
+.CreateNewProjectForm {
   display: flex;
   gap: 10px;
 
@@ -24,7 +23,8 @@
     font-size: .88rem;
   }
 
-  &__input {}
+  &__input {
+  }
 
   &__selectIconBtn.button {
     display: flex;
