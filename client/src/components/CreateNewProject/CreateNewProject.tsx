@@ -79,15 +79,12 @@ export function CreateNewProject() {
           autoFocus
         />
       </div>
-      <button
-        type="button"
-        className="CreateNewProjectForm__selectIconBtn button"
+      <ButtonWithIcon
+        className="CreateNewProjectForm__selectIconBtn"
+        icon={ProjectIcon?.type.name}
+        text={!ProjectIcon ? 'Select Icon' : undefined}
         onClick={() => onActionModal(setShowIconModal, true)}
-      >
-        {ProjectIcon
-          ? ProjectIcon
-          : <span className="CreateNewProjectForm__text">Select Icon</span>}
-      </button>
+      />
     </div>
   );
 
