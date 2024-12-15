@@ -33,7 +33,8 @@ export function CreateNewTask({ projectName, taskStatus }: CreateNewTaskType) {
         : undefined,
       comments: [],
       number: total + 1,
-      created: new Date()
+      created: new Date(),
+      priority: 'low'
     };
     dispatch(createNewTaskThunk(newTask));
     setNewTaskName(undefined);
