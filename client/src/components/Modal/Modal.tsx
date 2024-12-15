@@ -1,3 +1,4 @@
+import { MouseEvent } from 'react';
 import { RiCloseLine } from 'react-icons/ri';
 import './Modal.scss';
 
@@ -6,11 +7,11 @@ export type ModalProps = {
   isActive: boolean,
   children: JSX.Element,
   onClose: () => void,
-  onOk?: () => void,
+  onOk?: (e: MouseEvent<HTMLButtonElement>) => void,
   header: string,
   formId?: string,
   showActionBtns?: boolean,
-  width?: string
+  width?: string,
 }
 
 export function Modal(
@@ -32,20 +33,16 @@ export function Modal(
     <div className={`Modal ${className}`}>
       <div className={`Modal__overlay ${activeClass}`} onClick={onClose} />
       <div className={`Modal__body  ${activeClass}`} style={{ maxWidth: width }}>
-
         <RiCloseLine onClick={onClose} className="Modal__closeBtn" />
-
         <h5 className="Modal__header">{header}</h5>
         <div className="Modal__content">{children}</div>
-
-        {
-          showActionBtns &&
+        {showActionBtns &&
           <div className="actions">
             <button
               className="Modal__okBtn button"
               onClick={onOk}
-              type="submit"
               form={formId}
+              type="submit"
             >Ok
             </button>
             <button
@@ -54,9 +51,7 @@ export function Modal(
               type="button"
             >Cancel
             </button>
-          </div>
-        }
-
+          </div>}
       </div>
     </div>
   );
