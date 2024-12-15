@@ -13,13 +13,8 @@ export function CurrentProjectBtn() {
   const { currentProject }: ProjectsReducerStateType = useSelector((state: RootState) => state.projects);
   const [showIconModal, setShowIconModal] = useState(false);
 
-  const onClickCurrentProjectBtn = () => {
-    setShowIconModal(true);
-  };
-
-  const onClickOnProjectBtn = () => {
-    setShowIconModal(false);
-  };
+  const onClickCurrentProjectBtn = () => setShowIconModal(true);
+  const onClickOnProjectBtn = () => setShowIconModal(false);
 
   return (
     <div className="CurrentProjectBtnWrap">
