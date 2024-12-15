@@ -1,5 +1,6 @@
-@import "assets/vars.scss";
+@import "assets/vars";
+@import "assets/mixins";
 
 .CurrentProjectBtn {
-
+  @include button("xl", "100%");
 }

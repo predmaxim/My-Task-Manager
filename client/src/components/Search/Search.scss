@@ -1,5 +1,9 @@
+@import "assets/vars";
+@import "assets/mixins";
+
 .Search {
   &__input {
     width: calc(100% - 25px);
+    @include input;
   }
 }
