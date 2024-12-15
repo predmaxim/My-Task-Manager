@@ -15,28 +15,31 @@
   --bg-color: #ffffff;
 
   --primary-color: #ec4545;
-  --primary-color-darker: #e2e2e2;
+  --primary-color-darker: #c23131;
   --secondary-color: #505050;
-  --secondary-color-darker: #2B2B2B;
+  --secondary-color-darker: #2b2b2b;
   --success-color: #45ec69;
   --warning-color: #ecd345;
   --error-color: #ec4545;
-  --color-light-grey: #F0F0F0;
+  --color-light-grey: #f0f0f0;
   --color-light-grey-darker: #e1e1e1;
 
   --border-color: #d1d1d1;
   --border-color-darker: #949494;
 
-  --footer-bg-color: #F0F0F0;
+  --footer-bg-color: #f0f0f0;
   --footer-font-color: #000000;
 
   --block-shadow-color: #c0bdbd;
 
   --overlay-bg: rgb(87 87 87 / 50%);
 
-  --1-column-header-color: #FFBEBE;
-  --2-column-header-color: #FDFFB2;
-  --3-column-header-color: #B8FFC3;
+  --1-column-header-color: #ffbebe;
+  --2-column-header-color: #fdffb2;
+  --3-column-header-color: #b8ffc3;
+
+  --scroll-foreground-color: #b2b2b2;
+  --scroll-background-color: #e5e5e5;
 
   ::-webkit-input-placeholder {
     color: var(--font-color-dimmed)
