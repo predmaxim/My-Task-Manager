@@ -27,12 +27,14 @@ export type ProjectType = {
   name: string,
   status: ProjectStatusType,
   created: Date,
+  tasks: TaskInProject,
   user?: UserType['_id'],
   current?: boolean,
   icon?: string,
   color?: string,
-  tasks?: TaskType['_id'][],
 };
+
+export type TaskInProject = number;
 
 export type TaskType = {
   _id?: string,
@@ -43,6 +45,7 @@ export type TaskType = {
   project: ProjectType['name']
   status: TaskStatusType,
   lastStatus: TaskStatusType,
+  index: number,
   description?: string,
   done?: false | Date,
   priority: TaskPriorityType['name'],
