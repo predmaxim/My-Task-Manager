@@ -43,6 +43,14 @@ export function Task({ task }: TaskProps) {
     isEdit,
     setIsEdit
   ] = useState<boolean>(!taskName);
+  const [
+    isMenuActive,
+    setIsMenuActive
+  ] = useState(false);
+
+  const removeTask = () => {
+    dispatch(deleteTaskThunk(task._id));
+  };
 
   const saveTask = (taskFieldsToUpdate: Partial<TaskType>) => {
     taskName.trim()
@@ -133,12 +141,31 @@ export function Task({ task }: TaskProps) {
     saveTask({ ...task, ...updatedTask });
   };
 
+  const actions = [
+    {
+      name: 'remove',
+      action: removeTask
+    }
+  ];
+
+  const activeClassMenu = isMenuActive ? 'active' : '';
+
+  const onClickMenu = (e: MouseEvent<HTMLButtonElement>) => {
+    e.stopPropagation();
+    setIsMenuActive(true);
+  };
+
   return (
     <>
       <div
         className={`Task  ${taskDone ? 'done' : ''}`}
         onClick={onClickTask}
       >
+        {<PopupMenu
+          className={`Task__popup ${activeClassMenu}`}
+          actions={actions}
+          closeMenu={() => setIsMenuActive(false)}
+        />}
         <div className="Task-header">
           <input
             className="Task__checkbox"
@@ -173,7 +200,7 @@ export function Task({ task }: TaskProps) {
           </div>
           <ButtonWithIcon
             className="Task__menuBtn"
-            onClick={onClickDeleteBtn}
+            onClick={onClickMenu}
             icon="RiMore2Line"
           />
         </div>
