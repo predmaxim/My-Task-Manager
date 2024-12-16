@@ -33,6 +33,7 @@ export const TaskSchema =
       priority: String,
       status: String,
       lastStatus: String,
+      index: Number,
       parent: {
         type: Schema.Types.ObjectId,
         ref: 'Task'
