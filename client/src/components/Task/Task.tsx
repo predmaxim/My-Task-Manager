@@ -136,7 +136,7 @@ export function Task({ task }: TaskProps) {
   return (
     <>
       <div
-        className="Task"
+        className={`Task  ${taskDone ? 'done' : ''}`}
         onClick={onClickTask}
       >
         <div className="Task-header">
@@ -151,7 +151,7 @@ export function Task({ task }: TaskProps) {
           />
           <div className="TaskNameWrap">
             <div
-              className={`Task__name ${taskDone ? 'done' : ''}`}
+              className={`Task__name`}
             >
               {!isEdit
                 ? taskName
