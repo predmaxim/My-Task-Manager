@@ -3,6 +3,7 @@ import { Search } from 'components/Search';
 import { Link } from 'react-router-dom';
 import { ROUTES } from 'router/routes';
 import { CurrentProjectBtn } from '../CurrentProjectBtn';
+import { ThemeSwitcher } from '../ThemeSwitcher/ThemeSwitcher';
 import './Header.scss';
 
 export function Header() {
@@ -13,7 +14,10 @@ export function Header() {
           <img src={logoHorizontal} className="Header__logoImg" alt="logo" />
         </Link>
         <Search className="Header__search" />
-        <CurrentProjectBtn />
+        <div className="Header__buttonWrap">
+          <ThemeSwitcher />
+          <CurrentProjectBtn />
+        </div>
       </div>
     </header>
   );

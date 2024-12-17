@@ -1,56 +1,57 @@
-@media (prefers-color-scheme: dark) {
-  html {
-    color-scheme: dark;
-  }
-}
+//@media (prefers-color-scheme: dark) {
+//  html {
+//    color-scheme: dark;
+//  }
+//}
 
 :root {
+  .light {
+    --font-color: #333333;
+    --font-color-alt: #000000;
+    --font-color-dimmed: #999999;
+    --font-color-dimmed-darker: #666666;
 
-  // LIGHT THEME
-  --font-color: #333333;
-  --font-color-alt: #000000;
-  --font-color-dimmed: #999999;
-  --font-color-dimmed-darker: #666666;
+    --bg-color: #ffffff;
 
-  --bg-color: #ffffff;
+    --primary-color: #ec4545;
+    --primary-color-darker: #c23131;
+    --secondary-color: #505050;
+    --secondary-color-darker: #2b2b2b;
+    --success-color: #45ec69;
+    --warning-color: #ecd345;
+    --error-color: #ec4545;
 
-  --primary-color: #ec4545;
-  --primary-color-darker: #c23131;
-  --secondary-color: #505050;
-  --secondary-color-darker: #2b2b2b;
-  --success-color: #45ec69;
-  --warning-color: #ecd345;
-  --error-color: #ec4545;
+    --color-light-grey: #f0f0f0;
+    --color-light-grey-dimmed: #f8f8f8;
+    --color-light-grey-darker: #e1e1e1;
 
-  --color-light-grey: #f0f0f0;
-  --color-light-grey-dimmed: #f8f8f8;
-  --color-light-grey-darker: #e1e1e1;
+    --modal-bg: #ffffff;
 
-  --modal-bg: #ffffff;
+    --border-color: #d1d1d1;
+    --border-color-darker: #949494;
 
-  --border-color: #d1d1d1;
-  --border-color-darker: #949494;
+    --footer-bg-color: #f0f0f0;
+    --footer-font-color: #000000;
 
-  --footer-bg-color: #f0f0f0;
-  --footer-font-color: #000000;
+    --block-shadow-color: #c0bdbd;
 
-  --block-shadow-color: #c0bdbd;
+    --overlay-bg: rgb(87 87 87 / 50%);
 
-  --overlay-bg: rgb(87 87 87 / 50%);
+    --1-column-header-color: #ffbebe;
+    --2-column-header-color: #fdffb2;
+    --3-column-header-color: #b8ffc3;
 
-  --1-column-header-color: #ffbebe;
-  --2-column-header-color: #fdffb2;
-  --3-column-header-color: #b8ffc3;
+    --scroll-foreground-color: #b2b2b2;
+    --scroll-background-color: #e5e5e5;
 
-  --scroll-foreground-color: #b2b2b2;
-  --scroll-background-color: #e5e5e5;
+    ::-webkit-input-placeholder {
+      color: var(--font-color-dimmed)
+    }
 
-  ::-webkit-input-placeholder {
-    color: var(--font-color-dimmed)
   }
 
-  //DARK THEME
-  @media (prefers-color-scheme: dark) {
+  //@media (prefers-color-scheme: dark) {
+  .dark {
     --font-color: #e5e5e5;
     --font-color-alt: #000000;
     --font-color-dimmed: #999999;
@@ -92,9 +93,12 @@
     ::-webkit-input-placeholder {
       color: var(--font-color-dimmed)
     }
+
     .Header__logoImg,
     .logoVertical {
       filter: brightness(10);
     }
   }
+
+  //}
 }

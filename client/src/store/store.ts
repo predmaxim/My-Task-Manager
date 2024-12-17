@@ -6,12 +6,14 @@ import { commentReducer } from './reducers/commentReducer';
 import { projectReducer } from './reducers/projectReducer';
 import { searchReducer } from './reducers/searchReducer';
 import { taskReducer } from './reducers/taskReducer';
+import { themeReducer } from './reducers/themeReducer';
 
 const rootReducer = combineReducers({
   projects: projectReducer,
   tasks: taskReducer,
   comments: commentReducer,
-  search: searchReducer
+  search: searchReducer,
+  theme: themeReducer
 });
 
 const composeEnhancers = composeWithDevTools({ trace: true });
