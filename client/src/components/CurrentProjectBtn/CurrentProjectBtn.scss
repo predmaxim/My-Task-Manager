@@ -2,5 +2,5 @@
 @import "assets/mixins";
 
 .CurrentProjectBtn {
-  @include button("xl", "100%");
+  @include button("xl", 100%);
 }
