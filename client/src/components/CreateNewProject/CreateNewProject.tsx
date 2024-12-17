@@ -1,15 +1,17 @@
 import { ButtonWithIcon } from 'components/ButtonWithIcon';
 import { icons } from 'components/icons';
 import { Modal } from 'components/Modal';
-import { ChangeEvent, useCallback, useEffect, useMemo, useState } from 'react';
+import { ChangeEvent, ReactNode, useCallback, useEffect, useMemo, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { IconType } from 'react-icons';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
 import { createNewProjectThunk } from 'store/asyncActions/createNewProjectThunk';
 import { onActionModal } from 'utils/helpers';
 import { ThunkDispatchType } from 'utils/types';
+import { RootState } from '../../store';
 import { setCurrentProjectThunk } from '../../store/asyncActions/setCurrentProjectThunk';
+import { ProjectsReducerStateType } from '../../store/reducers/projectReducer';
 import './CreateNewProject.scss';
 
 export function CreateNewProject() {
@@ -18,7 +20,8 @@ export function CreateNewProject() {
   const [showIconModal, setShowIconModal] = useState(false);
   const [ProjectIcon, setProjectIcon] = useState<JSX.Element>();
   const [inputValue, setInputValue] = useState('');
-  const [allIcons, setAllIcons] = useState<JSX.Element[]>();
+  const [allIcons, setAllIcons] = useState<ReactNode[]>();
+  const { projects }: ProjectsReducerStateType = useSelector((state: RootState) => state.projects);
 
   const onChangeInputHandler = (e: ChangeEvent<HTMLInputElement>) => {
     setInputValue(e.target.value);
@@ -26,12 +29,16 @@ export function CreateNewProject() {
 
   const onOkModal = () => {
     if (inputValue) {
-      dispatch(createNewProjectThunk(inputValue.trim(), ProjectIcon?.type.name));
-      dispatch(setCurrentProjectThunk(inputValue.trim()));
-      setNewProjectModal(false);
-      setInputValue('');
-      setProjectIcon(undefined);
-      toast(`"${inputValue}" project was created`);
+      if (projects.some(el => el.name === inputValue)) {
+        toast(`Project name "${inputValue}" is busy`);
+      } else {
+        dispatch(createNewProjectThunk(inputValue.trim(), ProjectIcon?.type.name));
+        dispatch(setCurrentProjectThunk(inputValue.trim()));
+        setNewProjectModal(false);
+        setInputValue('');
+        setProjectIcon(undefined);
+        toast(`"${inputValue}" project was created`);
+      }
     } else {
       toast('Field "Name" cannot be empty');
     }
