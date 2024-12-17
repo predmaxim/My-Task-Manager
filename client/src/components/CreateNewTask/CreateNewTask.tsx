@@ -4,6 +4,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import TextareaAutosize from 'react-textarea-autosize';
 import { RootState } from '../../store';
 import { createNewTaskThunk } from '../../store/asyncActions/createNewTaskThunk';
+import { ProjectsReducerStateType } from '../../store/reducers/projectReducer';
 import { TASK_STATUSES, TEMP_USER } from '../../utils/constants';
 import { TaskStatusType, TaskType, ThunkDispatchType } from '../../utils/types';
 import './CreateNewTask.scss';
@@ -15,30 +16,33 @@ export type CreateNewTaskType = {
 
 export function CreateNewTask({ projectName, taskStatus }: CreateNewTaskType) {
   const dispatch: ThunkDispatchType = useDispatch();
-  const { total } = useSelector((state: RootState) => state.tasks);
+  const { currentProject }: ProjectsReducerStateType = useSelector((state: RootState) => state.projects);
   const [newTaskName, setNewTaskName] = useState<string>();
   const [showTaskCreator, setShowTaskCreator] = useState(false);
 
   const createNewTask = () => {
-    const newTask: TaskType = {
-      name: newTaskName || '',
-      project: projectName,
-      user: TEMP_USER,
-      status: taskStatus,
-      lastStatus: taskStatus === TASK_STATUSES.done as TaskStatusType
-        ? TASK_STATUSES.queue as TaskStatusType
-        : taskStatus,
-      done: taskStatus === TASK_STATUSES.done as TaskStatusType
-        ? new Date()
-        : undefined,
-      comments: [],
-      number: total + 1,
-      created: new Date(),
-      priority: 'low'
-    };
-    dispatch(createNewTaskThunk(newTask));
-    setNewTaskName(undefined);
-    setShowTaskCreator(false);
+    if (currentProject) {
+      const newTask: TaskType = {
+        name: newTaskName || '',
+        project: projectName,
+        user: TEMP_USER,
+        status: taskStatus,
+        lastStatus: taskStatus === TASK_STATUSES.done as TaskStatusType
+          ? TASK_STATUSES.queue as TaskStatusType
+          : taskStatus,
+        done: taskStatus === TASK_STATUSES.done as TaskStatusType
+          ? new Date()
+          : undefined,
+        comments: [],
+        created: new Date(),
+        priority: 'low',
+        number: currentProject.tasks + 1,
+        index: 0
+      };
+      dispatch(createNewTaskThunk(newTask as TaskType));
+      setNewTaskName(undefined);
+      setShowTaskCreator(false);
+    }
   };
 
   const onClickNewBtn = () => setShowTaskCreator(true);
