@@ -1,7 +1,7 @@
 import { ButtonWithIcon } from 'components/ButtonWithIcon';
 import { Modal } from 'components/Modal';
 import { TaskContent } from 'components/TaskContent';
-import { ChangeEvent, KeyboardEvent, MouseEvent, useState } from 'react';
+import { ChangeEvent, ComponentProps, ElementType, KeyboardEvent, MouseEvent, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { useDispatch } from 'react-redux';
 import TextareaAutosize from 'react-textarea-autosize';
@@ -10,13 +10,21 @@ import { TaskStatusType, TaskType, ThunkDispatchType } from 'utils/types';
 import { deleteTaskThunk } from '../../store/asyncActions/deleteTaskThunk';
 import { updateTaskThunk } from '../../store/asyncActions/updateTaskThunk';
 import { TASK_STATUSES } from '../../utils/constants';
+import { PopupMenu } from '../PopupMenu/PopupMenu';
 import './Task.scss';
 
-export type TaskProps = {
-  task: TaskType;
-}
+export type TaskOWnProps<E extends ElementType = ElementType> = {
+  task: TaskType
+};
 
-export function Task({ task }: TaskProps) {
+export type TaskProps<E extends ElementType> =
+  TaskOWnProps<E> & Omit<ComponentProps<E>, keyof TaskOWnProps>;
+
+const defaultElement = 'div';
+
+export function Task<E extends ElementType = typeof defaultElement>(
+  { task, ...otherProps }: TaskProps<E>
+) {
   const dispatch: ThunkDispatchType = useDispatch();
 
   const [
@@ -54,8 +62,10 @@ export function Task({ task }: TaskProps) {
 
   const saveTask = (taskFieldsToUpdate: Partial<TaskType>) => {
     taskName.trim()
-      ? dispatch(updateTaskThunk({ _id: task._id, ...taskFieldsToUpdate } as TaskType))
-      : dispatch(deleteTaskThunk(task._id));
+      ? dispatch(updateTaskThunk(
+        { _id: task._id, ...taskFieldsToUpdate } as TaskType
+      ))
+      : removeTask();
   };
 
   //done
@@ -121,12 +131,6 @@ export function Task({ task }: TaskProps) {
   const onChangeTaskName = (e: ChangeEvent<HTMLTextAreaElement>) =>
     setTaskName(e.currentTarget.value);
 
-  //delete
-  const onClickDeleteBtn = (e: MouseEvent<HTMLButtonElement>) => {
-    e.stopPropagation();
-    setIsEdit(true);
-  };
-
   // Modal
   const onClickTask = () => {
     if (!isEdit) {
@@ -160,6 +164,7 @@ export function Task({ task }: TaskProps) {
       <div
         className={`Task  ${taskDone ? 'done' : ''}`}
         onClick={onClickTask}
+        {...otherProps}
       >
         {<PopupMenu
           className={`Task__popup ${activeClassMenu}`}
