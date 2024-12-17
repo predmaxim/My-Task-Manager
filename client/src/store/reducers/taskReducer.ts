@@ -2,18 +2,12 @@ import { TaskType } from 'utils/types';
 
 export type TaskReducerStateType = {
   tasks: TaskType[],
-  isLoading: boolean,
-  total: number
+  isLoading: boolean
 }
-
-export type TaskWithTotalType = {
-  tasks: TaskType[],
-  total: number
-};
 
 type SET_TASKS_ActionType = {
   type: string,
-  payload: TaskWithTotalType
+  payload: TaskType[]
 }
 
 type CREATE_TASK_ActionType = {
@@ -30,7 +24,6 @@ type DELETE_TASK_ActionType = {
   type: string,
   payload: TaskType['_id']
 }
-
 type SET_LOADING_ActionType = {
   type: string,
   payload: boolean
@@ -46,8 +39,7 @@ export type TaskActionType =
 
 export const initialState: TaskReducerStateType = {
   tasks: [],
-  isLoading: true,
-  total: 0
+  isLoading: true
 };
 
 // actions
@@ -67,33 +59,29 @@ export const taskReducer = (
     case SET_TASKS:
       return {
         ...state,
-        tasks: (action.payload as TaskWithTotalType).tasks,
-        total: (action.payload as TaskWithTotalType).total
+        tasks: action.payload as TaskType[]
       };
 
     case CREATE_TASK:
-      const tasks: TaskType[] = state.tasks;
+      const tasks: TaskType[] = [...state.tasks];
       const newTask: TaskType = action.payload as TaskType;
-      tasks.push(newTask);
-      tasks.sort((a: TaskType, b: TaskType) =>
-        new Date(b.created).getTime() - new Date(a.created).getTime());
+      tasks.unshift(newTask);
       return {
         ...state,
-        tasks: tasks,
-        total: state.total + 1
+        tasks: tasks
       };
 
     case UPDATE_TASK:
       const updatedTask: TaskType = action.payload as TaskType;
-      const allWithoutUpdated: TaskType[] = state.tasks.filter(({ _id: id, project, number }: TaskType) =>
-        id !== updatedTask._id
-        && (project === updatedTask.project && number !== updatedTask.number));
-
+      const newAllTasks = [...state.tasks];
+      const updateTaskIndex = state.tasks.findIndex((task: TaskType) =>
+        updatedTask._id && task._id === updatedTask._id ||
+        (task.number === updatedTask.number && task.project === updatedTask.project));
+      newAllTasks.splice(updateTaskIndex, 1);
+      newAllTasks.splice(updateTaskIndex, 0, updatedTask);
       return {
         ...state,
-        tasks: [...allWithoutUpdated, updatedTask].sort((a: TaskType, b: TaskType) =>
-          new Date(b.created).getTime() - new Date(a.created).getTime()),
-        total: state.total
+        tasks: newAllTasks
       };
 
     case DELETE_TASK:
@@ -104,8 +92,7 @@ export const taskReducer = (
       ];
       return {
         ...state,
-        tasks: tasksWithoutDeleted,
-        total: state.total - 1
+        tasks: tasksWithoutDeleted
       };
 
     case SET_LOADING:
@@ -120,7 +107,7 @@ export const taskReducer = (
 };
 
 // action creators
-export const setTasks = (payload: TaskWithTotalType): SET_TASKS_ActionType =>
+export const setTasks = (payload: TaskType[]): SET_TASKS_ActionType =>
   ({ type: SET_TASKS, payload });
 
 export const createTask = (payload: TaskType): CREATE_TASK_ActionType =>
