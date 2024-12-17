@@ -1,4 +1,3 @@
-import { ButtonWithIcon } from 'components/ButtonWithIcon';
 import { CreateNewTask } from 'components/CreateNewTask/CreateNewTask';
 import { Task } from 'components/Task';
 import { useCallback, useLayoutEffect, useState } from 'react';
@@ -36,7 +35,7 @@ export function Board({ currentProjectName }: BoardType) {
     const newQuery = new RegExp(query.toLowerCase());
     const tasksByStatus: TaskType[] = tasks.filter(
       (task: TaskType) => task.status === status
-    );
+    ).sort((a, b) => a.index - b.index);
 
     return {
       id: status,
@@ -74,13 +73,8 @@ export function Board({ currentProjectName }: BoardType) {
     const taskSourceIndex = source.index;
     const taskDestinationIndex = destination.index;
 
-
-    const sourceColumn: ColumnType = {
-      ...newBoard[columnSourceIndex]
-    };
-    const destinationColumn: ColumnType = {
-      ...newBoard[columnDestinationIndex]
-    };
+    const sourceColumn: ColumnType = newBoard[columnSourceIndex];
+    const destinationColumn: ColumnType = newBoard[columnDestinationIndex];
 
     const [removedTask] = sourceColumn.tasks
       .splice(taskSourceIndex, 1);
@@ -97,14 +91,20 @@ export function Board({ currentProjectName }: BoardType) {
 
     destinationColumn.tasks.splice(taskDestinationIndex, 0, removedTask);
 
-    setBoard(newBoard);
+    [sourceColumn, destinationColumn].forEach((column) =>
+      column.tasks.forEach((task, i) => {
+        task.index = i;
+        dispatch(updateTaskThunk(task));
+        return task;
+      }));
 
     const newTasks = newBoard
       .map((column) => column.tasks)
       .flat();
 
+    setBoard(newBoard);
     dispatch(setTasks(newTasks));
-    dispatch(updateTaskThunk(removedTask));
+
   };
 
   const getAllTasks = useCallback(
@@ -119,16 +119,17 @@ export function Board({ currentProjectName }: BoardType) {
   return (
     <div className={`Board`}>
       <DragDropContext key={'Board'} onDragEnd={onDragEnd}>
-        {board.map(({ id, title, onClickMenu, tasks }: ColumnType) => {
+        {board.map(({ id, title, onClickMenu, tasks, total }: ColumnType) => {
           return (
             <div className={`column column-${title}`} key={`column-${id}`}>
               <div className="column__header">
                 <div className="column__title">{upperCaseFirstLetter(title)}</div>
-                <ButtonWithIcon
-                  className="column__menuBtn"
-                  onClick={onClickMenu}
-                  icon="RiMore2Line"
-                />
+                {/*<ButtonWithIcon*/}
+                {/*  className="column__menuBtn"*/}
+                {/*  onClick={onClickMenu}*/}
+                {/*  icon="RiMore2Line"*/}
+                {/*/>*/}
+                {/*{total}*/}
               </div>
               <div className="column__CreateNewTask">
                 {currentProjectName &&
