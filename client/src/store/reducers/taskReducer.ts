@@ -65,6 +65,7 @@ export const taskReducer = (
     case CREATE_TASK:
       const tasks: TaskType[] = [...state.tasks];
       const newTask: TaskType = action.payload as TaskType;
+      tasks.forEach((task: TaskType) => task.index = task.status === newTask.status ? task.index + 1 : task.index);
       tasks.unshift(newTask);
       return {
         ...state,

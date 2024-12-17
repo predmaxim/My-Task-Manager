@@ -13,7 +13,7 @@ export const getTasksFromDbThunk = (projectName: string) => {
         data: TaskType[]
       } = await axios.get(`${BASE_URL}/api/tasks/${projectName}`);
 
-      dispatch(setTasks(data.sort((a, b) => new Date(a.created).getDate() - new Date(b.created).getDate())));
+      dispatch(setTasks(data));
 
       dispatch(setLoadingTasks(false));
     } catch (error) {
