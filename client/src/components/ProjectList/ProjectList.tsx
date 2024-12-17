@@ -6,8 +6,8 @@ import { toast } from 'react-toastify';
 import { RootState } from 'store';
 import { ProjectsReducerStateType } from 'store/reducers/projectReducer';
 import { ProjectType, ThunkDispatchType } from 'utils/types';
+import { ROUTES } from '../../router/routes';
 import { deleteProjectThunk } from '../../store/asyncActions/deleteProjectThunk';
-import { getAllProjectsFromDbThunk } from '../../store/asyncActions/getAllProjectsFromDbThunk';
 import { setCurrentProjectThunk } from '../../store/asyncActions/setCurrentProjectThunk';
 import { deleteSearch } from '../../store/reducers/searchReducer';
 import { BASE_PROJECT_URL } from '../../utils/constants';
@@ -19,7 +19,7 @@ export type ProjectListType = {
 
 export function ProjectList({ isModalAction }: ProjectListType) {
   const dispatch: ThunkDispatchType = useDispatch();
-  const { projects }: ProjectsReducerStateType = useSelector((state: RootState) => state.projects);
+  const { projects, currentProject }: ProjectsReducerStateType = useSelector((state: RootState) => state.projects);
   const navigate = useNavigate();
 
   const onClickHandler = (project: ProjectType) => {
@@ -31,8 +31,10 @@ export function ProjectList({ isModalAction }: ProjectListType) {
 
   const removeAction = (projectName: string) => {
     dispatch(deleteProjectThunk(projectName));
-    dispatch(getAllProjectsFromDbThunk());
     toast(`Project "${projectName}" was removed`);
+    if (currentProject && projectName === currentProject.name) {
+      navigate(ROUTES.projects);
+    }
   };
 
   const editAction = () => {
