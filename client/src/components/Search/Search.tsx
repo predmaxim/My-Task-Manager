@@ -1,15 +1,15 @@
-import { ChangeEvent, useState } from 'react';
-import { useDispatch } from 'react-redux';
-import { deleteSearch, setSearch } from '../../store/reducers/searchReducer';
-import { ThunkDispatchType } from '../../utils/types';
-import { ButtonWithIcon } from '../ButtonWithIcon';
+import {ChangeEvent, useState} from 'react';
+import {useDispatch} from 'react-redux';
+import {deleteSearch, setSearch} from 'store/reducers/searchReducer';
+import {ThunkDispatchType} from 'utils/types';
+import {ButtonWithIcon} from 'components/ButtonWithIcon';
 import './Search.scss';
 
 export type SearchProps = {
   className?: string;
 }
 
-export function Search({ className }: SearchProps) {
+export function Search({className}: SearchProps) {
   const dispatch: ThunkDispatchType = useDispatch();
   const [inputValue, setInputValue] = useState('');
 
