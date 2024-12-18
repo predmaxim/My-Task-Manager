@@ -19,11 +19,20 @@
     "ecmaVersion": "latest",
     "sourceType": "module"
   },
-  "plugins": ["@typescript-eslint", "react", "react-hooks",  "import", "jsx-a11y"],
+  "plugins": [
+    "@typescript-eslint",
+    "react",
+    "react-hooks",
+    "import",
+    "jsx-a11y"
+  ],
   "rules": {
     "react-hooks/rules-of-hooks": "error",
     "react-hooks/exhaustive-deps": "warn",
-    "comma-dangle": ["error", "only-multiline"],
+    "comma-dangle": [
+      "error",
+      "only-multiline"
+    ],
     "react/prop-types": "off",
     "react/display-name": "off",
     "@typescript-eslint/explicit-function-return-type": "off",
