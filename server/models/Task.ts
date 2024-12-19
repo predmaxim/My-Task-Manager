@@ -1,6 +1,6 @@
-import { model, models, Schema } from 'mongoose';
-import { TaskType } from '../utils/types';
-import { CommentSchema } from './Comment';
+import {model, models, Schema} from 'mongoose';
+import {TaskType} from '../utils/types';
+import {CommentSchema} from './Comment';
 
 export const TaskSchema =
   new Schema<TaskType>({
@@ -14,7 +14,7 @@ export const TaskSchema =
         maxLength: [100, 'Your project name must be shorter than 50 characters'],
         required: true
       },
-      user: { type: Schema.Types.ObjectId, ref: 'User' },
+      user: {type: Schema.Types.ObjectId, ref: 'User'},
       project: {
         type: Schema.Types.String,
         ref: 'Project',
@@ -32,7 +32,6 @@ export const TaskSchema =
       done: Schema.Types.Mixed,
       priority: String,
       status: String,
-      lastStatus: String,
       index: Number,
       parent: {
         type: Schema.Types.ObjectId,
