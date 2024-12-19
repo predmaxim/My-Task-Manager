@@ -11,10 +11,8 @@ import commentRoute from './routes/comments';
 dotenv.config();
 
 const PORT = process.env.PORT || 5001;
-const DB_USER = process.env.DB_USER;
-const DB_PASSWORD = process.env.DB_PASSWORD;
-const DB_NAME = process.env.DB_NAME;
-const DB_URI = `mongodb+srv://${DB_USER}:${DB_PASSWORD}@cluster0.huzyqov.mongodb.net/${DB_NAME}?retryWrites=true&w=majority&appName=AtlasApp`;
+const DB_URI = `mongodb://${process.env.DB_SERVICE_NAME}/${process.env.DB_NAME}:${process.env.DB_PORT}`;
+
 
 const app: Express = express();
 
