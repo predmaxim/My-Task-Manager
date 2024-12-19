@@ -7,6 +7,9 @@
   &__buttonWrap {
     display: flex;
     gap: 10px;
+    @media screen and (width <=$mobile) {
+      flex: 1;
+    }
   }
 
   .container {
@@ -19,7 +22,7 @@
       gap: 30px;
     }
 
-    @media screen and (width <=760px) {
+    @media screen and (width <=$mobile) {
       gap: 10px;
       flex-wrap: wrap;
     }
