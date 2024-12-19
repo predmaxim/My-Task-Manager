@@ -1,6 +1,6 @@
-import { ThunkAction, ThunkDispatch } from 'redux-thunk';
-import { RootState } from '../store';
-import { PROJECT_STATUSES, ROLES, TASK_PRIORITY, TASK_STATUSES } from './constants';
+import {ThunkAction, ThunkDispatch} from 'redux-thunk';
+import {RootState} from '../store';
+import {PROJECT_STATUSES, ROLES, TASK_PRIORITY, TASK_STATUSES} from './constants';
 
 export type ThemeType = 'dark' | 'light';
 export type LanguageType = 'ru' | 'en';
@@ -44,7 +44,6 @@ export type TaskType = {
   user: UserType['_id'],
   project: ProjectType['name']
   status: TaskStatusType,
-  lastStatus: TaskStatusType,
   index: number,
   description?: string,
   done?: false | Date,
@@ -79,3 +78,12 @@ export type CommentType = {
 export type AnyType = any;
 export type ThunkDispatchType = ThunkDispatch<RootState, AnyType, AnyType>
 export type ThunkActionType = ThunkAction<AnyType, RootState, AnyType, AnyType>
+
+export type TaskMenuActionType = {
+  name: 'edit' | 'remove',
+  action: () => void
+};
+
+export type TaskUpdateFieldsType =
+  Pick<TaskType, '_id' | 'number' | 'project'>
+  & Partial<Exclude<TaskType, '_id' | 'number' | 'project'>>
