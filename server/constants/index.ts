@@ -1,5 +1,7 @@
-export const SERVER_URL = 'http://localhost';
-export const SERVER_PORT = '5000';
+import * as process from 'node:process';
+
+export const SERVER_URL = process.env.SERVER_URL || 'http://localhost';
+export const SERVER_PORT = process.env.SERVER_PORT || '5000';
 export const BASE_URL = `${SERVER_URL}:${SERVER_PORT}`;
 
 export const TASK_STATUSES = {
@@ -12,14 +14,9 @@ export const TASK_PRIORITY = {
   low: 'low',
   normal: 'normal',
   high: 'high'
-};
-
-export const PROJECT_STATUSES = {
-  active: 'active',
-  inactive: 'inactive'
-};
+} as const;
 
 export const ROLES = {
   admin: 'admin',
   user: 'user'
-};
+} as const;
