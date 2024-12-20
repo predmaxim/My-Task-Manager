@@ -1,12 +1,16 @@
 [
   {
-    "name": "predmaxim",
-    "email": "predmaxim@ya.ru",
+    "id": 1,
+    "name": "test",
+    "email": "test@test.ru",
     "password": "pass",
     "avatar": "https://www.pinclipart.com/picdir/big/165-1653686_female-user-icon-png-download-user-colorful-icon.png",
-    "role": "admin",
+    "role": 1,
     "created": 1696226995998,
     "lastVisit": 1696826995998,
-    "projects": []
+    "projects": [
+      1,
+      2
+    ]
   }
 ]

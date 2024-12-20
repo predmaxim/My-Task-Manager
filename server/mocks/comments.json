@@ -1,14 +1,22 @@
 [
   {
-    "comment": "Some comment",
-    "author": "651bf0065fb59a873e3adc4d",
-    "task": "651c1f275fb59a873e3adc59",
-    "parent": false
+    "id": 1,
+    "content": "Some comment",
+    "user": 1,
+    "task": 1,
+    "parent": null,
+    "children": [
+      2
+    ],
+    "created": 1696329635849
   },
   {
-    "comment": "Some comment 2",
-    "author": "651bf0065fb59a873e3adc4d",
-    "task": "651c1f275fb59a873e3adc59",
-    "parent": "651c20de5fb59a873e3adc67"
+    "id": 2,
+    "content": "Some comment 2",
+    "user": 1,
+    "task": 1,
+    "parent": 1,
+    "children": [],
+    "created": 1696329635849
   }
 ]
