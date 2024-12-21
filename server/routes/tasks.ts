@@ -5,7 +5,7 @@ const router = Router();
 
 // Get Tasks
 // http://localhost:5000/api/tasks
-router.get('/api/tasks/:projectName', getTasks);
+router.get('/api/tasks/:projectId', getTasks);
 
 // Get Task
 // http://localhost:5000/api/tasks/:id
