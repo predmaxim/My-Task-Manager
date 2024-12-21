@@ -11,7 +11,7 @@ export type GlobalStateType = {
 };
 
 export type UserType = {
-  _id?: string,
+  id?: string,
   name: string,
   email: string,
   password: string,
@@ -19,16 +19,16 @@ export type UserType = {
   created: Date,
   lastVisit: Date,
   avatarURL?: string,
-  projects?: ProjectType['_id'][]
+  projects?: ProjectType['id'][]
 };
 
 export type ProjectType = {
-  _id?: string,
+  id?: string,
   name: string,
   status: ProjectStatusType,
   created: Date,
   tasks: TaskInProject,
-  user?: UserType['_id'],
+  user?: UserType['id'],
   current?: boolean,
   icon?: string,
   color?: string,
@@ -37,11 +37,11 @@ export type ProjectType = {
 export type TaskInProject = number;
 
 export type TaskType = {
-  _id?: string,
+  id?: string,
   number: number,
   name: string,
   created: Date,
-  user: UserType['_id'],
+  user: UserType['id'],
   project: ProjectType['name']
   status: TaskStatusType,
   index: number,
@@ -68,7 +68,7 @@ export type TaskPriorityType = {
 export type FileType = string;
 
 export type CommentType = {
-  _id?: string,
+  id?: string,
   comment: string,
   author: UserType,
   parent?: string
@@ -85,5 +85,5 @@ export type TaskMenuActionType = {
 };
 
 export type TaskUpdateFieldsType =
-  Pick<TaskType, '_id' | 'number' | 'project'>
-  & Partial<Exclude<TaskType, '_id' | 'number' | 'project'>>
+  Pick<TaskType, 'id' | 'number' | 'project'>
+  & Partial<Exclude<TaskType, 'id' | 'number' | 'project'>>
