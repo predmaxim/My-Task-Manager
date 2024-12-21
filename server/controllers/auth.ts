@@ -1,19 +1,19 @@
-import {Request, Response} from 'express';
+import {Request, RequestHandler, Response} from 'express';
 import {compareSync, genSaltSync, hashSync} from 'bcrypt-ts';
 import jwt from 'jsonwebtoken';
-import {prisma} from '../lib/prisma-client';
+import {prisma} from '@/lib/prisma-client';
 
 const JWT_SECRET = process.env.JWT_SECRET || '';
 const JWT_EXPIRES = process.env.JWT_EXPIRES || '15m';
 
 // Register user
-export const register = async (req: Request, res: Response) => {
+export const register: RequestHandler = async (req: Request, res: Response) => {
   try {
     const {email, password} = req.body as { email: string, password: string };
     const isUsed = await prisma.user.findFirst({where: {email}});
 
     if (isUsed) {
-      return res.status(400).json({message: 'This email is already busy'});
+      res.status(400).json({message: 'This email is already busy'});
     }
 
     const salt = genSaltSync(10);
@@ -22,7 +22,7 @@ export const register = async (req: Request, res: Response) => {
       data: {
         password: hash,
         email,
-        role_id: 2
+        roleId: 2
       }
     });
     const token = jwt.sign({id: newUser.id}, JWT_SECRET, {expiresIn: JWT_EXPIRES});
@@ -35,19 +35,21 @@ export const register = async (req: Request, res: Response) => {
 };
 
 // Login user
-export const login = async (req: Request, res: Response) => {
+export const login: RequestHandler = async (req: Request, res: Response) => {
   try {
     const {email, password} = req.body;
     const user = await prisma.user.findFirst({where: {email}});
 
     if (!user) {
-      return res.status(404).json({message: 'User not found'});
+      res.status(404).json({message: 'User not found'});
+      return;
     }
 
     const isPasswordCorrect = compareSync(password, user.password);
 
     if (!isPasswordCorrect) {
-      return res.status(403).json({message: 'Incorrect password'});
+      res.status(403).json({message: 'Incorrect password'});
+      return;
     }
 
     const token = jwt.sign({id: user.id}, JWT_SECRET, {expiresIn: JWT_EXPIRES});
@@ -60,21 +62,23 @@ export const login = async (req: Request, res: Response) => {
 };
 
 // Get Me
-export const getMe = async (req: Request, res: Response) => {
+export const getMe: RequestHandler = async (req: Request, res: Response) => {
   try {
     const id = req.query.userId ? Number(req.query.userId) : null;
 
     if (!id) {
-      return res.status(400).json({message: 'Bad payload'});
+      res.status(400).json({message: 'Bad payload'});
+      return;
     }
 
     const user = await prisma.user.findUnique({where: {id}});
 
     if (!user) {
-      return res.status(404).json({message: 'User not found'});
+      res.status(404).json({message: 'User not found'});
+      return;
     }
 
-    const token = jwt.sign({id: user.id}, JWT_SECRET, {expiresIn: JWT_EXPIRES});
+    const token = jwt.sign({id: user?.id}, JWT_SECRET, {expiresIn: JWT_EXPIRES});
 
     res.status(200).json({user, token});
 

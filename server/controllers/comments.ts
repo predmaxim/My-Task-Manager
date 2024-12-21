@@ -1,25 +1,25 @@
 import {Request, Response} from 'express';
-import {CommentType} from '../types';
-import {prisma} from '../lib/prisma-client';
+import {prisma} from '@/lib/prisma-client';
+import {CommentSchema} from '@/zod-schemas';
+import {z} from 'zod';
 
 export const createComment = async (req: Request, res: Response) => {
     try {
-      const {taskId, comment}: { taskId: string, comment: CommentType } = req.body;
-      const id = taskId ? Number(taskId) : null;
-
-      if (!id) {
-        return res.status(400).json({message: 'Task ID cannot be empty'});
-      }
+      const {taskId, comment} = z.object({
+        taskId: z.number(),
+        comment: CommentSchema
+      }).parse(req.body);
 
       if (!comment) {
-        return res.status(400).json({message: 'Comment cannot be empty'});
+        res.status(400).json({message: 'Comment cannot be empty'});
+        return;
       }
 
       const newComment = prisma.comment.create({data: comment});
 
       try {
         await prisma.task.update({
-            where: {id},
+            where: {id: taskId},
             data: {
               comments: {
                 include: newComment

@@ -8,28 +8,6 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Task {
-  id          Int       @id @default(autoincrement())
-  name        String
-  description String?
-  created     DateTime  @default(now())
-  done        Boolean   @default(false)
-  priority    Priority  @relation(fields: [priority_id], references: [id])
-  priority_id Int
-  status      Status    @relation(fields: [status_id], references: [id])
-  status_id   Int
-  parent      Task?     @relation("TaskToTask", fields: [parent_id], references: [id])
-  parent_id   Int?
-  project     Project   @relation(fields: [project_id], references: [id])
-  project_id  Int
-  index       Int       @default(0)
-  due         DateTime?
-  in_work     Int?
-  files       File[]
-  children    Task[]    @relation("TaskToTask")
-  comments    Comment[]
-}
-
 model User {
   id       Int       @id @default(autoincrement())
   name     String?
@@ -38,8 +16,8 @@ model User {
   avatar   String?
   created  DateTime  @default(now())
   projects Project[]
-  role     Role      @relation(fields: [role_id], references: [id])
-  role_id  Int
+  role     Role      @relation(fields: [roleId], references: [id])
+  roleId   Int
 }
 
 model Project {
@@ -49,44 +27,66 @@ model Project {
   icon    String?
   color   String?
   tasks   Task[]
-  user    User     @relation(fields: [user_id], references: [id])
-  user_id Int
+  user    User     @relation(fields: [userId], references: [id])
+  userId  Int
+}
+
+model Task {
+  id          Int       @id @default(autoincrement())
+  name        String
+  description String?
+  created     DateTime  @default(now())
+  done        Boolean   @default(false)
+  priority    Priority  @relation(fields: [priorityId], references: [id])
+  priorityId  Int
+  status      Status    @relation(fields: [statusId], references: [id])
+  statusId    Int
+  parent      Task?     @relation("TaskToTask", fields: [parentId], references: [id])
+  parentId    Int?
+  project     Project   @relation(fields: [projectId], references: [id])
+  projectId   Int
+  index       Int       @default(0)
+  due         DateTime?
+  in_work     Int?
+  files       File[]
+  children    Task[]    @relation("TaskToTask")
+  comments    Comment[]
 }
 
 model Comment {
-  id        Int       @id @default(autoincrement())
-  content   String
-  parent    Comment?  @relation("CommentToComment", fields: [parent_id], references: [id])
-  parent_id Int?
-  children  Comment[] @relation("CommentToComment")
-  task      Task      @relation(fields: [task_id], references: [id])
-  task_id   Int
-  created   DateTime  @default(now())
+  id       Int       @id @default(autoincrement())
+  content  String
+  parent   Comment?  @relation("CommentToComment", fields: [parentId], references: [id])
+  parentId Int?
+  children Comment[] @relation("CommentToComment")
+  task     Task      @relation(fields: [taskId], references: [id])
+  taskId   Int
+  created  DateTime  @default(now())
 }
 
 model File {
   id      Int      @id @default(autoincrement())
   src     String
-  task    Task     @relation(fields: [task_id], references: [id])
-  task_id Int
+  task    Task     @relation(fields: [taskId], references: [id])
+  taskId  Int
   created DateTime @default(now())
 }
 
 model Role {
   id   Int    @id @default(autoincrement())
   name String
-  User User[]
+  user User[]
 }
 
 model Priority {
   id    Int    @id @default(autoincrement())
   name  String
   color String
-  Task  Task[]
+  task  Task[]
 }
 
 model Status {
   id   Int    @id @default(autoincrement())
   name String
-  Task Task[]
+  task Task[]
 }
