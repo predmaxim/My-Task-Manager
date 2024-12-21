@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "docker compose up -d && nodemon --ext '.ts,.json' --exec 'ts-node index.ts'"
+    "start": "npx prisma generate && docker compose up -d && nodemon --ext '.ts,.json' --exec 'ts-node index.ts'"
   },
   "keywords": [],
   "author": "",

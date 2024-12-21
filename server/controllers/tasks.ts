@@ -1,21 +1,13 @@
 // import jwt from 'jsonwebtoken';
 import {Request, RequestHandler, Response} from 'express';
-import {TaskType} from '@/types';
 import {prisma} from '@/lib/prisma-client';
+import {TaskSchema} from '@/zod-schemas';
 
 export const getTasks: RequestHandler = async (req: Request, res: Response) => {
   try {
-    const projectId = req.params.projectId ? Number(req.params.projectId) : null;
-
-    if (!projectId) {
-      res.status(400).json({message: 'Project ID cannot be empty'});
-      return;
-    }
-
+    const projectId = TaskSchema.parse(req.query).projectId;
     const tasks = await prisma.task.findMany({where: {project: {id: projectId}}, orderBy: {index: 'asc'}});
-
     res.status(200).json(tasks);
-
   } catch (error) {
     res.status(500).json({message: 'Something went wrong', error});
   }
@@ -23,13 +15,7 @@ export const getTasks: RequestHandler = async (req: Request, res: Response) => {
 
 export const getTask: RequestHandler = async (req: Request, res: Response) => {
   try {
-    const id = req.params.id ? Number(req.params.id) : null;
-
-    if (!id) {
-      res.status(400).json({message: 'Task ID cannot be empty'});
-      return;
-    }
-
+    const id = TaskSchema.parse(req.query).id;
     const task = await prisma.task.findUnique({where: {id}});
 
     if (!task) {
@@ -46,22 +32,7 @@ export const getTask: RequestHandler = async (req: Request, res: Response) => {
 
 export const createTask: RequestHandler = async (req: Request, res: Response) => {
   try {
-    const task: TaskType = req.body;
-
-    // TODO: implement zod validation
-
-    if (!task.name) {
-      res.status(400).json({message: 'Task name cannot be empty'});
-      return;
-    }
-    if (!task.projectId) {
-      res.status(400).json({message: 'Task project cannot be empty'});
-      return;
-    }
-    if (!task.statusId) {
-      res.status(400).json({message: 'Task status cannot be empty'});
-      return;
-    }
+    const task = TaskSchema.parse(req.body);
 
     await prisma.task.updateMany({
       where: {statusId: task.statusId}, data: {
@@ -70,10 +41,9 @@ export const createTask: RequestHandler = async (req: Request, res: Response) =>
         }
       }
     });
+
     const newTask = prisma.task.create({data: task});
-
     res.status(201).json({task: newTask});
-
   } catch (error) {
     res.status(500).json({message: 'Something went wrong', error});
   }

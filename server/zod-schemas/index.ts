@@ -36,12 +36,12 @@ const BaseTaskSchema = z.object({
   index: z.number(),
   due: z.date().optional(),
   in_work: z.number().optional(),
-  files: z.array(FileSchema).optional(),
+  filesId: z.array(FileSchema),
   comments: z.array(CommentSchema).optional()
 });
 
 type TaskSchemaType = z.infer<typeof BaseTaskSchema> & {
-  children?: TaskSchemaType[] | null
+  children?: TaskSchemaType[];
 };
 
 export const TaskSchema: z.ZodType<TaskSchemaType> = BaseTaskSchema.extend({
