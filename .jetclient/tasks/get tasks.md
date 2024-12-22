@@ -1,0 +1,7 @@
+```toml
+name = 'get tasks'
+method = 'GET'
+url = 'http://localhost:5000/api/tasks/1'
+sortWeight = 1000000
+id = 'dcf88480-1995-4851-b85e-be34fc4c69a0'
+```
