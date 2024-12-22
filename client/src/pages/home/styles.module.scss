@@ -1,0 +1,31 @@
+@import "src/assets/vars";
+@import "src/assets/mixins";
+
+.Home {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.button {
+  @include button("xl", auto, "primary");
+  margin-top: 1rem;
+
+  &:hover {
+    color: inherit;
+  }
+}
+
+.description {
+  max-width: 40rem;
+  text-align: center;
+}
+
+.img {
+  width: 100%;
+  max-width: 60rem;
+  margin: 2rem 0;
+  box-shadow: 0 15px 35px -10px var(--block-shadow-color);
+  border-radius: 1rem;
+}

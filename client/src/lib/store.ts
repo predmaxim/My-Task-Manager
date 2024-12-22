@@ -9,23 +9,25 @@ import themeReducer from '@/lib/features/theme-slice';
 import { projectsApi } from '@/services/projects';
 import { tasksApi } from '@/services/tasks';
 import { commentsApi } from '@/services/comments';
+import { authApi } from '@/services/auth.ts';
 
 
 const store = configureStore({
   reducer: {
     projects: projectsReducer,
     tasks: tasksReducer,
-    users: usersReducer,
+    auth: usersReducer,
     comments: commentsReducer,
     search: searchReducer,
     theme: themeReducer,
     [projectsApi.reducerPath]: projectsApi.reducer,
     [tasksApi.reducerPath]: tasksApi.reducer,
     [commentsApi.reducerPath]: commentsApi.reducer,
+    [authApi.reducerPath]: authApi.reducer,
   },
   devTools: process.env.NODE_ENV !== 'production',
   middleware: (getDefaultMiddleware) =>
-    getDefaultMiddleware().concat(projectsApi.middleware, tasksApi.middleware, commentsApi.middleware),
+    getDefaultMiddleware().concat(projectsApi.middleware, tasksApi.middleware, commentsApi.middleware, authApi.middleware),
 });
 
 export type RootState = ReturnType<typeof store.getState>;

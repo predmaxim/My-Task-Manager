@@ -1,4 +1,6 @@
 .Footer {
+  position: sticky;
+  top: 100vh;
   grid-area: footer;
   margin: auto;
   width: fit-content;

@@ -7,7 +7,7 @@ export const authApi = createApi({
   baseQuery: fetchBaseQuery({ baseUrl: `${API_URL}/` }),
   endpoints: (builder) => ({
     getMe: builder.query<AuthType, void>({
-      query: (id) => `auth/me${id}`,
+      query: () => `auth/me`,
     }),
     login: builder.mutation<AuthType, LoginType>({
       query: (body) => ({
@@ -16,7 +16,7 @@ export const authApi = createApi({
         body,
       }),
     }),
-    register: builder.mutation<AuthType, RegisterType>({
+    register: builder.mutation<AuthType | Error, RegisterType>({
       query: (body) => ({
         url: `auth/register`,
         method: 'POST',

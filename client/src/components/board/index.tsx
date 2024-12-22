@@ -26,7 +26,7 @@ export function Board({ currentProjectId }: BoardType) {
   });
   const [updateTask] = useUpdateTaskMutation();
   const [board, setBoard] = useState<ColumnType[]>([]);
-  const { query } = useAppSelector((state) => state.search);
+  const query = useAppSelector((state) => state.search.query);
 
   const genColumn = useCallback((status: TaskStatusType): ColumnType => {
     const newQuery = new RegExp(query.toLowerCase());

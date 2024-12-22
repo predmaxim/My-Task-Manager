@@ -1,4 +1,8 @@
 export const ROUTES = {
-  projects: '/',
-  tasks: 'project/:slug'
-}
+  home: '/',
+  projects: '/projects',
+  tasks: 'project/:slug',
+  login: '/login',
+  register: '/register',
+  me: '/me',
+};

@@ -5,13 +5,13 @@ import { toast } from 'react-toastify';
 import { ProjectType } from '@/types';
 import { ROUTES } from '@/router/routes';
 import { BASE_PROJECT_URL } from '@/constants';
-import './styles.module.scss';
 import { useId } from 'react';
 import { useAppDispatch, useAppSelector } from '@/lib/store';
 import { useDeleteProjectMutation } from '@/services/projects.ts';
 import { setCurrentProject } from '@/lib/features/projects-slice.ts';
 import { setSearch } from '@/lib/features/search-slice.ts';
 import { Loading } from '@/components/loading';
+import styles from './styles.module.scss';
 
 export type ProjectListType = {
   isModalAction?: () => void;
@@ -48,20 +48,20 @@ export function ProjectList({ isModalAction }: ProjectListType) {
   }
 
   if (!projects?.length) {
-    return <p>No projects found</p>;
+    return <p className={styles.ProjectList__noProjects}>No projects found</p>;
   }
 
   console.log('projects', projects);
 
   return (
-    <div className="ProjectList">
+    <div className={styles.ProjectList}>
       <CreateNewProject />
-      {!!projects.length && <p className="ProjectList__project-header">Select Project:</p>}
-      <div className="ProjectList__container">
-        {projects.map((project: ProjectType) => (
+      {!!projects.length && <p className={styles['ProjectList__project-header']}>Select Project:</p>}
+      <div className={styles.ProjectList__container}>
+        {projects.map((project) => (
           <ButtonWithIcon
             key={project.id || id}
-            className="ProjectButton"
+            className={styles.ProjectButton}
             icon={project?.icon}
             text={project.name}
             onClick={() => onClickHandler(project)}

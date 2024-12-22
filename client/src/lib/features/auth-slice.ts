@@ -1,9 +1,9 @@
 import type { PayloadAction } from '@reduxjs/toolkit';
 import { createSlice } from '@reduxjs/toolkit';
-import { AuthType, TokenType, UserType } from '@/types';
+import { AuthType, TokenType, UserWithoutPassType } from '@/types';
 
 interface AuthState {
-  user: UserType | null;
+  user: UserWithoutPassType | null;
   token: TokenType | null;
   isLoading: boolean;
 }
