@@ -1,9 +1,9 @@
-import {HomeLayout, Layout} from '@/components/layouts';
 import {BrowserRouter, Route, Routes} from 'react-router-dom';
 import {ROUTES} from './routes';
-import {ProjectsPage} from '@/pages/projects';
-import {TasksPage} from '@/pages/tasks';
-import {NotFoundPage} from '@/pages/not-found';
+import { HomeLayout, Layout } from '@/components/layouts';
+import { ProjectsPage } from '@/pages/projects';
+import { TasksPage } from '@/pages/tasks';
+import { NotFoundPage } from '@/pages/not-found';
 
 export function Router() {
   return (

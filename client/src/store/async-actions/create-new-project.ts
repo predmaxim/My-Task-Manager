@@ -11,7 +11,7 @@ export const createNewProject = (projectName: string, icon: string) => {
       const project: ProjectType = {
         name: projectName,
         status: 'active',
-        created: new Date(),
+        created: new Date(), 
         icon: icon,
         current: false,
         tasks: 0
