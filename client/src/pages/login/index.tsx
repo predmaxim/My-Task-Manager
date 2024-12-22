@@ -3,6 +3,7 @@ import { useLoginMutation } from '@/services/auth.ts';
 import { FormEvent, useState } from 'react';
 import { UserSchema } from '../../../../server/zod-schemas/generated';
 import Input from '@/components/input';
+import { Link } from 'react-router-dom';
 
 export function LoginPage() {
   const [login] = useLoginMutation();
@@ -41,6 +42,10 @@ export function LoginPage() {
         <button type="submit" className={styles.submit}>Login</button>
         {errors && <div className={styles.error}>{errors}</div>}
       </form>
+      <div className={styles.account}>
+        <p>No account?</p>
+        <Link to="/register" className={styles.accountButton}>Register</Link>
+      </div>
     </div>
   );
 }

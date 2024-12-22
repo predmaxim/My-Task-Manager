@@ -32,3 +32,18 @@
   font-size: 0.8rem;
   margin-top: 0.5rem;
 }
+
+.account {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
+}
+
+.accountButton {
+  @include button("s", $color: "secondary");
+
+  &:hover {
+    color: var(--font-color);
+  }
+}
