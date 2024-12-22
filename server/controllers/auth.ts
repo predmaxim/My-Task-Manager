@@ -3,7 +3,7 @@ import { compareSync, genSaltSync, hashSync } from "bcrypt-ts";
 import jwt from "jsonwebtoken";
 import { prisma } from "@/lib/prisma-client";
 import { z } from "zod";
-import { JWT_EXPIRES, JWT_SECRET } from "@/constants";
+import { JWT_ACCESS_TOKEN_EXPIRES, JWT_REFRESH_TOKEN_EXPIRES, JWT_SECRET } from "@/constants";
 import { UserSchema } from "@/zod-schemas/generated";
 
 export const register: RequestHandler = async (req: Request, res: Response) => {
@@ -32,15 +32,22 @@ export const register: RequestHandler = async (req: Request, res: Response) => {
       },
     });
 
-    const token = jwt.sign({ id: newUser.id }, JWT_SECRET, {
-      expiresIn: JWT_EXPIRES,
+    const userWithoutPass = UserSchema.omit({password: true}).parse(newUser);
+
+    const access_token = jwt.sign({ id: userWithoutPass.id }, JWT_SECRET, {
+      expiresIn: JWT_ACCESS_TOKEN_EXPIRES,
     });
 
-    const { password: pass, ...userWithoutPass } = newUser;
+    const refresh_token = jwt.sign({ id: access_token }, JWT_SECRET, {
+      expiresIn: JWT_REFRESH_TOKEN_EXPIRES,
+    });
 
     res.status(201).json({
       user: userWithoutPass,
-      token,
+      token: {
+        access_token,
+        refresh_token
+      },
       message: "Registration completed successfully",
       ok: true,
     });
@@ -69,21 +76,29 @@ export const login: RequestHandler = async (req: Request, res: Response) => {
     const hash = hashSync(password, salt);
     const isPasswordCorrect = compareSync(hash, user.password);
 
-    console.log(hash);
-    console.log(user.password);
+    console.log('hash:', hash);
+    console.log('password:', user.password);
 
     if (!isPasswordCorrect) {
       res.status(403).json({ message: "Incorrect password" });
       return;
     }
 
-    const { password: pass, ...userWithoutPass } = user;
-    const token = jwt.sign({ id: user.id }, JWT_SECRET, {
-      expiresIn: JWT_EXPIRES,
+    const userWithoutPass = UserSchema.omit({ password: true }).parse(user);
+
+    const access_token = jwt.sign({ id: userWithoutPass.id }, JWT_SECRET, {
+      expiresIn: JWT_ACCESS_TOKEN_EXPIRES,
+    });
+
+    const refresh_token = jwt.sign({ id: access_token }, JWT_SECRET, {
+      expiresIn: JWT_REFRESH_TOKEN_EXPIRES,
     });
 
     res.status(200).json({
-      token,
+      token: {
+        access_token,
+        refresh_token
+      },
       user: userWithoutPass,
       message: "Auth success!",
       ok: true,
@@ -95,12 +110,12 @@ export const login: RequestHandler = async (req: Request, res: Response) => {
 
 export const getMe: RequestHandler = async (req: Request, res: Response) => {
   try {
-    const accessToken = z
+    const access_token = z
       .string()
       .parse(req.headers.authorization)
       .replace("Bearer ", "");
 
-    if (!accessToken) {
+    if (!access_token) {
       res
         .status(403)
         .json({ message: "Forbidden! No access token found", ok: false });
@@ -108,7 +123,7 @@ export const getMe: RequestHandler = async (req: Request, res: Response) => {
     }
 
     const decoded = UserSchema.pick({ id: true }).parse(
-      jwt.verify(accessToken, JWT_SECRET),
+      jwt.verify(access_token, JWT_SECRET),
     );
     const user = await prisma.user.findUnique({ where: { id: decoded.id } });
 
@@ -152,7 +167,7 @@ export const refresh: RequestHandler = async (req: Request, res: Response) => {
     }
 
     const newAccessToken = jwt.sign({ id: user.id }, JWT_SECRET, {
-      expiresIn: JWT_EXPIRES,
+      expiresIn: JWT_ACCESS_TOKEN_EXPIRES,
     });
 
     res.status(200).json({ accessToken: newAccessToken, ok: true });
