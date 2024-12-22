@@ -2,6 +2,7 @@ import { ROUTES } from '@/router/routes';
 import styles from './styles.module.scss';
 import { useAppSelector } from '@/lib/store';
 import { Link } from 'react-router-dom';
+import img from "@/assets/img/img_1.png"
 
 export function HomePage() {
   const user = useAppSelector((state) => state.auth.user);
@@ -17,7 +18,7 @@ export function HomePage() {
           </p>
           <Link to={user ? ROUTES.projects : ROUTES.login} className={styles.button}>Start Now</Link>
         </div>
-        <img src="public/img_1.png" alt="image" className={styles.img} />
+        <img src={img} alt="project page image" className={styles.img} />
       </section>
     </div>
   );

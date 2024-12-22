@@ -10,7 +10,7 @@ import { TokenSchema } from '@/zod-schemas/custom';
 import { Link } from 'react-router-dom';
 
 export function RegisterPage() {
-  const [register, result] = useRegisterMutation();
+  const [register] = useRegisterMutation();
   const [errors, setErrors] = useState<string | null>(null);
   const dispatch = useAppDispatch();
 
@@ -30,9 +30,8 @@ export function RegisterPage() {
     }
 
     try {
-      const { data } = await register({ email, password, name });
+      const  data  = await register({ email, password, name });
       console.log('RegisterPage => handleSubmit => data:', data);
-      console.log('RegisterPage => handleSubmit => result:', result);
 
       if (data instanceof Error) {
         setErrors(data.message);
@@ -40,7 +39,6 @@ export function RegisterPage() {
       }
 
       const authData = z.object({ user: UserSchema.omit({ password: true }) }).extend({ token: TokenSchema }).parse(data);
-
       dispatch(setAuthData(authData));
       setErrors(null);
     } catch (error) {
