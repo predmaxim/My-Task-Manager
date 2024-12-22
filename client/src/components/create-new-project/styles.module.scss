@@ -1,0 +1,69 @@
+@import "src/assets/vars";
+@import "src/assets/mixins";
+
+.CreateNewProject {
+  margin: auto;
+}
+
+.CreateNewProjectForm {
+  display: flex;
+  gap: 10px;
+  align-items: flex-end;
+
+  .ButtonWithIcon__text {
+    margin: 0;
+  }
+
+  @media screen and (width <=$mobile) {
+    flex-direction: column;
+  }
+
+  .input-wrapper {
+    display: flex;
+    gap: 5px;
+    flex-direction: column;
+    flex: 1;
+  }
+
+  &__label {
+    font-size: .88rem;
+  }
+
+  &__input {
+    @include input;
+  }
+
+  &__selectIconBtn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    align-self: end;
+    padding: 10px;
+    font-size: 1.8rem;
+
+    @media screen and (width <=$mobile) {
+      align-self: auto;
+    }
+
+  }
+
+  &__text {
+    font-size: .8rem;
+    padding: 0 10px;
+  }
+}
+
+.iconsBox {
+  &__icon {
+    font-size: 1.5rem;
+  }
+
+  &__btn {
+    @include button("s");
+    padding: 0.5rem 0.6rem;
+
+    &:hover {
+      background-color: var(--color-light-grey);
+    }
+  }
+}

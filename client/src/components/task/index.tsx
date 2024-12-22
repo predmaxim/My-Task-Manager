@@ -1,44 +1,44 @@
-import {ButtonWithIcon} from '@/components/button-with-iIcon';
-import {Modal} from '@/components/modal';
-import {TaskContent} from '@/components/task-content';
-import {ChangeEvent, KeyboardEvent, MouseEvent, useState} from 'react';
-import {createPortal} from 'react-dom';
-import {useDispatch} from 'react-redux';
+import { ButtonWithIcon } from '@/components/button-with-iIcon';
+import { Modal } from '@/components/modal';
+import { TaskContent } from '@/components/task-content';
+import { ChangeEvent, KeyboardEvent, MouseEvent, useState } from 'react';
+import { createPortal } from 'react-dom';
 import TextareaAutosize from 'react-textarea-autosize';
-import {formatDate, onActionModal} from '@/utils/helpers';
-import {TaskMenuActionType, TaskStatusType, TaskType, ThunkDispatchType} from '@/utils/types';
-import {deleteTask} from '@/store/async-actions/delete-task';
-import {PopupMenu} from '@/components/popup-menu';
-import './styles.scss';
-import {TASK_STATUSES} from '@/utils/constants';
+import { formatDate } from '@/utils/helpers';
+import { TaskMenuActionType, TaskStatusType, TaskType } from '@/types';
+import { PopupMenu } from '@/components/popup-menu';
+import styles from './styles.module.scss';
+import { TASK_STATUSES } from '@/constants';
+import { useDeleteTaskMutation, useUpdateTaskMutation } from '@/services/tasks';
 
 export type TaskProps = {
   task: TaskType
 };
 
-export function Task({task: initialTask}: TaskProps) {
-  const dispatch: ThunkDispatchType = useDispatch();
-
+export function Task({ task: initialTask }: TaskProps) {
   const [task, setTask] = useState<TaskType>(initialTask);
   const [showModal, setShowModal] = useState(false);
   const [isEdit, setIsEdit] = useState(false);
   const [isMenuActive, setIsMenuActive] = useState(false);
 
-  const updateTask = (taskFieldsToUpdate: Partial<TaskType>) => {
+  const [updateTask] = useUpdateTaskMutation();
+  const [deleteTask] = useDeleteTaskMutation();
+
+  const updateTaskHandler = async (taskFieldsToUpdate: Partial<TaskType>) => {
     const updatedTask: TaskType = {
       ...task,
-      ...taskFieldsToUpdate
+      ...taskFieldsToUpdate,
     };
     setTask(updatedTask);
-    dispatch(updateTask(updatedTask));
+    await updateTask(updatedTask);
   };
 
   const onClickDone = (e: MouseEvent<HTMLInputElement>) => e.stopPropagation();
 
   const onDone = () => {
-    updateTask({
-      done: task.done ? false : new Date,
-      status: task.done ? TASK_STATUSES.queue as TaskStatusType : 'done'
+    updateTaskHandler({
+      done: task.done ? false : new Date(),
+      status: task.done ? TASK_STATUSES.queue as TaskStatusType : 'done',
     });
   };
 
@@ -49,24 +49,24 @@ export function Task({task: initialTask}: TaskProps) {
 
   const onPressKey = (e: KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.code === 'Enter' || e.code === 'NumpadEnter') {
-      task.name.trim() ? updateTask({...task, name: task.name.trim()}) : initialTask.name;
+      task.name.trim() ? updateTaskHandler({ ...task, name: task.name.trim() }) : initialTask.name;
       setIsEdit(false);
     }
     if (e.code === 'Escape') {
       if (initialTask.name !== task.name.trim()) {
-        updateTask({name: initialTask.name});
+        updateTaskHandler({ name: initialTask.name });
       }
       setIsEdit(false);
     }
   };
 
   const onBlurTaskName = () => {
-    updateTask({name: task.name.trim() ? task.name.trim() : initialTask.name});
+    updateTaskHandler({ name: task.name.trim() ? task.name.trim() : initialTask.name });
     setIsEdit(false);
   };
 
   const onChangeTaskName = (e: ChangeEvent<HTMLTextAreaElement>) => {
-    setTask({...task, name: e.currentTarget.value});
+    setTask({ ...task, name: e.currentTarget.value });
   };
 
   const onClickTask = () => {
@@ -78,7 +78,7 @@ export function Task({task: initialTask}: TaskProps) {
   };
 
   const onSubmitForm = (updatedTask: Partial<TaskType>) => {
-    updateTask({...task, ...updatedTask});
+    updateTaskHandler({ ...task, ...updatedTask });
     setShowModal(false);
   };
 
@@ -91,19 +91,19 @@ export function Task({task: initialTask}: TaskProps) {
     setIsEdit(true);
   };
 
-  const removeTask = () => {
-    dispatch(deleteTask(task.id));
+  const removeTask = async () => {
+    await deleteTask(task._id);
   };
 
   const actions: TaskMenuActionType[] = [
     {
       name: 'edit',
-      action: editTask
+      action: editTask,
     },
     {
       name: 'remove',
-      action: removeTask
-    }
+      action: removeTask,
+    },
   ];
 
   const activeClassMenu = isMenuActive ? 'active' : '';
@@ -111,24 +111,24 @@ export function Task({task: initialTask}: TaskProps) {
   return (
     <>
       <div
-        className={`Task  ${!!task.done ? 'done' : ''}`}
+        className={`${styles.Task}  ${task.done ? 'done' : ''}`}
         onClick={onClickTask}
       >
         {<PopupMenu
-          className={`Task__popup ${activeClassMenu}`}
+          className={`${styles.Task__popup} ${activeClassMenu}`}
           actions={actions}
           closeMenu={() => setIsMenuActive(false)}
         />}
-        <div className="Task-header">
+        <div className={styles.Task_header}>
           <input
-            className="Task__checkbox"
+            className={styles.Task__checkbox}
             type="checkbox"
             checked={!!task.done}
             value={task.name}
             onChange={onDone}
             onClick={onClickDone}
           />
-          <div className="TaskNameWrap">
+          <div className={styles.TaskNameWrap}>
             <div
               className={`Task__name`}
             >
@@ -136,13 +136,13 @@ export function Task({task: initialTask}: TaskProps) {
                 ? <>
                   {task.name}
                   <ButtonWithIcon
-                    className="Task__editBtn"
+                    className={styles.Task__editBtn}
                     onClick={onClickEditBtn}
                     icon="RiPencilLine"
                   />
                 </>
                 : <TextareaAutosize
-                  className="Task__editText"
+                  className={styles.Task__editText}
                   onBlur={onBlurTaskName}
                   onChange={onChangeTaskName}
                   onKeyDown={onPressKey}
@@ -152,27 +152,27 @@ export function Task({task: initialTask}: TaskProps) {
             </div>
           </div>
           <ButtonWithIcon
-            className="Task__menuBtn"
+            className={styles.Task__menuBtn}
             onClick={onClickMenu}
             icon="RiMore2Line"
           />
         </div>
         {(!!task.due || !!task.done) &&
-          <div className="Task-footer">
+          <div className={styles.Task_footer}>
             {task.due &&
-              <div className="Task__due">
-                <div className="due">
-                  <span className="due__title">due:</span>
-                  <span className="due__date">
+              <div className={styles.Task__due}>
+                <div className={styles.due}>
+                  <span className={styles.due__title}>due:</span>
+                  <span className={styles.due__date}>
                     {formatDate(task.due)}
                   </span>
                 </div>
               </div>}
             {!!task.done &&
-              <div className="Task__done">
-                <div className="done">
-                  <span className="done__title">done:</span>
-                  <span className="done__date">
+              <div className={styles.Task__done}>
+                <div className={styles.done}>
+                  <span className={styles.done__title}>done:</span>
+                  <span className={styles.done__date}>
                     {formatDate(task.done)}
                   </span>
                 </div>
@@ -182,9 +182,9 @@ export function Task({task: initialTask}: TaskProps) {
       {showModal &&
         createPortal(
           <Modal
-            className="TaskContentModal"
+            className={styles.TaskContentModal}
             isActive={true}
-            onClose={() => onActionModal(setShowModal, false)}
+            onClose={() => setShowModal(false)}
             header={`#${task.number} - ${task.name}`}
             width="930px"
             formId="TaskContentForm"
@@ -194,7 +194,7 @@ export function Task({task: initialTask}: TaskProps) {
               onSubmit={onSubmitForm}
             />
           </Modal>,
-          document.body
+          document.body,
         )}
     </>
   );

@@ -1,52 +1,48 @@
-import {ButtonWithIcon} from '@/components/button-with-iIcon';
-import {icons} from '@/components/icons';
-import {Modal} from '@/components/modal';
-import React, {ChangeEvent, ReactNode, useCallback, useEffect, useMemo, useState} from 'react';
-import {createPortal} from 'react-dom';
-import {IconType} from 'react-icons';
-import {useDispatch, useSelector} from 'react-redux';
-import {toast} from 'react-toastify';
-import {createNewProject} from '@/store/async-actions/create-new-project';
-import {onActionModal} from '@/utils/helpers';
-import {ThunkDispatchType} from '@/utils/types';
-import {RootState} from '@/store';
-import {setCurrentProject} from '@/store/async-actions/set-current-project';
-import {ProjectsReducerStateType} from '@/store/reducers/project-reducer';
-import './styles.scss';
+import { ButtonWithIcon } from '@/components/button-with-iIcon';
+import { icons } from '@/components/icons';
+import { Modal } from '@/components/modal';
+import React, { ChangeEvent, ReactNode, useCallback, useEffect, useMemo, useState } from 'react';
+import { createPortal } from 'react-dom';
+import { IconType } from 'react-icons';
+import { toast } from 'react-toastify';
+import { useAppSelector } from '@/lib/store';
+import { useCreateProjectMutation, useSetCurrentProjectMutation } from '@/services/projects';
+import './styles.module.scss';
 
 export function CreateNewProject() {
-  const dispatch: ThunkDispatchType = useDispatch();
+  const [createNewProject] = useCreateProjectMutation();
+  const [setCurrentProject] = useSetCurrentProjectMutation();
   const [showNewProjectModal, setNewProjectModal] = useState(false);
   const [showIconModal, setShowIconModal] = useState(false);
-  const [ProjectIcon, setProjectIcon] = useState<JSX.Element>();
+  const [ProjectIcon, setProjectIcon] = useState<React.JSX.Element>();
   const [inputValue, setInputValue] = useState('');
   const [allIcons, setAllIcons] = useState<ReactNode[]>();
-  const {projects}: ProjectsReducerStateType = useSelector((state: RootState) => state.projects);
+  const { projects } = useAppSelector((state) => state.projects);
 
   const onChangeInputHandler = (e: ChangeEvent<HTMLInputElement>) => {
     setInputValue(e.target.value);
   };
 
-  const onOkModal = () => {
+  const onOkModal = async () => {
     if (inputValue) {
-      if (projects.some(el => el.name === inputValue)) {
-        toast(`Project name "${inputValue}" is busy`);
+      if (projects?.some((el) => el._id === inputValue)) {
+        toast(`Project id "${inputValue}" is busy`);
       } else {
-        dispatch(createNewProject(inputValue.trim(), ProjectIcon?.type.name));
-        dispatch(setCurrentProject(inputValue.trim()));
+        await createNewProject({ name: inputValue.trim(), icon: ProjectIcon?.type.name });
+        await setCurrentProject({ name: inputValue.trim() });
         setNewProjectModal(false);
         setInputValue('');
         setProjectIcon(undefined);
         toast(`"${inputValue}" project was created`);
       }
     } else {
-      toast('Field "Name" cannot be empty');
+      toast('Field "ID" cannot be empty');
     }
   };
 
   const setIconOnClickHandler = useCallback((icon: React.JSX.Element) => {
     setProjectIcon(icon);
-    onActionModal(setShowIconModal, false);
+    setShowIconModal(false);
   }, []);
 
   const getIcon = useMemo(() => {
@@ -56,10 +52,10 @@ export function CreateNewProject() {
           key={Icon.name}
           className="iconsBox__btn"
           onClick={() => {
-            setIconOnClickHandler(<Icon/>);
+            setIconOnClickHandler(<Icon />);
           }}
         >
-          <Icon className="iconsBox__icon"/>
+          <Icon className="iconsBox__icon" />
         </button>
       );
     });
@@ -89,7 +85,7 @@ export function CreateNewProject() {
         className="CreateNewProjectForm__selectIconBtn"
         icon={ProjectIcon?.type.name}
         text={!ProjectIcon ? 'Select Icon' : undefined}
-        onClick={() => onActionModal(setShowIconModal, true)}
+        onClick={() => setShowIconModal(true)}
       />
     </div>
   );
@@ -104,32 +100,32 @@ export function CreateNewProject() {
         className="CreateNewProject"
         icon="RiAddLine"
         text="New Project"
-        onClick={() => onActionModal(setNewProjectModal, true)}
+        onClick={() => setNewProjectModal(true)}
       />
       {showNewProjectModal && createPortal(
         <Modal
           className="CreateNewProject"
           isActive={true}
-          onClose={() => onActionModal(setNewProjectModal, false)}
+          onClose={() => setNewProjectModal(false)}
           onOk={onOkModal}
           header="Add New Project"
         >
           {NewProjectForm}
         </Modal>,
-        document.body
+        document.body,
       )}
       {showIconModal && createPortal(
         <Modal
           className="IconModal"
           isActive={true}
-          onClose={() => onActionModal(setShowIconModal, false)}
+          onClose={() => setShowIconModal(false)}
           onOk={onOkModal}
           header="Select Icon"
           showActionBtns={false}
         >
           {IconModal}
         </Modal>,
-        document.body
+        document.body,
       )}
     </>
   );

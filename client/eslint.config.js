@@ -1,8 +1,8 @@
-import js from '@eslint/js'
-import globals from 'globals'
-import reactHooks from 'eslint-plugin-react-hooks'
-import reactRefresh from 'eslint-plugin-react-refresh'
-import tseslint from 'typescript-eslint'
+import js from '@eslint/js';
+import globals from 'globals';
+import reactHooks from 'eslint-plugin-react-hooks';
+import reactRefresh from 'eslint-plugin-react-refresh';
+import tseslint from 'typescript-eslint';
 
 export default tseslint.config(
   { ignores: ['dist'] },
@@ -25,4 +25,20 @@ export default tseslint.config(
       ],
     },
   },
-)
+);
+
+// module.exports = {
+//   extends: ['next/core-web-vitals', 'plugin:@typescript-eslint/recommended'],
+//   rules: {
+//     semi: 'warn',
+//     quotes: ['warn', 'single'],
+//     'jsx-quotes': ['warn', 'prefer-double'],
+//   },
+//   plugins: ['@typescript-eslint', 'react', '@tanstack/eslint-plugin-query'],
+//   settings: {
+//     react: {
+//       pragma: 'React',
+//       version: 'detect',
+//     },
+//   },
+// };

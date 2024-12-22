@@ -1,17 +1,17 @@
-import {Helmet, HelmetProvider} from 'react-helmet-async';
-import {APP_NAME} from '@/utils/constants';
-import './styles.scss';
-import {ProjectList} from '@/components/project-list';
+import { Helmet, HelmetProvider } from 'react-helmet-async';
+import { APP_NAME } from '@/constants';
+import styles from './styles.module.scss';
+import { ProjectList } from '@/components/project-list';
 
 export function ProjectsPage() {
   return (
     <HelmetProvider>
-      <main className="ProjectsPage">
+      <main className={styles.ProjectsPage}>
         <Helmet>
           <title>Projects - {APP_NAME}</title>
         </Helmet>
         <div className="container">
-          <ProjectList/>
+          <ProjectList />
         </div>
       </main>
     </HelmetProvider>

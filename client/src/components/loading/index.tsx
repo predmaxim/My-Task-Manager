@@ -1,7 +1,7 @@
-import './styles.scss';
+import styles from './styles.module.scss';
 
 export function Loading() {
   return (
-    <div className="Loading">Loading...</div>
+    <div className={styles.Loading}>Loading...</div>
   );
 }

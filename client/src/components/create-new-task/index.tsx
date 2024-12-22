@@ -1,13 +1,11 @@
-import React, {FocusEvent, KeyboardEvent, useState} from 'react';
-import {useDispatch, useSelector} from 'react-redux';
+import {FocusEvent, KeyboardEvent, useState} from 'react';
 import TextareaAutosize from 'react-textarea-autosize';
-import {RootState} from '@/store';
-import {ProjectsReducerStateType} from '@/store/reducers/project-reducer';
-import {TASK_STATUSES, TEMP_USER} from '@/utils/constants';
-import {TaskStatusType, TaskType, ThunkDispatchType} from '@/utils/types';
+import {TASK_STATUSES, TEMP_USER} from '@/constants';
+import {PartialTaskType, TaskStatusType} from '@/types';
 import {ButtonWithIcon} from '@/components/button-with-iIcon';
-import './styles.scss';
+import styles from './styles.module.scss';
 import {createNewTask} from '@/store/async-actions/create-new-task';
+import {useAppDispatch, useAppSelector} from '@/lib/store';
 
 export type CreateNewTaskType = {
   projectName: string;
@@ -15,15 +13,15 @@ export type CreateNewTaskType = {
 };
 
 export function CreateNewTask({projectName, taskStatus}: CreateNewTaskType) {
-  const dispatch: ThunkDispatchType = useDispatch();
-  const {currentProject}: ProjectsReducerStateType = useSelector((state: RootState) => state.projects);
+  const dispatch = useAppDispatch();
+  const {currentProject} = useAppSelector((state) => state.projects);
 
   const [newTaskName, setNewTaskName] = useState<string>('');
   const [showTaskCreator, setShowTaskCreator] = useState(false);
 
   const createNewTaskHandler = () => {
     if (currentProject) {
-      const newTask: TaskType = {
+      const newTask: PartialTaskType = {
         name: newTaskName,
         project: projectName,
         user: TEMP_USER,
@@ -45,7 +43,11 @@ export function CreateNewTask({projectName, taskStatus}: CreateNewTaskType) {
 
   const onKeyDownTaskName = (e: KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.code === 'Enter' || e.code === 'NumpadEnter') {
-      newTaskName ? createNewTaskHandler() : setShowTaskCreator(false);
+      if (newTaskName) {
+        createNewTaskHandler();
+      } else {
+        setShowTaskCreator(false);
+      }
     }
     if (e.code === 'Escape') {
       setShowTaskCreator(false);
@@ -59,16 +61,16 @@ export function CreateNewTask({projectName, taskStatus}: CreateNewTaskType) {
     setNewTaskName(e.currentTarget.value);
 
   return (
-    <div className="CreateNewTask">
+    <div className={styles.CreateNewTask}>
       <ButtonWithIcon
-        className="CreateNewTask__newTaskBtn"
+        className={styles.CreateNewTask__newTaskBtn}
         onClick={onClickNewBtn}
         icon="RiAddLine"
         text="New Task"
       />
       {showTaskCreator && (
         <TextareaAutosize
-          className="CreateNewTask__newTaskText"
+          className={styles.CreateNewTask__newTaskText}
           onBlur={onBlurNewTaskCreator}
           onKeyDown={onKeyDownTaskName}
           onChange={onChangeHandler}

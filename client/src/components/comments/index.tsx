@@ -1,10 +1,11 @@
-import './styles.scss';
+import styles from './styles.module.scss';
 
 export type CommentsProps = {
   prop?: string;
 }
 
 export function Comments({prop = 'default value'}: CommentsProps) {
+  console.log(styles);
   // if (taskNameEditRef.current) {
   //   const context = taskNameEditRef.current.editor?.getContent({ format: 'raw' });
   //   console.log(context);

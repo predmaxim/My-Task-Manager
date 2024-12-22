@@ -4,17 +4,17 @@ import {Link} from 'react-router-dom';
 import {ROUTES} from '@/router/routes';
 import {CurrentProjectButton} from '@/components/current-project-button';
 import {ThemeSwitcher} from '@/components/theme-switcher';
-import './styles.scss';
+import styles from './styles.module.scss';
 
 export function Header() {
   return (
-    <header className="Header">
+    <header className={styles.Header}>
       <div className="container">
-        <Link to={ROUTES.projects} className="Header_logoLink">
-          <img src={logoHorizontal} className="Header__logoImg" alt="logo"/>
+        <Link to={ROUTES.projects} className={styles.Header_logoLink}>
+          <img src={logoHorizontal} className={styles.Header__logoImg} alt="logo"/>
         </Link>
-        <Search className="Header__search"/>
-        <div className="Header__buttonWrap">
+        <Search className={styles.Header__search}/>
+        <div className={styles.Header__buttonWrap}>
           <ThemeSwitcher/>
           <CurrentProjectButton/>
         </div>

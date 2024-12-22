@@ -1,6 +1,6 @@
 import {MouseEvent} from 'react';
 import {ButtonWithIcon} from '@/components/button-with-iIcon';
-import './styles.scss';
+import styles from './styles.module.scss';
 
 export type PopupMenuAction = {
   name: string,
@@ -15,12 +15,12 @@ export type PopupMenuType = {
 
 export function PopupMenu({actions, className, closeMenu}: PopupMenuType) {
   return (
-    <div className={`PopupMenu ${className}`} onClick={(e: MouseEvent<HTMLDivElement>) => e.stopPropagation()}>
+    <div className={`${styles.PopupMenu} ${className}`} onClick={(e: MouseEvent<HTMLDivElement>) => e.stopPropagation()}>
       {actions.map(({name, action}: PopupMenuAction) => {
         return (
           <button
             key={name}
-            className={`PopupMenu__action action-${name}`}
+            className={`${styles.PopupMenu__action} action-${name}`}
             onClick={action}
             onBlur={closeMenu}
           >
@@ -29,7 +29,7 @@ export function PopupMenu({actions, className, closeMenu}: PopupMenuType) {
         );
       })}
       <ButtonWithIcon
-        className={'close-btn'}
+        className='close-btn'
         onClick={closeMenu}
         icon={'RiCloseLine'}
       />
