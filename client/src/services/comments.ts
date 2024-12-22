@@ -1,15 +1,15 @@
-import {createApi, fetchBaseQuery} from '@reduxjs/toolkit/query/react';
-import {CommentType, PartialCommentType} from '@/types';
-import {API_URL} from '@/constants';
+import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
+import { CommentType, PartialCommentType } from '@/types';
+import { API_URL } from '@/constants';
 
 export const commentsApi = createApi({
   reducerPath: 'commentsApi',
-  baseQuery: fetchBaseQuery({ baseUrl: `${API_URL}/api/` }),
+  baseQuery: fetchBaseQuery({ baseUrl: `${API_URL}/` }),
   endpoints: (builder) => ({
     getComments: builder.query<CommentType[], void>({
       query: () => `comments/`,
     }),
-    getComment: builder.query<CommentType, CommentType['_id']>({
+    getComment: builder.query<CommentType, CommentType['id']>({
       query: (id) => `comments/${id}`,
     }),
     createComment: builder.mutation<CommentType, PartialCommentType>({
@@ -21,7 +21,7 @@ export const commentsApi = createApi({
     }),
     updateComment: builder.mutation<CommentType, CommentType>({
       query: (body) => ({
-        url: `comments/${body._id}`,
+        url: `comments/${body.id}`,
         method: 'PUT',
         body,
       }),
@@ -33,6 +33,6 @@ export const commentsApi = createApi({
       }),
     }),
   }),
-})
+});
 
-export const { useGetCommentQuery, useGetCommentsQuery } = commentsApi
+export const { useGetCommentQuery, useGetCommentsQuery } = commentsApi;

@@ -1,15 +1,15 @@
-import {createApi, fetchBaseQuery} from '@reduxjs/toolkit/query/react';
-import {PartialTaskType, ProjectType, TaskType} from '@/types';
-import {API_URL} from '@/constants';
+import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
+import { PartialTaskType, ProjectType, TaskType } from '@/types';
+import { API_URL } from '@/constants';
 
 export const tasksApi = createApi({
   reducerPath: 'tasksApi',
-  baseQuery: fetchBaseQuery({ baseUrl: `${API_URL}/api/` }),
+  baseQuery: fetchBaseQuery({ baseUrl: `${API_URL}/` }),
   endpoints: (builder) => ({
-    getTasks: builder.query<TaskType[], ProjectType['_id']>({
+    getTasks: builder.query<TaskType[], ProjectType['id']>({
       query: (id) => `tasks/${id}`,
     }),
-    getTask: builder.query<TaskType, TaskType['_id']>({
+    getTask: builder.query<TaskType, TaskType['id']>({
       query: (id) => `tasks/${id}`,
     }),
     createTask: builder.mutation<TaskType, PartialTaskType>({
@@ -21,18 +21,24 @@ export const tasksApi = createApi({
     }),
     updateTask: builder.mutation<TaskType, TaskType>({
       query: (body) => ({
-        url: `tasks/${body._id}`,
+        url: `tasks/${body.id}`,
         method: 'PUT',
         body,
       }),
     }),
-    deleteTask: builder.mutation<void, TaskType['_id']>({
+    deleteTask: builder.mutation<void, TaskType['id']>({
       query: (id) => ({
         url: `tasks/${id}`,
         method: 'DELETE',
       }),
     }),
   }),
-})
+});
 
-export const { useGetTaskQuery, useGetTasksQuery, useDeleteTaskMutation, useCreateTaskMutation, useUpdateTaskMutation } = tasksApi
+export const {
+  useGetTaskQuery,
+  useGetTasksQuery,
+  useDeleteTaskMutation,
+  useCreateTaskMutation,
+  useUpdateTaskMutation,
+} = tasksApi;

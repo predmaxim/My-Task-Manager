@@ -95,8 +95,8 @@ $modal-body-max-height: 80vh;
 
   &__closeBtn {
     position: absolute;
-    top: $modal-padding / 2;
-    right: $modal-padding / 2;
+    top: calc($modal-padding / 2);
+    right: calc($modal-padding / 2);
     font-size: 1.5rem;
     cursor: pointer;
   }

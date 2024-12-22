@@ -11,7 +11,7 @@ import { ButtonWithIcon } from '@/components/button-with-iIcon';
 import { useAppSelector } from '@/lib/store';
 
 export type BoardType = {
-  currentProjectId: ProjectType['_id'];
+  currentProjectId: ProjectType['id'];
 };
 
 export type ColumnType = {

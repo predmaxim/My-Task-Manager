@@ -24,13 +24,13 @@ export function Task({ task: initialTask }: TaskProps) {
   const [updateTask] = useUpdateTaskMutation();
   const [deleteTask] = useDeleteTaskMutation();
 
-  const updateTaskHandler = async (taskFieldsToUpdate: Partial<TaskType>) => {
+  const updateTaskHandler = (taskFieldsToUpdate: Partial<TaskType>) => {
     const updatedTask: TaskType = {
       ...task,
       ...taskFieldsToUpdate,
     };
     setTask(updatedTask);
-    await updateTask(updatedTask);
+    updateTask(updatedTask);
   };
 
   const onClickDone = (e: MouseEvent<HTMLInputElement>) => e.stopPropagation();
@@ -49,7 +49,10 @@ export function Task({ task: initialTask }: TaskProps) {
 
   const onPressKey = (e: KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.code === 'Enter' || e.code === 'NumpadEnter') {
-      task.name.trim() ? updateTaskHandler({ ...task, name: task.name.trim() }) : initialTask.name;
+      if (task.name.trim()) {
+        updateTaskHandler({ ...task, name: task.name.trim() });
+      }
+      task.name = initialTask.name;
       setIsEdit(false);
     }
     if (e.code === 'Escape') {
@@ -92,7 +95,7 @@ export function Task({ task: initialTask }: TaskProps) {
   };
 
   const removeTask = async () => {
-    await deleteTask(task._id);
+    await deleteTask(task.id);
   };
 
   const actions: TaskMenuActionType[] = [
