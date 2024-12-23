@@ -71,12 +71,14 @@ export function CreateNewProject() {
 
   return (
     <>
-      <ButtonWithIcon
-        className={styles.CreateNewProject}
-        icon="RiAddLine"
-        text="New Project"
-        onClick={() => setNewProjectModal(true)}
-      />
+      <div className={styles.CreateNewProject}>
+        <ButtonWithIcon         
+        className={styles.CreateNewProject__btn}  
+          icon="RiAddLine"
+          text="New Project"
+          onClick={() => setNewProjectModal(true)}
+          />
+        </div>
       <Modal
         isActive={showNewProjectModal}
         onClose={() => setNewProjectModal(false)}
@@ -104,10 +106,9 @@ export function CreateNewProject() {
           />
         </div>
       </Modal>
-      {showIconModal && createPortal(
         <Modal
           className={styles.IconModal}
-          isActive={true}
+          isActive={showIconModal}
           onClose={() => setShowIconModal(false)}
           onOk={onOkModal}
           header="Select Icon"
@@ -128,9 +129,7 @@ export function CreateNewProject() {
               showActions={icons.length > (iconPage + 1) * iconsPerPage}
             />
           </div>
-        </Modal>,
-        document.body,
-      )}
+        </Modal>
     </>
   );
 }
