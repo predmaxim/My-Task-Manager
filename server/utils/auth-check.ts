@@ -16,14 +16,14 @@ export const authCheck = (req: Request, res: Response, next: NextFunction) => {
     return next();
   }
 
-  const access_token = req.headers.authorization?.replace("Bearer ", "");
-
-  if (!access_token) {
-    res.status(403).json({ message: "Forbidden! Unauthorized!" });
-    return;
-  }
-
   try {
+    const access_token = req.headers.authorization?.split(' ')[1];
+
+    if (!access_token) {
+      res.status(403).json({ message: "Forbidden! Unauthorized!" });
+      return;
+    }
+
     const refresh_token = req.cookies[TOKEN_COOKIE_NAME];
 
     if (!refresh_token) {
