@@ -1149,6 +1149,13 @@ side-channel@^1.0.6:
     get-intrinsic "^1.2.4"
     object-inspect "^1.13.1"
 
+slugify-ts@^1.1.0:
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/slugify-ts/-/slugify-ts-1.1.0.tgz#4231f7028f81d10930dc83bb593510d65c82b2df"
+  integrity sha512-xApjkRcOZy/VEUZRpB7/Mq4BWq5GG1BbZaUc4f8DlDSkXD+NdXvttEA6Ev484Ghht2VemZuYdKmoV3wdpkOX1w==
+  dependencies:
+    unidecode "^1.1.0"
+
 split2@^4.1.0:
   version "4.2.0"
   resolved "https://registry.yarnpkg.com/split2/-/split2-4.2.0.tgz#c9c5920904d148bab0b9f67145f245a86aadbfa4"
@@ -1205,6 +1212,11 @@ undici-types@~6.19.8:
   version "6.19.8"
   resolved "https://registry.yarnpkg.com/undici-types/-/undici-types-6.19.8.tgz#35111c9d1437ab83a7cdc0abae2f26d88eda0a02"
   integrity sha512-ve2KP6f/JnbPBFyobGHuerC9g1FYGn/F8n1LWTwNxCEzd6IfqTwUQcNXgEtmmQ6DlRrC1hrSrBnCZPokRrDHjw==
+
+unidecode@^1.1.0:
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/unidecode/-/unidecode-1.1.0.tgz#0b5f5ddd9b7b1ce3dbc7a24c72150edd63a83a8c"
+  integrity sha512-GIp57N6DVVJi8dpeIU6/leJGdv7W65ZSXFLFiNmxvexXkc0nXdqUvhA/qL9KqBKsILxMwg5MnmYNOIDJLb5JVA==
 
 unpipe@1.0.0, unpipe@~1.0.0:
   version "1.0.0"

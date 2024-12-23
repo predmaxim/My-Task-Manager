@@ -6,8 +6,8 @@
   justify-content: center;
   align-items: center;
 
-  .CreateNewProject__btn {
-    @include button($size: "xl", $color: "secondary");
+  &__btn {
+    @include button($size: "xl", $color: "primary");
   }
 }
 
@@ -72,21 +72,21 @@
 .iconsBox {
   display: grid;
   grid-template-columns: repeat(11, 1fr);
-  gap: 5px;   
+  gap: 5px;
 
 
-&__icon {
-  font-size: 1.5rem;
-}
-
-&__btn {
-  @include button("s", $color: "transparent");
-  padding: 0.5rem 0.6rem;
-
-  &:hover {
-    box-shadow: 0 0 0 2px var(--border-color);
+  &__icon {
+    font-size: 1.5rem;
   }
-}
+
+  &__btn {
+    @include button("s", $color: "transparent");
+    padding: 0.5rem 0.6rem;
+
+    &:hover {
+      box-shadow: 0 0 0 2px var(--border-color);
+    }
+  }
 }
 
 .iconModal {

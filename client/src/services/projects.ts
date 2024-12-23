@@ -1,14 +1,48 @@
-import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 import { ProjectType } from '@/types';
-import { API_URL } from '@/constants';
+import { api } from '@/services/api.ts';
+import { ProjectSchema } from '@/zod-schemas/custom';
 
-export const projectsApi = createApi({
-  reducerPath: 'projectsApi',
-  baseQuery: fetchBaseQuery({ baseUrl: `${API_URL}/` }),
-  tagTypes: ['projects'],
+// const projectsAdapter = createEntityAdapter<ProjectType>();
+
+export const projectsApi = api.injectEndpoints({
+  // reducerPath: 'projectsApi',
+  // baseQuery: fetchBaseQuery({ baseUrl: `${API_URL}/` }),
+  // tagTypes: ['projects'],
   endpoints: (builder) => ({
     getProjects: builder.query<ProjectType[], void>({
       query: () => `projects/`,
+      async onCacheEntryAdded(
+        arg,
+        { updateCachedData, cacheDataLoaded, cacheEntryRemoved },
+      ) {
+        const ws = new WebSocket(`ws://localhost:5173`);
+        try {
+          await cacheDataLoaded;
+          const listener = (event: MessageEvent) => {
+            const data = JSON.parse(event.data);
+            console.log('Received data:', data);
+            const parsedData = ProjectSchema.array().safeParse(data);
+            if (parsedData.success) {
+              updateCachedData((draft) => {
+                draft.push(...parsedData.data);
+              });
+            }
+          };
+
+          ws.addEventListener('message', listener);
+        } catch {
+          // no-op in case `cacheEntryRemoved` resolves before `cacheDataLoaded`,
+          // in which case `cacheDataLoaded` will throw
+        }
+        // cacheEntryRemoved will resolve when the cache subscription is no longer active
+        await cacheEntryRemoved;
+        // perform cleanup steps once the `cacheEntryRemoved` promise resolves
+        ws.close();
+      },
+      providesTags: (result = []) => [
+        ...result.map(({ id }) => ({ type: 'projects', id }) as const),
+        { type: 'projects' as const, id: 'LIST' },
+      ],
     }),
     getProject: builder.query<ProjectType, ProjectType['id']>({
       query: (id) => `projects/${id}`,

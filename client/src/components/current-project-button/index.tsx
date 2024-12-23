@@ -34,7 +34,7 @@ export function CurrentProjectButton() {
           header="Select Project"
           showActionBtns={false}
         >
-          <ProjectList isModalAction={onClickOnProjectBtn} />
+          <ProjectList modalAction={onClickOnProjectBtn} />
         </Modal>,
         document.body,
       )}

@@ -29,6 +29,8 @@
   &__action {
     cursor: pointer;
     transition: $transition;
+    display: flex;
+    gap: 0.5rem;
 
     &:hover {
       color: var(--primary-color);

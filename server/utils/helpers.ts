@@ -1,14 +1,15 @@
 import { JWT_ACCESS_TOKEN_EXPIRES, JWT_SECRET } from "@/constants";
-import { UserSchema } from "@/zod-schemas/generated";
 import { Request } from "express";
-import jwt from 'jsonwebtoken'
+import jwt from "jsonwebtoken";
+import { UserWithoutPassSchema } from "@/zod-schemas/custom";
 
 export const getUserIdFromQuery = (req: Request) => {
-  return UserSchema.pick({ id: true }).shape.id.parse(
-    req.query.userId,
-  );
-}
+  return UserWithoutPassSchema.parse(req.user);
+};
 
-export const generateToken = (id: number, expiresIn: string = JWT_ACCESS_TOKEN_EXPIRES) => {
+export const generateToken = (
+  id: number,
+  expiresIn: string = JWT_ACCESS_TOKEN_EXPIRES,
+) => {
   return jwt.sign({ id }, JWT_SECRET, { expiresIn });
-}
+};

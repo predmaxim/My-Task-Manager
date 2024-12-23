@@ -1,11 +1,10 @@
-import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 import { PartialTaskType, ProjectType, TaskType } from '@/types';
-import { API_URL } from '@/constants';
+import { api } from '@/services/api.ts';
 
-export const tasksApi = createApi({
-  reducerPath: 'tasksApi',
-  baseQuery: fetchBaseQuery({ baseUrl: `${API_URL}/` }),
-  tagTypes: ['tasks'],
+export const tasksApi = api.injectEndpoints({
+  // reducerPath: 'tasksApi',
+  // baseQuery: fetchBaseQuery({ baseUrl: `${API_URL}/` }),
+  // tagTypes: ['tasks'],
   endpoints: (builder) => ({
     getTasks: builder.query<TaskType[], ProjectType['id']>({
       query: (id) => `tasks/${id}`,

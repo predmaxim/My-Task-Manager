@@ -19,18 +19,14 @@ const persistConfig = {
   blacklist: [projectsApi.reducerPath, tasksApi.reducerPath, commentsApi.reducerPath, authApi.reducerPath],
 };
 
-const authPersistConfig = {
+const authPersistedReducer = persistReducer({
   key: 'auth',
   ...persistConfig,
-};
-
-const themePersistConfig = {
+}, authReducer);
+const themePersistedReducer = persistReducer({
   key: 'theme',
   ...persistConfig,
-};
-
-const authPersistedReducer = persistReducer(authPersistConfig, authReducer);
-const themePersistedReducer = persistReducer(themePersistConfig, themeReducer);
+}, themeReducer);
 
 
 const store = configureStore({
