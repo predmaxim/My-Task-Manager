@@ -1,11 +1,12 @@
-import { Prisma } from '@prisma/client';
-import { ZodError } from 'zod';
+import { Prisma } from "@prisma/client";
+import { ZodError } from "zod";
+import jwt from "jsonwebtoken";
 
 type ErrorHandler = (error: unknown) => string;
 
 export const errorHandler: ErrorHandler = (error) => {
   if (error instanceof ZodError) {
-    return error.errors.map((e) => e.message).join(', ');
+    return error.errors.map((e) => e.message).join(", ");
   }
 
   if (error instanceof Prisma.PrismaClientKnownRequestError) {
@@ -28,11 +29,15 @@ export const errorHandler: ErrorHandler = (error) => {
     return `Prisma validation error: ${error.message}`;
   }
 
+  if (error instanceof jwt.TokenExpiredError) {
+    return "Token expired";
+  }
+
   if (error instanceof Error) {
     return error.message;
   }
 
-  return 'An unknown error occurred.';
+  return "An unknown error occurred.";
 };
 
 export default errorHandler;

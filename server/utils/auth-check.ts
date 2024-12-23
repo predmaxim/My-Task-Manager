@@ -2,10 +2,16 @@ import { NextFunction, Request, Response } from "express";
 import jwt from "jsonwebtoken";
 import { JWT_SECRET, TOKEN_COOKIE_NAME } from "@/constants";
 import errorHandler from "@/utils/error-handler";
+import { JwtPayloadSchema } from "@/zod-schemas/custom";
 import { z } from "zod";
-import { UserSchema } from "@/zod-schemas/generated";
 
 export const authCheck = (req: Request, res: Response, next: NextFunction) => {
+  // Cookies that have not been signed
+  console.log("Cookies: ", req.cookies);
+
+  // Cookies that have been signed
+  console.log("Signed Cookies: ", req.signedCookies);
+
   if (req.path === "/api/auth/login" || req.path === "/api/auth/register") {
     return next();
   }
@@ -17,19 +23,6 @@ export const authCheck = (req: Request, res: Response, next: NextFunction) => {
     return;
   }
 
-  const JwtPayloadSchema = z
-    .object({
-      id: UserSchema.pick({ id: true }).shape.id,
-      iss: z.string().optional(),
-      sub: z.string().optional(),
-      aud: z.union([z.string(), z.array(z.string())]).optional(),
-      exp: z.number().optional(),
-      nbf: z.number().optional(),
-      iat: z.number().optional(),
-      jti: z.string().optional(),
-    })
-    .catchall(z.any());
-
   try {
     const refresh_token = req.cookies[TOKEN_COOKIE_NAME];
 
@@ -38,14 +31,14 @@ export const authCheck = (req: Request, res: Response, next: NextFunction) => {
       return;
     }
 
-    const decoded = JwtPayloadSchema.parse(
+    const decoded = JwtPayloadSchema.extend({ id: z.number() }).parse(
       jwt.verify(access_token, JWT_SECRET),
     );
 
     req.query.userId = decoded.id.toString();
     next();
   } catch (error) {
-    if (error instanceof Error && error.name === "TokenExpiredError") {  
+    if (error instanceof jwt.TokenExpiredError) {
       res.status(401).json({ message: "Token expired" });
     } else {
       const errorMessage = errorHandler(error);
