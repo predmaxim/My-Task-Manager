@@ -5,7 +5,7 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  
+
   .CreateNewProject__btn {
     @include button($size: "xl", $color: "secondary");
   }
@@ -22,6 +22,7 @@
 
   @media screen and (width <=$mobile) {
     flex-direction: column;
+    align-items: normal;
   }
 
   .input-wrapper {
@@ -45,7 +46,7 @@
     justify-content: center;
     align-self: end;
     padding: 10px;
-    font-size: 1.8rem;
+    font-size: 1rem;
 
     @media screen and (width <=$mobile) {
       align-self: auto;

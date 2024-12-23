@@ -2,25 +2,26 @@ import { ButtonWithIcon } from '@/components/button-with-iIcon';
 import { Modal } from '@/components/modal';
 import * as Icons from 'react-icons/ri';
 import React, { ChangeEvent, useState } from 'react';
-import { createPortal } from 'react-dom';
 import { IconType } from 'react-icons';
 import { toast } from 'react-toastify';
 import { useAppDispatch, useAppSelector } from '@/lib/store';
 import { useCreateProjectMutation } from '@/services/projects';
 import styles from './styles.module.scss';
-import { setCurrentProject } from '@/lib/features/projects-slice.ts';
+import { setCurrentProject } from '@/lib/features/projects-slice';
 import Input from '@/components/input';
 
 export function CreateNewProject() {
   const dispatch = useAppDispatch();
   const [createProject] = useCreateProjectMutation();
-  const { projects } = useAppSelector((state) => state.projects);
+  const projects = useAppSelector((state) => state.projects.projects);
+
   const [showNewProjectModal, setNewProjectModal] = useState(false);
   const [showIconModal, setShowIconModal] = useState(false);
   const [ProjectIcon, setProjectIcon] = useState<React.JSX.Element>();
   const [inputValue, setInputValue] = useState('');
   const [iconPage, setIconPage] = useState(0);
   const iconsPerPage = 12;
+
 
   const icons = Object.values(Icons);
 
@@ -30,7 +31,8 @@ export function CreateNewProject() {
 
   const onOkModal = async () => {
     if (inputValue) {
-      if (projects?.some((el) => el.name === inputValue)) {
+      console.log('onOkModal => projects:', projects);
+      if (projects?.find((el) => el.name === inputValue)) {
         toast(`Project name "${inputValue}" is busy`);
       } else {
         const { data: project } = await createProject({ name: inputValue.trim(), icon: ProjectIcon?.type.name });
@@ -52,33 +54,16 @@ export function CreateNewProject() {
     setShowIconModal(false);
   };
 
-  const IconModal = ({ page }: { page: number }) => (
-    <div className={styles.iconsBox}>
-      {icons.slice(page * iconsPerPage, iconsPerPage).map((Icon: IconType) => {
-        return (
-          <button
-            key={Icon.name}
-            className={styles.iconsBox__btn}
-            onClick={() => {
-              setIconOnClickHandler(<Icon />);
-            }}
-          >
-            <Icon className={styles.iconsBox__icon} />
-          </button>
-        );
-      })}
-    </div>);
-
   return (
     <>
       <div className={styles.CreateNewProject}>
-        <ButtonWithIcon         
-        className={styles.CreateNewProject__btn}  
+        <ButtonWithIcon
+          className={styles.CreateNewProject__btn}
           icon="RiAddLine"
           text="New Project"
           onClick={() => setNewProjectModal(true)}
-          />
-        </div>
+        />
+      </div>
       <Modal
         isActive={showNewProjectModal}
         onClose={() => setNewProjectModal(false)}
@@ -91,7 +76,6 @@ export function CreateNewProject() {
               label="Project Name:"
               name="My Project"
               type="text"
-              id="CreateNewProjectForm__input"
               className={`${styles.CreateNewProjectForm__input} ${styles.input}`}
               value={inputValue}
               onChange={onChangeInputHandler}
@@ -106,30 +90,44 @@ export function CreateNewProject() {
           />
         </div>
       </Modal>
-        <Modal
-          className={styles.IconModal}
-          isActive={showIconModal}
-          onClose={() => setShowIconModal(false)}
-          onOk={onOkModal}
-          header="Select Icon"
-          showActionBtns={false}
-        >
-          <IconModal page={iconPage} />
-          <div>
-            <ButtonWithIcon
-              className={styles.IconModal__prevBtn}
-              icon="RiArrowLeftSLine"
-              onClick={() => setIconPage((prev) => prev - 1)}
-              showActions={iconPage > 0}
-            />
-            <ButtonWithIcon
-              className={styles.IconModal__nextBtn}
-              icon="RiArrowRightSLine"
-              onClick={() => setIconPage((prev) => prev + 1)}
-              showActions={icons.length > (iconPage + 1) * iconsPerPage}
-            />
-          </div>
-        </Modal>
+      <Modal
+        className={styles.IconModal}
+        isActive={showIconModal}
+        onClose={() => setShowIconModal(false)}
+        onOk={onOkModal}
+        header="Select Icon"
+        showActionBtns={false}
+      >
+        <div className={styles.iconsBox}>
+          {icons.slice(iconPage * iconsPerPage, iconsPerPage).map((Icon: IconType) => {
+            return (
+              <button
+                key={Icon.name}
+                className={styles.iconsBox__btn}
+                onClick={() => {
+                  setIconOnClickHandler(<Icon />);
+                }}
+              >
+                <Icon className={styles.iconsBox__icon} />
+              </button>
+            );
+          })}
+        </div>
+        <div>
+          <ButtonWithIcon
+            className={styles.IconModal__prevBtn}
+            icon="RiArrowLeftSLine"
+            onClick={() => setIconPage((prev) => prev - 1)}
+            showActions={iconPage > 0}
+          />
+          <ButtonWithIcon
+            className={styles.IconModal__nextBtn}
+            icon="RiArrowRightSLine"
+            onClick={() => setIconPage((prev) => prev + 1)}
+            showActions={icons.length > (iconPage + 1) * iconsPerPage}
+          />
+        </div>
+      </Modal>
     </>
   );
 }

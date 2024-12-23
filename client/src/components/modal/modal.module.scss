@@ -13,100 +13,104 @@ $modal-body-max-height: 80vh;
 }
 
 .Modal {
-  &__overlay {
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    background-color: var(--overlay-bg);
-    z-index: 3;
-    transition: .2s;
-    animation: smoothAppearanceOverlayHide .2s forwards;
+}
 
-    &.active {
-      animation: smoothAppearanceOverlayShow .2s forwards;
+.header {
+}
+
+.overlay {
+  position: fixed;
+  inset: 0;
+  background-color: var(--overlay-bg);
+  transition: $transition;
+  animation: smoothAppearanceOverlayHide $transition forwards;
+  display: none;
+
+  &.active {
+    display: block;
+    animation: smoothAppearanceOverlayShow $transition forwards;
+  }
+}
+
+.body {
+  position: fixed;
+  top: 10vh;
+  left: 50%;
+  padding: $modal-padding;
+  width: calc(100% - $modal-padding * 4);
+  max-width: 600px;
+  background: var(--modal-bg);
+  border-radius: $border-radius;
+  overflow: hidden;
+  box-shadow: $shadow-s;
+  overflow-y: auto;
+  @include scrollbar;
+  animation: smoothAppearanceHide $transition forwards;
+  display: none;
+
+  &.active {
+    display: block;
+    animation: smoothAppearanceShow $transition forwards;
+  }
+}
+
+.content {
+  padding: 5px $modal-padding $modal-padding $modal-padding;
+  overflow-y: auto;
+  max-height: calc($modal-body-max-height - $modal-padding * 4 - 100px);
+  @include scrollbar;
+
+  .ProjectList {
+    &__container {
+      max-width: none;
+    }
+
+    &__project-header {
+      margin-top: 30px;
     }
   }
+}
 
-  &__body {
-    position: absolute;
-    top: 10vh;
-    left: 50%;
-    padding: $modal-padding;
-    width: calc(100% - $modal-padding * 4);
-    max-width: 600px;
-    //max-height: $modal-body-max-height;
-    background: var(--modal-bg);
-    border-radius: $border-radius;
-    visibility: hidden;
-    animation: smoothAppearanceHide .2s forwards;
-    transform: translateY(-999vh);
-    opacity: 0;
-    z-index: -100;
-    overflow: hidden;
-    box-shadow: $shadow-s;
-    overflow-y: auto;
-    @include scrollbar;
+.actions {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  padding: 15px 0;
+}
 
-    &.active {
-      visibility: visible;
-      z-index: 3;
-      animation: smoothAppearanceShow .2s forwards;
-    }
-  }
+.okBtn {
+  width: 80px;
+}
 
-  &__content {
-    padding: 5px $modal-padding $modal-padding $modal-padding;
-    overflow-y: auto;
-    max-height: calc($modal-body-max-height - $modal-padding * 4 - 100px);
-    @include scrollbar;
+.okBtn {
+  @include button("xl", 150px, $color: "primary");
+}
 
-    .ProjectList {
-      &__container {
-        max-width: none;
-      }
+.cancelBtn {
+  @include button("xl", 150px, $color: "secondary");
+}
 
-      &__project-header {
-        margin-top: 30px;
-      }
-    }
-  }
-
-  .actions {
-    display: flex;
-    justify-content: center;
-    gap: 20px;
-    padding: 15px 0;
-  }
-
-  &__okBtn {
-    width: 80px;
-  }
-
-  &__okBtn,
-  &__cancelBtn {
-    @include button("xl", 150px);
-  }
-
-  &__closeBtn {
-    position: absolute;
-    top: calc($modal-padding / 2);
-    right: calc($modal-padding / 2);
-    font-size: 1.5rem;
-    cursor: pointer;
-  }
+.closeBtn {
+  position: absolute;
+  top: calc($modal-padding / 2);
+  right: calc($modal-padding / 2);
+  font-size: 1.5rem;
+  cursor: pointer;
 }
 
 @keyframes smoothAppearanceShow {
   0% {
     transform: translate(-50%, -100%);
     opacity: 0;
+    z-index: -10;
+    visibility: hidden;
   }
 
   100% {
     transform: translate(-50%, 0);
     opacity: 1;
+    z-index: 11;
+    visibility: visible;
   }
 }
 
@@ -114,30 +118,42 @@ $modal-body-max-height: 80vh;
   100% {
     transform: translate(-50%, 0);
     opacity: 1;
+    z-index: 11;
+    visibility: visible;
   }
 
-  100% {
+  0% {
     transform: translate(-50%, -100%);
     opacity: 0;
+    z-index: -10;
+    visibility: hidden;
   }
 }
 
 @keyframes smoothAppearanceOverlayShow {
   0% {
     opacity: 0;
+    z-index: -10;
+    visibility: hidden;
   }
 
   100% {
     opacity: 1;
+    z-index: 10;
+    visibility: visible;
   }
 }
 
 @keyframes smoothAppearanceOverlayHide {
   100% {
     opacity: 1;
+    z-index: 10;
+    visibility: visible;
   }
 
-  100% {
+  0% {
     opacity: 0;
+    z-index: -10;
+    visibility: hidden;
   }
 }
