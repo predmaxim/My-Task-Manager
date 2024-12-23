@@ -7,7 +7,6 @@ import {
   RegisterSchema,
   TaskPopulatedSchema,
   ThemeSchema,
-  TokensSchema,
   UserWithoutPassSchema,
 } from '@/zod-schemas/custom.ts';
 
@@ -31,7 +30,6 @@ export type TaskUpdateFieldsType =
   & Partial<Exclude<Task, 'id' | 'number' | 'project'>>
 
 
-export type TokensType = z.infer<typeof TokensSchema>
 export type AuthType = z.infer<typeof AuthSchema>
 export type LoginType = z.infer<typeof LoginSchema>
 export type RegisterType = z.infer<typeof RegisterSchema>

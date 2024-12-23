@@ -20,7 +20,7 @@ export function CreateNewProject() {
   const [ProjectIcon, setProjectIcon] = useState<React.JSX.Element>();
   const [inputValue, setInputValue] = useState('');
   const [iconPage, setIconPage] = useState(0);
-  const iconsPerPage = 12;
+  const iconsPerPage = 55;
 
 
   const icons = Object.values(Icons);
@@ -99,7 +99,7 @@ export function CreateNewProject() {
         showActionBtns={false}
       >
         <div className={styles.iconsBox}>
-          {icons.slice(iconPage * iconsPerPage, iconsPerPage).map((Icon: IconType) => {
+          {icons.slice(iconPage * iconsPerPage, (iconPage + 1) * iconsPerPage).map((Icon: IconType) => {
             return (
               <button
                 key={Icon.name}
@@ -113,17 +113,22 @@ export function CreateNewProject() {
             );
           })}
         </div>
-        <div>
+        <div className={styles.iconModal__nav}>
           <ButtonWithIcon
-            className={styles.IconModal__prevBtn}
+            className={styles.iconModal__prevBtn}
             icon="RiArrowLeftSLine"
-            onClick={() => setIconPage((prev) => prev - 1)}
+            onClick={() => setIconPage((prev) => {
+              return prev - 1 < 0 ? 0 : prev - 1;
+            })}
             showActions={iconPage > 0}
           />
           <ButtonWithIcon
-            className={styles.IconModal__nextBtn}
+            className={styles.iconModal__nextBtn}
             icon="RiArrowRightSLine"
-            onClick={() => setIconPage((prev) => prev + 1)}
+            onClick={() => setIconPage((prev) => {
+              const lastPage = icons.length / iconsPerPage - 1;
+              return prev + 1 > lastPage ? lastPage : prev + 1;
+            })}
             showActions={icons.length > (iconPage + 1) * iconsPerPage}
           />
         </div>

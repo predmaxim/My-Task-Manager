@@ -26,9 +26,10 @@
     --secondary-color-darker: #2b2b2b;
     --success-color: #45ec69;
     --warning-color: #ecd345;
-    --error-color: #6d0000;
+    --error-color: #ec4545;
 
-    --error-bg: #fcbcbc;
+    --error-message-color: #6d0000;
+    --error-message-bg: #fcbcbc;
 
     --button-primary-bg: var(--primary-color);
     --button-primary-bg-hover: var(--primary-color-darker);
@@ -72,7 +73,7 @@
       color-scheme: light;
     }
 
-    .button {
+    .dark .button {
       color: var(--font-color-alt);
 
       &:hover {
@@ -104,9 +105,10 @@
     --secondary-color-darker: #252525;
     --success-color: #45ec69;
     --warning-color: #ecd345;
-    --error-color: #6d0000;
+    --error-color: #ec4545;
 
-    --error-bg: #e18181;
+    --error-message-color: #6d0000;
+    --error-message-bg: #e18181;
 
     --button-primary-bg: var(--primary-color);
     --button-primary-bg-hover: var(--primary-color-darker);
@@ -117,8 +119,8 @@
     --button-secondary-color: var(--font-color);
 
     --color-light-grey: #f0f0f0;
-      --color-light-grey-dimmed: #f8f8f8;
-      --color-light-grey-darker: #acacac;
+    --color-light-grey-dimmed: #f8f8f8;
+    --color-light-grey-darker: #acacac;
 
     --modal-bg: #1b1b1b;
 
