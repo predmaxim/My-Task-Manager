@@ -64,14 +64,13 @@
     font-size: small;
     border-radius: calc($border-radius / 2);
   }
-  
+
   @if $variant== "icon" {
     aspect-ratio: 1;
     padding: 0.5rem;
   } @else if $variant== "default" {
     aspect-ratio: auto;
-    padding: auto;
-  } 
+  }
 
   @if $width== "full" {
     width: 100%;
@@ -79,17 +78,21 @@
 
   @if $color== "primary" {
     background: var(--button-primary-bg);
+    color: var(--button-secondary-color);
 
     &:hover {
       background: var(--button-primary-bg-hover);
+      color: var(--button-secondary-color);
     }
   }
 
   @if $color== "secondary" {
     background: var(--button-secondary-bg);
+    color: var(--button-secondary-color);
 
     &:hover {
       background: var(--button-secondary-bg-hover);
+      color: var(--button-secondary-color);
     }
   }
 

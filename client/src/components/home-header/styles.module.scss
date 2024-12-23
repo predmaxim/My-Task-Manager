@@ -1,21 +1,27 @@
 .HomeHeader {
   grid-area: header;
-  margin: 0 auto;
-  width: fit-content;
+  width: 100%;
   padding: 2rem 0 1rem;
-  
-  .logoVertical {
-    width: 100%;
-    height: auto;
-  }
-}
-
-.buttonWrap {
-  display: flex;
-  justify-content: center;
-  
 }
 
 .container {
-  display: flex;  
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+}
+
+.leftSide {
+  display: flex;
+  justify-content: left;
+  gap: 1rem;
+}
+
+.logoVertical {
+  justify-items: center;
+  width: 100%;
+}
+
+.rightSide {
+  display: flex;
+  justify-content: right;
+  gap: 1rem;
 }

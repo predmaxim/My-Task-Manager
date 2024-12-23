@@ -12,6 +12,7 @@ export function HomeHeader() {
   return (
     <header className={styles.HomeHeader}>
       <div className={`${styles.container} container`}>
+        <div className={styles.leftSide}></div>
         <Link to={ROUTES.home}>
           <img
             src={theme === 'light' ? logoVertical : logoVerticalWhite}
@@ -21,7 +22,7 @@ export function HomeHeader() {
             height={169}
           />
         </Link>
-        <div className={styles.buttonWrap}>
+        <div className={styles.rightSide}>
           <ThemeSwitcher />
           <CurrentProjectButton />
         </div>

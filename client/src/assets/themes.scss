@@ -30,9 +30,11 @@
 
     --button-primary-bg: var(--primary-color);
     --button-primary-bg-hover: var(--primary-color-darker);
+    --button-primary-color: var(--font-color-alt);
 
     --button-secondary-bg: var(--secondary-color);
     --button-secondary-bg-hover: var(--secondary-color-darker);
+    --button-secondary-color: var(--font-color-alt);
 
     --color-light-grey: #f0f0f0;
     --color-light-grey-dimmed: #f8f8f8;
@@ -97,16 +99,18 @@
     --primary-color: #ec4545;
     --primary-color-darker: #c23131;
     --secondary-color: #505050;
-    --secondary-color-darker: #2b2b2b;
+    --secondary-color-darker: #252525;
     --success-color: #45ec69;
     --warning-color: #ecd345;
     --error-color: #ec4545;
 
     --button-primary-bg: var(--primary-color);
     --button-primary-bg-hover: var(--primary-color-darker);
+    --button-primary-color: var(--font-color);
 
     --button-secondary-bg: var(--secondary-color);
     --button-secondary-bg-hover: var(--secondary-color-darker);
+    --button-secondary-color: var(--font-color);
 
     --color-light-grey: #363636;
     --color-light-grey-dimmed: #414141;
