@@ -2,9 +2,11 @@ import { NextFunction, Request, Response } from "express";
 import jwt from "jsonwebtoken";
 import { JWT_SECRET } from "@/constants";
 import errorHandler from "@/utils/error-handler";
+import { z } from "zod";
+import { UserSchema } from "@/zod-schemas/generated";
 
 export const authCheck = (req: Request, res: Response, next: NextFunction) => {
-  if (req.path === "/login" || req.path === "/register") {
+  if (req.path === "/api/auth/login" || req.path === "/api/auth/register") {
     return next();
   }
 
@@ -15,9 +17,24 @@ export const authCheck = (req: Request, res: Response, next: NextFunction) => {
     return;
   }
 
+  const JwtPayloadSchema = z
+    .object({
+      id: UserSchema.pick({ id: true }).shape.id,
+      iss: z.string().optional(),
+      sub: z.string().optional(),
+      aud: z.union([z.string(), z.array(z.string())]).optional(),
+      exp: z.number().optional(),
+      nbf: z.number().optional(),
+      iat: z.number().optional(),
+      jti: z.string().optional(),
+    })
+    .catchall(z.any());
+
   try {
-    const decoded = jwt.verify(access_token, JWT_SECRET);
-    req.query.userId = (decoded as jwt.JwtPayload).id;
+    const decoded = JwtPayloadSchema.parse(
+      jwt.verify(access_token, JWT_SECRET),
+    );
+    req.query.userId = decoded.id.toString();
     next();
   } catch (error) {
     if (error instanceof Error && error.name === "TokenExpiredError") {

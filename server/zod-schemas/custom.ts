@@ -8,11 +8,6 @@ export const GlobalStateSchema = z.object({
   language: LanguageSchema,
 });
 
-export const TokensSchema = z.object({
-  access_token: z.string(),
-  refresh_token: z.string(),
-});
-
 // TODO: change min password length to 6 characters in PasswordSchema
 export const PasswordSchema = z
   .string()
@@ -25,7 +20,7 @@ export const UserWithoutPassSchema = UserSchema.omit({
 });
 export const AuthSchema = z.object({
   user: UserWithoutPassSchema,
-  token: TokensSchema,
+  token: z.string(),
 });
 
 export const LoginSchema = UserSchema.pick({

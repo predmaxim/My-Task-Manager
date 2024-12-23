@@ -56,6 +56,7 @@ export const createProject: RequestHandler = async (
   req: Request,
   res: Response,
 ) => {
+  console.log(req.query);
   try {
     const userId = UserSchema.pick({ id: true }).shape.id.parse(
       req.query.userId,
