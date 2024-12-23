@@ -12,15 +12,16 @@ import { setCurrentProject } from '@/lib/features/projects-slice.ts';
 import { setSearch } from '@/lib/features/search-slice.ts';
 import { Loading } from '@/components/loading';
 import styles from './styles.module.scss';
+import * as Icons from 'react-icons/ri';
 
 export type ProjectListType = {
   isModalAction?: () => void;
 };
 
 export function ProjectList({ isModalAction }: ProjectListType) {
+  const [deleteProject] = useDeleteProjectMutation();
   const { projects, currentProject, isLoading } = useAppSelector((state) => state.projects);
   const dispatch = useAppDispatch();
-  const [deleteProject] = useDeleteProjectMutation();  
   const navigate = useNavigate();
   const id = useId();
 
@@ -47,32 +48,35 @@ export function ProjectList({ isModalAction }: ProjectListType) {
     return <Loading />;
   }
 
-  if (!projects?.length) {
-    return <p className={styles.ProjectList__noProjects}>No projects found</p>;
-  }
+  // if (!projects?.length) {
+  //   return <p className={styles.ProjectList__noProjects}>No projects found</p>;
+  // }
 
   console.log('projects', projects);
 
   return (
     <div className={styles.ProjectList}>
       <CreateNewProject />
-      {!!projects.length && <p className={styles['ProjectList__project-header']}>Select Project:</p>}
-      <div className={styles.ProjectList__container}>
-        {projects.map((project) => (
-          <ButtonWithIcon
-            key={project.id || id}
-            className={styles.ProjectButton}
-            icon={project?.icon || ''}
-            text={project.name}
-            onClick={() => onClickHandler(project)}
-            showActions={true}
-            actions={{
-              remove: () => removeAction(project),
-              edit: editAction,
-            }}
-          />
-        ))}
-      </div>
+      {projects?.length ?
+        <>
+          <p className={styles['ProjectList__project-header']}>Select Project:</p>
+          <div className={styles.ProjectList__container}>
+            {projects.map((project) => (
+              <ButtonWithIcon
+                key={project.id || id}
+                className={styles.ProjectButton}
+                icon={project?.icon as keyof typeof Icons}
+                text={project.name}
+                onClick={() => onClickHandler(project)}
+                showActions={true}
+                actions={{
+                  remove: () => removeAction(project),
+                  edit: editAction,
+                }}
+              />
+            ))}
+          </div>
+        </> : <p className={styles.ProjectList__noProjects}>No projects found</p>}
     </div>
   );
 }

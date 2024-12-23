@@ -11,9 +11,9 @@ export function ThemeSwitcher() {
   const [icon, setIcon] = useState(theme === 'light' ? 'RiMoonFill' : 'RiSunFill');
 
   const onClickHandler = () => {
-    const newThemeColor = theme === 'light' ? 'dark' : 'light';
-    setIcon(newThemeColor === 'light' ? 'RiMoonFill' : 'RiSunFill');
-    dispatch(setTheme(newThemeColor));
+    const themeColor = theme === 'light' ? 'dark' : 'light';
+    setIcon(themeColor === 'light' ? 'RiMoonFill' : 'RiSunFill');
+    dispatch(setTheme(themeColor));
   };
 
   return (

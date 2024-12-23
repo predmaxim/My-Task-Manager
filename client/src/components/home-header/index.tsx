@@ -25,6 +25,11 @@ export function HomeHeader() {
         <div className={styles.rightSide}>
           <ThemeSwitcher />
           <CurrentProjectButton />
+          {/*<ButtonWithIcon*/}
+          {/*  className={styles.CurrentProjectBtn}*/}
+          {/*  icon="PiUserFill"*/}
+          {/*  onClick={onClickCurrentProjectBtn}*/}
+          {/*/>*/}
         </div>
       </div>
     </header>

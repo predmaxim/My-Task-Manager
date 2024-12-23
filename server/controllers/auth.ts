@@ -13,8 +13,8 @@ import {
   RegisterSchema,
   UserWithoutPassSchema,
 } from "@/zod-schemas/custom";
-import { checkPassword, hashPassword } from "@/utils/password";
 import errorHandler from "@/utils/error-handler";
+import { compare, hash } from "bcrypt-ts";
 
 export const register: RequestHandler = async (req: Request, res: Response) => {
   try {
@@ -27,13 +27,13 @@ export const register: RequestHandler = async (req: Request, res: Response) => {
       return;
     }
 
-    const hash = hashPassword(password);
+    const hashedPassword = await hash(password, 10);
 
     const newUser = await prisma.user.create({
       data: {
         name,
         email,
-        password: hash,
+        password: hashedPassword,
       },
     });
 
@@ -73,7 +73,7 @@ export const login: RequestHandler = async (req: Request, res: Response) => {
       return;
     }
 
-    const isPasswordCorrect = checkPassword(password, user.password);
+    const isPasswordCorrect = await compare(password, user.password);
 
     if (!isPasswordCorrect) {
       res.status(403).json({ message: "Incorrect password" });

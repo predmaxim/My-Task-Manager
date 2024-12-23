@@ -1,4 +1,17 @@
 .Error {
   margin: auto;
   width: fit-content;
+  background: var(--error-bg);
+  color: var(--error-color);
+  padding: 2rem 3rem;
+  border-radius: 1rem;
+  text-align: center;
+}
+
+.header {
+  margin-bottom: 0.5rem;
+}
+
+.description {
+  margin: 0;
 }
