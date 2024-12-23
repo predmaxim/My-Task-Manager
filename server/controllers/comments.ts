@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import { prisma } from "@/lib/prisma-client";
-import { CommentSchema } from "../zod-schemas/generated";
+import { CommentSchema } from "@/zod-schemas/generated";
+import errorHandler from "@/utils/error-handler";
 
 export const getComments = async (req: Request, res: Response) => {
   try {
@@ -8,7 +9,8 @@ export const getComments = async (req: Request, res: Response) => {
     const comments = await prisma.comment.findMany();
     res.status(200).json({ comments, total: comments.length });
   } catch (error) {
-    res.status(500).json({ message: "Something went wrong", error });
+    const errorMessage = errorHandler(error);
+    res.status(500).json({ message: errorMessage });
   }
 };
 
@@ -18,6 +20,7 @@ export const createComment = async (req: Request, res: Response) => {
     const newComment = await prisma.comment.create({ data: comment });
     res.status(201).json(newComment);
   } catch (error) {
-    res.status(500).json({ message: "Something went wrong", error });
+    const errorMessage = errorHandler(error);
+    res.status(500).json({ message: errorMessage });
   }
 };

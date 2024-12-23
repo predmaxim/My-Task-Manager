@@ -1,12 +1,9 @@
 import { ROUTES } from '@/router/routes';
 import styles from './styles.module.scss';
-import { useAppSelector } from '@/lib/store';
 import { Link } from 'react-router-dom';
-import img from "@/assets/img/img_1.png"
+import img from '@/assets/img/img_1.png';
 
 export function HomePage() {
-  const user = useAppSelector((state) => state.auth.user);
-
   return (
     <div className={`${styles.Home} container`}>
       <section className={styles.section}>
@@ -16,7 +13,7 @@ export function HomePage() {
             Manage your tasks, set priorities,
             and achieve your goals effortlessly.
           </p>
-          <Link to={user ? ROUTES.projects : ROUTES.login} className={styles.button}>Start Now</Link>
+          <Link to={ROUTES.projects} className={styles.button}>Start Now</Link>
         </div>
         <img src={img} alt="project page image" className={styles.img} />
       </section>

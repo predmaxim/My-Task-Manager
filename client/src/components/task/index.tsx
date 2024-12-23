@@ -37,8 +37,8 @@ export function Task({ task: initialTask }: TaskProps) {
 
   const onDone = () => {
     updateTaskHandler({
-      done: task.done ? false : new Date(),
-      status: task.done ? TASK_STATUSES.queue as TaskStatusType : 'done',
+      done: task.done ? null : new Date(),
+      status: task.done ? TASK_STATUSES.queue as TaskStatusType['name'] : 'done',
     });
   };
 

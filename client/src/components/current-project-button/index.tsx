@@ -7,8 +7,12 @@ import { ProjectList } from '@/components/project-list';
 import styles from './styles.module.scss';
 
 export function CurrentProjectButton() {
-  const { currentProject } = useAppSelector((state: RootState) => state.projects);
+  const currentProject = useAppSelector((state: RootState) => state.projects.currentProject);
   const [showIconModal, setShowIconModal] = useState(false);
+
+  if (!currentProject) {
+    return;
+  }
 
   const onClickCurrentProjectBtn = () => setShowIconModal(true);
   const onClickOnProjectBtn = () => setShowIconModal(false);
@@ -17,8 +21,8 @@ export function CurrentProjectButton() {
     <div className={styles.CurrentProjectBtnWrap}>
       <ButtonWithIcon
         className={styles.CurrentProjectBtn}
-        icon={currentProject ? currentProject?.icon : 'Loading...'}
-        text={currentProject ? `${currentProject?.name}` : 'Loading...'}
+        icon={currentProject.icon || 'Loading...'}
+        text={`${currentProject.name}` || 'Loading...'}
         onClick={onClickCurrentProjectBtn}
       />
       {showIconModal && createPortal(
