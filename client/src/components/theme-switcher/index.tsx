@@ -14,7 +14,6 @@ export function ThemeSwitcher() {
     const newThemeColor = theme === 'light' ? 'dark' : 'light';
     setIcon(newThemeColor === 'light' ? 'RiSunFill' : 'RiMoonFill');
     dispatch(setTheme(newThemeColor));
-    document.body.className = newThemeColor;
   };
 
   return (

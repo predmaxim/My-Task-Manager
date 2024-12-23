@@ -20,7 +20,7 @@ export type ProjectListType = {
 export function ProjectList({ isModalAction }: ProjectListType) {
   const { projects, currentProject, isLoading } = useAppSelector((state) => state.projects);
   const dispatch = useAppDispatch();
-  const [deleteProject] = useDeleteProjectMutation();
+  const [deleteProject] = useDeleteProjectMutation();  
   const navigate = useNavigate();
   const id = useId();
 

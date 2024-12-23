@@ -5,6 +5,7 @@ import { API_URL } from '@/constants';
 export const projectsApi = createApi({
   reducerPath: 'projectsApi',
   baseQuery: fetchBaseQuery({ baseUrl: `${API_URL}/` }),
+  tagTypes: ['projects'],
   endpoints: (builder) => ({
     getProjects: builder.query<ProjectType[], void>({
       query: () => `projects/`,
@@ -26,14 +27,7 @@ export const projectsApi = createApi({
         body,
       }),
     }),
-    setCurrentProject: builder.mutation<ProjectType, { id: ProjectType['id'], current: boolean }>({
-      query: (body) => ({
-        url: `projects/${body.id}`,
-        method: 'PATCH',
-        body: body.current,
-      }),
-    }),
-    deleteProject: builder.mutation<void, ProjectType['id']>({
+    deleteProject: builder.mutation<ProjectType['id'], ProjectType['id']>({
       query: (id) => ({
         url: `projects/${id}`,
         method: 'DELETE',
@@ -48,5 +42,4 @@ export const {
   useDeleteProjectMutation,
   useCreateProjectMutation,
   useUpdateProjectMutation,
-  useSetCurrentProjectMutation,
 } = projectsApi;

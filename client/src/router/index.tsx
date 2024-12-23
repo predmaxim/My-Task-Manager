@@ -27,13 +27,13 @@ export function Router() {
           <Route element={isLogged ? <TasksLayout /> : <HomeLayout />}>
             <Route path={ROUTES.tasks} element={isLogged ? <TasksPage /> : <LoginPage />} />
           </Route>
-          <Route element={isLogged ? <HomeLayout /> : <HomeLayout />}>
+          <Route element={<HomeLayout />}>
             <Route path={ROUTES.login} element={isLogged ? <MePage /> : <LoginPage />} />
           </Route>
-          <Route element={isLogged ? <HomeLayout /> : <HomeLayout />}>
+          <Route element={<HomeLayout />}>
             <Route path={ROUTES.register} element={isLogged ? <MePage /> : <RegisterPage />} />
           </Route>
-          <Route element={isLogged ? <HomeLayout /> : <HomeLayout />}>
+          <Route element={<HomeLayout />}>
             <Route path={ROUTES.me} element={isLogged ? <MePage /> : <LoginPage />} />
           </Route>
           <Route path="*" element={<NotFoundPage />} />
