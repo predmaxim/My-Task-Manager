@@ -32,7 +32,7 @@ export function CreateNewProject() {
   const onOkModal = async () => {
     if (inputValue) {
       console.log('onOkModal => projects:', projects);
-      if (projects?.find((el) => el.name === inputValue)) {
+      if (projects?.find((project) => project.name === inputValue)) {
         toast(`Project name "${inputValue}" is busy`);
       } else {
         const { data: project } = await createProject({ name: inputValue.trim(), icon: ProjectIcon?.type.name });
@@ -45,7 +45,7 @@ export function CreateNewProject() {
         }
       }
     } else {
-      toast('Field "ID" cannot be empty');
+      toast('Field "Name" cannot be empty');
     }
   };
 

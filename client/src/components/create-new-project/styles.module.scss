@@ -18,6 +18,7 @@
 
   .ButtonWithIcon__text {
     margin: 0;
+    color: var(--font-color)
   }
 
   @media screen and (width <=$mobile) {
@@ -47,11 +48,19 @@
     align-self: end;
     padding: 10px;
     font-size: 1rem;
+    color: var(--font-color);
 
     @media screen and (width <=$mobile) {
       align-self: auto;
     }
+  }
 
+  .light &__selectIconBtn {
+    color: var(--font-color);
+  }
+
+  .light &__selectIconBtn:hover {
+    color: var(--font-color);
   }
 
   &__text {
@@ -66,11 +75,11 @@
   }
 
   &__btn {
-    @include button("s");
+    @include button("s", $color: "transparent");
     padding: 0.5rem 0.6rem;
 
     &:hover {
-      background-color: var(--color-light-grey);
+      box-shadow: 0 0 0 2px var(--border-color);
     }
   }
 }

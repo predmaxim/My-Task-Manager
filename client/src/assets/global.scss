@@ -128,9 +128,11 @@ h6 {
 button {
   background: none;
   line-height: 1.2;
+  outline: none;
+  border: none;
 }
 
-button,
+
 input,
 select,
 textarea {
