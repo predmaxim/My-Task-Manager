@@ -9,8 +9,8 @@ export const JWT_REFRESH_TOKEN_EXPIRES =
   process.env.JWT_REFRESH_TOKEN_EXPIRES || "7d";
 export const TOKEN_COOKIE_NAME = process.env.TOKEN_COOKIE_NAME || "mtm_token";
 
-export enum TASK_STATUSES {
-  queue = "queue",
-  development = "development",
-  done = "done",
-}
+export const TASK_STATUSES = {
+  queue: "queue",
+  development: "development",
+  done: "done",
+} as const;

@@ -5,11 +5,7 @@ import { errorHandler } from "@/utils/error-handler";
 import { JwtPayloadSchema, UserWithoutPassSchema } from "@/zod-schemas/custom";
 import { z } from "zod";
 import { prisma } from "@/lib/prisma-client";
-
-const isTokenExpired = (token: string): boolean => {
-  const payload = JSON.parse(atob(token.split(".")[1]));
-  return payload.exp * 1000 < Date.now();
-};
+import { isTokenExpired } from "@/utils/helpers";
 
 export const authCheck = async (
   req: Request,
@@ -24,7 +20,13 @@ export const authCheck = async (
     const refresh_token: string | undefined = req.cookies[TOKEN_COOKIE_NAME];
 
     if (!refresh_token) {
-      res.status(403).json({ message: "Forbidden! No refresh token found!" });
+      res.status(401).json({ message: "Forbidden! No refresh token found!" });
+      return;
+    }
+
+    if (isTokenExpired(refresh_token)) {
+      res.clearCookie(TOKEN_COOKIE_NAME);
+      res.status(401).json({ message: "Refresh token expired" });
       return;
     }
 
@@ -35,7 +37,7 @@ export const authCheck = async (
     const access_token = req.headers.authorization?.split(" ")[1];
 
     if (!access_token) {
-      res.status(403).json({ message: "Forbidden! No access token found!" });
+      res.status(401).json({ message: "Forbidden! No access token found!" });
       return;
     }
 

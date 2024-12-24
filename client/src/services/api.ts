@@ -1,11 +1,4 @@
-import {
-  BaseQueryFn,
-  createApi,
-  FetchArgs,
-  fetchBaseQuery,
-  FetchBaseQueryError,
-  retry,
-} from '@reduxjs/toolkit/query/react';
+import { BaseQueryFn, createApi, FetchArgs, fetchBaseQuery, FetchBaseQueryError } from '@reduxjs/toolkit/query/react';
 import { RootState } from '@/lib/store';
 import { API_URL } from '@/constants';
 import { logout, setToken } from '@/lib/features/auth-slice.ts';
@@ -25,19 +18,8 @@ const baseQuery = fetchBaseQuery({
   },
 });
 
-const baseQueryWithRetry: BaseQueryFn<string | FetchArgs, unknown, FetchBaseQueryError> = async (args, api, extraOptions) => {
-  let result = await baseQuery(args, api, extraOptions);
-
-  if (result.error && result.error.status === 401) {
-    return result;
-  }
-
-  result = await retry(baseQuery, { maxRetries: 2 })(args, api, extraOptions);
-  return result;
-};
-
 const baseQueryWithReauth: BaseQueryFn<string | FetchArgs, unknown, FetchBaseQueryError> = async (args, api, extraOptions) => {
-  let result = await baseQueryWithRetry(args, api, extraOptions);
+  let result = await baseQuery(args, api, extraOptions);
 
   if (result.error && result.error.status === 401) {
     const refreshResult = await baseQuery('/auth/refresh', api, extraOptions);
@@ -46,7 +28,7 @@ const baseQueryWithReauth: BaseQueryFn<string | FetchArgs, unknown, FetchBaseQue
 
     if (data) {
       api.dispatch(setToken(data.access_token));
-      result = await baseQueryWithRetry(args, api, extraOptions);
+      result = await baseQuery(args, api, extraOptions);
     } else {
       api.dispatch(logout());
     }
@@ -58,6 +40,6 @@ const baseQueryWithReauth: BaseQueryFn<string | FetchArgs, unknown, FetchBaseQue
 export const api = createApi({
   reducerPath: 'splitApi',
   baseQuery: baseQueryWithReauth,
-  tagTypes: ['comments', 'projects', 'tasks', 'auth'],
+  tagTypes: ['comments', 'projects', 'tasks', 'auth', 'task-statuses'],
   endpoints: () => ({}),
 });
