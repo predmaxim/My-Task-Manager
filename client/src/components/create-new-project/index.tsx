@@ -26,26 +26,29 @@ export function CreateNewProject() {
   const icons = Object.values(Icons);
 
   const onChangeInputHandler = (e: ChangeEvent<HTMLInputElement>) => {
-    setInputValue(e.target.value.trim());
+    setInputValue(e.target.value);
   };
 
   const onOkModal = async () => {
-    if (inputValue) {
-      if (projects?.find((project) => project.name === inputValue)) {
-        toast(`Project name "${inputValue}" is busy`);
+    const projectName = inputValue.trim();
+
+    if (!projectName) {
+      toast('Field "Name" cannot be empty');
+      return;
+    }
+
+      if (projects?.find((project) => project.name === projectName)) {
+        toast(`Project name "${projectName}" is busy`);
       } else {
-        const { data: project } = await createProject({ name: inputValue.trim(), icon: ProjectIcon?.type.name });
+        const { data: project } = await createProject({ name: projectName, icon: ProjectIcon?.type.name });
         if (project) {
           dispatch(setCurrentProject(project.id));
           setNewProjectModal(false);
           setInputValue('');
           setProjectIcon(undefined);
-          toast(`"${inputValue}" project was created`);
+          toast(`"${projectName}" project was created`);
         }
       }
-    } else {
-      toast('Field "Name" cannot be empty');
-    }
   };
 
   const setIconOnClickHandler = (icon: React.JSX.Element) => {

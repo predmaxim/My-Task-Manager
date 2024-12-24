@@ -18,9 +18,9 @@ export const projectsApi = api.injectEndpoints({
         try {
           await cacheDataLoaded;
           const listener = (event: MessageEvent) => {
-            const data = JSON.parse(event.data);
-            console.log('Received data:', data);
+            const data = JSON.parse(event.data);            
             const parsedData = ProjectSchema.array().safeParse(data);
+
             if (parsedData.success) {
               updateCachedData((draft) => {
                 draft.push(...parsedData.data);
@@ -45,7 +45,7 @@ export const projectsApi = api.injectEndpoints({
     }),
     createProject: builder.mutation<ProjectType, Pick<ProjectType, 'name'> & Partial<Pick<ProjectType, 'icon'>>>({
       query: (body) => ({
-        url: `projects/`,
+        url: `projects`,
         method: 'POST',
         body,
       }),
