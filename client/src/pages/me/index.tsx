@@ -1,37 +1,29 @@
-import styles from '@/pages/login/styles.module.scss';
-import { useGetMeQuery } from '@/services/auth.ts';
-import { Loading } from '@/components/loading';
-import { Error } from '@/components/error';
+import styles from './styles.module.scss';
 import { logout } from '@/lib/features/auth-slice';
+import { useAppDispatch, useAppSelector } from '@/lib/store.ts';
+import { useNavigate } from 'react-router-dom';
 
 export function MePage() {
-  const { data: user, isLoading, error } = useGetMeQuery();
-
-  if (isLoading) {
-    return <Loading />;
-  }
-
-  if (error) {
-    console.error(error);
-    return <Error />;
-  }
-
+  // const { data: user, isLoading, error } = useGetMeQuery();
+  const dispatch = useAppDispatch();
+  const user = useAppSelector((state) => state.auth.user);
+  const router = useNavigate();
   if (!user) {
-    return;
+    return null;
   }
 
   const handleLogout = () => {
-    logout();
-  }
+    dispatch(logout());
+    router('/');
+  };
 
 
   return (
     <section className={`${styles.Me} container`}>
       <h1>About me</h1>
       {user.avatar && <img src={user.avatar} alt={user.name} />}
-      <p>Name: {user.name}</p>
-      <p>Email: {user.email}</p>
-      <button onClick={handleLogout}>Logout</button>
+      <p>{user.name} ({user.email})</p>
+      <button onClick={handleLogout} className={styles.logout}>Logout</button>
     </section>
   );
 }

@@ -8,5 +8,5 @@
 }
 
 .CurrentProjectBtn {
-  @include button("xl", 100%);
+  @include button("l", $color: "secondary");
 }

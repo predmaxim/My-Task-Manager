@@ -2,7 +2,7 @@ import { forwardRef, InputHTMLAttributes, useEffect, useImperativeHandle, useRef
 import { PiEye, PiEyeSlash } from 'react-icons/pi';
 import styles from './styles.module.scss';
 
-type InputProps = Omit<Omit<InputHTMLAttributes<HTMLInputElement>, 'size'>, 'placeholder'> & {
+type InputProps = Omit<InputHTMLAttributes<HTMLInputElement>, 'size'> & {
   label: string;
   errors?: Record<string, unknown>;
   touched?: Record<string, unknown>;
@@ -11,7 +11,7 @@ type InputProps = Omit<Omit<InputHTMLAttributes<HTMLInputElement>, 'size'>, 'pla
 };
 
 const Input = forwardRef<HTMLInputElement, InputProps>(
-  ({ type, name, className, label, touched, required, topLabel, ...props }, ref) => {
+  ({ type, name, className, label, required, topLabel, placeholder, ...props }, ref) => {
     const inputRef = useRef<HTMLInputElement>(null);
     const [showPassword, setShowPassword] = useState(false);
     const [inputType, setInputType] = useState(type);
@@ -39,7 +39,7 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
           <input
             type={inputType}
             name={name}
-            placeholder=" "
+            placeholder={placeholder || ' '}
             required={required}
             className={`${styles.input} ${styles.inputBordered} ${className} ${type === 'password' ? styles.passwordShift : ''}`}
             ref={inputRef}

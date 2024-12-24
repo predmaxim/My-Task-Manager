@@ -3,6 +3,7 @@ import { ButtonWithIcon } from '@/components/button-with-iIcon';
 import { useAppDispatch, useAppSelector } from '@/lib/store';
 import styles from './styles.module.scss';
 import { setSearch } from '@/lib/features/search-slice';
+import Input from '@/components/input';
 
 export type SearchProps = {
   className?: string;
@@ -24,11 +25,13 @@ export function Search({ className }: SearchProps) {
 
   return (
     <div className={`${styles.Search} ${className} ${activeClass}`}>
-      <input
+      <Input
+        label=""
+        name="Search"
         type="text"
         id="Search__input"
-        className={`${styles.Search__input} input`}
         placeholder="Search"
+        className={`${styles.Search__input} input`}
         value={query}
         onChange={onChangeHandler}
       />

@@ -1,5 +1,16 @@
+@import "src/assets/vars";
+@import "src/assets/mixins";
+
 .Me {
   display: flex;
   justify-content: center;
   align-items: center;
+  flex-direction: column;
+  margin-top: 2rem;
+}
+
+.logout {
+  @include button($size: "xl", $color: "secondary");
+  width: fit-content;
+  margin-top: 1rem;
 }

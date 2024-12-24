@@ -7,6 +7,7 @@ import { useAppSelector } from '@/lib/store.ts';
 import { ThemeSwitcher } from '../theme-switcher';
 import { CurrentProjectButton } from '../current-project-button';
 import { ProfileButton } from '../profile-button';
+import { Menu } from '@/components/menu';
 
 export function HomeHeader() {
   const theme = useAppSelector((state) => state.theme.theme);
@@ -26,7 +27,8 @@ export function HomeHeader() {
         <div className={styles.rightSide}>
           <ThemeSwitcher />
           <CurrentProjectButton />
-          <ProfileButton/>
+          <ProfileButton />
+          <Menu className={styles.menu} />
           {/*<ButtonWithIcon*/}
           {/*  className={styles.CurrentProjectBtn}*/}
           {/*  icon="PiUserFill"*/}

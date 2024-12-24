@@ -1,6 +1,6 @@
 import { ProjectType } from '@/types';
 import { api } from '@/services/api.ts';
-import { ProjectSchema } from '@/zod-schemas/custom';
+import { ProjectSchema } from '@/zod-schemas/custom.ts';
 
 // const projectsAdapter = createEntityAdapter<ProjectType>();
 
@@ -11,8 +11,12 @@ export const projectsApi = api.injectEndpoints({
   endpoints: (builder) => ({
     getProjects: builder.query<ProjectType[], void>({
       query: () => `projects/`,
+      providesTags: (result = []) => [
+        ...result.map(({ id }) => ({ type: 'projects', id }) as const),
+        { type: 'projects' as const, id: 'LIST' },
+      ],
       async onCacheEntryAdded(
-        arg,
+        _arg,
         { updateCachedData, cacheDataLoaded, cacheEntryRemoved },
       ) {
         const ws = new WebSocket(`ws://localhost:5173`);
@@ -39,10 +43,6 @@ export const projectsApi = api.injectEndpoints({
         // perform cleanup steps once the `cacheEntryRemoved` promise resolves
         ws.close();
       },
-      providesTags: (result = []) => [
-        ...result.map(({ id }) => ({ type: 'projects', id }) as const),
-        { type: 'projects' as const, id: 'LIST' },
-      ],
     }),
     getProject: builder.query<ProjectType, ProjectType['id']>({
       query: (id) => `projects/${id}`,
@@ -53,6 +53,7 @@ export const projectsApi = api.injectEndpoints({
         method: 'POST',
         body,
       }),
+      invalidatesTags: [{ type: 'projects', id: 'LIST' }],
     }),
     updateProject: builder.mutation<ProjectType, ProjectType>({
       query: (body) => ({
@@ -60,12 +61,18 @@ export const projectsApi = api.injectEndpoints({
         method: 'PUT',
         body,
       }),
+      invalidatesTags: [{ type: 'projects', id: 'LIST' }],
     }),
     deleteProject: builder.mutation<ProjectType['id'], ProjectType['id']>({
       query: (id) => ({
         url: `projects/${id}`,
         method: 'DELETE',
       }),
+      invalidatesTags: (_result, _error, id) => [
+        { type: 'projects', id },
+        { type: 'projects', id: 'LIST' },
+      ],
+
     }),
   }),
 });

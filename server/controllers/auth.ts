@@ -125,9 +125,7 @@ export const login: RequestHandler = async (req: Request, res: Response) => {
 
 export const getMe: RequestHandler = async (req: Request, res: Response) => {
   try {
-    const userId = UserSchema.pick({ id: true }).shape.id.parse(
-      req.query.userId,
-    );
+    const userId = UserSchema.pick({ id: true }).shape.id.parse(req.user?.id);
 
     if (!userId) {
       res.status(403).json({ message: "Forbidden! Unauthorized!" });
