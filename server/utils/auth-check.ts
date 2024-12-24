@@ -30,11 +30,13 @@ export const authCheck = async (
       return;
     }
 
-    const decoded = JwtPayloadSchema.extend({ id: z.number() }).parse(
-      jwt.verify(access_token, JWT_SECRET),
-    );
+    const decoded_access_token = JwtPayloadSchema.extend({
+      id: z.number(),
+    }).parse(jwt.verify(access_token, JWT_SECRET));
 
-    const user = await prisma.user.findUnique({ where: { id: decoded.id } });
+    const user = await prisma.user.findUnique({
+      where: { id: decoded_access_token.id },
+    });
 
     if (!user) {
       res.status(404).json({ message: "User not found" });

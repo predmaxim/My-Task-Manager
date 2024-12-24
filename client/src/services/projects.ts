@@ -2,12 +2,7 @@ import { ProjectType } from '@/types';
 import { api } from '@/services/api.ts';
 import { ProjectSchema } from '@/zod-schemas/custom.ts';
 
-// const projectsAdapter = createEntityAdapter<ProjectType>();
-
 export const projectsApi = api.injectEndpoints({
-  // reducerPath: 'projectsApi',
-  // baseQuery: fetchBaseQuery({ baseUrl: `${API_URL}/` }),
-  // tagTypes: ['projects'],
   endpoints: (builder) => ({
     getProjects: builder.query<ProjectType[], void>({
       query: () => `projects/`,
@@ -46,6 +41,7 @@ export const projectsApi = api.injectEndpoints({
     }),
     getProject: builder.query<ProjectType, ProjectType['id']>({
       query: (id) => `projects/${id}`,
+      providesTags: (_result, _error, id) => [{ type: 'projects', id }],
     }),
     createProject: builder.mutation<ProjectType, Pick<ProjectType, 'name'> & Partial<Pick<ProjectType, 'icon'>>>({
       query: (body) => ({
@@ -61,7 +57,7 @@ export const projectsApi = api.injectEndpoints({
         method: 'PUT',
         body,
       }),
-      invalidatesTags: [{ type: 'projects', id: 'LIST' }],
+      invalidatesTags: (_result, _error, { id }) => [{ type: 'projects', id }],
     }),
     deleteProject: builder.mutation<ProjectType['id'], ProjectType['id']>({
       query: (id) => ({
@@ -72,7 +68,6 @@ export const projectsApi = api.injectEndpoints({
         { type: 'projects', id },
         { type: 'projects', id: 'LIST' },
       ],
-
     }),
   }),
 });
