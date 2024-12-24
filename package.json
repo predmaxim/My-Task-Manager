@@ -1,0 +1,16 @@
+{
+  "name": "my-task-manager",
+  "version": "2.0.0",
+  "main": "index.js",
+  "repository": "git@github.com:predmaxim/My-Task-Manager.git",
+  "author": "Maxim Predybailo <predmaxim@ya.ru>",
+  "license": "MIT",
+  "scripts": {
+    "start": "concurrently \"yarn server\" \"yarn client\"",
+    "server": "cd server && yarn start",
+    "client": "cd client && yarn dev"
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.0"
+  }
+}
