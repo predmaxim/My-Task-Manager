@@ -1,7 +1,6 @@
-import { CreateNewTask } from '@/components/create-new-task';
-import { Task } from '@/components/task';
 import { useCallback, useEffect, useState } from 'react';
-import { DragDropContext, Draggable, Droppable, DropResult } from 'react-beautiful-dnd';
+import { closestCenter, DndContext, MouseSensor, TouchSensor, useSensor, useSensors } from '@dnd-kit/core';
+import { arrayMove, SortableContext, useSortable, verticalListSortingStrategy } from '@dnd-kit/sortable';
 import { useGetTasksQuery, useUpdateTaskMutation } from '@/services/tasks';
 import { upperCaseFirstLetter } from '@/utils/helpers';
 import { ProjectType, TaskStatusType, TaskType } from '@/types';
@@ -9,16 +8,34 @@ import { TASK_STATUSES } from '@/constants';
 import styles from './styles.module.scss';
 import { ButtonWithIcon } from '@/components/button-with-iIcon';
 import { useAppSelector } from '@/lib/store';
-
-export type BoardType = {
-  currentProjectId: ProjectType['id'];
-};
+import { CreateNewTask } from '@/components/create-new-task';
+import { Task } from '@/components/task';
 
 export type ColumnType = {
   id: TaskStatusType;
   title: TaskStatusType;
   tasks: TaskType[];
 };
+
+export type BoardType = {
+  currentProjectId: ProjectType['id'];
+};
+
+export function SortableItem({ id, task }: { id: string, task: TaskType }) {
+  const taskStatuses = useAppSelector((state) => state.taskStatuses.taskStatuses);
+  const { attributes, listeners, setNodeRef, transform, transition } = useSortable({ id });
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+  };
+
+  return (
+    <div ref={setNodeRef} style={style} {...attributes} {...listeners}>
+      <Task task={task} />
+    </div>
+  );
+}
 
 export function Board({ currentProjectId }: BoardType) {
   const { data: tasks = [] } = useGetTasksQuery(currentProjectId, {
@@ -27,6 +44,11 @@ export function Board({ currentProjectId }: BoardType) {
   const [updateTask] = useUpdateTaskMutation();
   const [board, setBoard] = useState<ColumnType[]>([]);
   const query = useAppSelector((state) => state.search.query);
+
+  const sensors = useSensors(
+    useSensor(MouseSensor),
+    useSensor(TouchSensor),
+  );
 
   const genColumn = useCallback((status: TaskStatusType): ColumnType => {
     const newQuery = new RegExp(query.toLowerCase());
@@ -42,58 +64,61 @@ export function Board({ currentProjectId }: BoardType) {
   }, [query, tasks]);
 
   const genBoard = useCallback(() => {
-    const newColumns = (Object.keys(TASK_STATUSES) as TaskStatusType['name'][]).map((status: TaskStatusType) =>
+    const newColumns = Object.values(TASK_STATUSES).map((status) =>
       genColumn(status),
     );
     setBoard(newColumns);
   }, [genColumn]);
 
-  const onDragEnd = (result: DropResult) => {
-    const { source, destination } = result;
-    if (!destination || (source.droppableId === destination.droppableId && source.index === destination.index)) return;
+  const handleDragEnd = (event: any) => {
+    const { active, over } = event;
+    if (!over) return;
 
-    const newBoard = [...board];
-    const sourceColumn = newBoard.find(column => column.id === source.droppableId);
-    const destinationColumn = newBoard.find(column => column.id === destination.droppableId);
+    const activeColumn = board.find(column => column.tasks.some(task => task.id === active.id));
+    const overColumn = board.find(column => column.tasks.some(task => task.id === over.id));
 
-    if (!sourceColumn || !destinationColumn) return;
+    if (!activeColumn || !overColumn) return;
 
-    const [removedTask] = sourceColumn.tasks.splice(source.index, 1);
+    const activeIndex = activeColumn.tasks.findIndex(task => task.id === active.id);
+    const overIndex = overColumn.tasks.findIndex(task => task.id === over.id);
 
-    if (source.droppableId !== destination.droppableId) {
-      removedTask.done = destination.droppableId === TASK_STATUSES.done ? new Date() : false;
-      removedTask.status = destination.droppableId as TaskStatusType;
+    if (activeColumn.id === overColumn.id) {
+      const newTasks = arrayMove(activeColumn.tasks, activeIndex, overIndex);
+      const newBoard = board.map(column => column.id === activeColumn.id ? { ...column, tasks: newTasks } : column);
+      setBoard(newBoard);
+    } else {
+      const [movedTask] = activeColumn.tasks.splice(activeIndex, 1);
+      movedTask.statusId = overColumn.id.id;
+      overColumn.tasks.splice(overIndex, 0, movedTask);
+
+      const newBoard = board.map(column => {
+        if (column.id === activeColumn.id) return { ...column, tasks: activeColumn.tasks };
+        if (column.id === overColumn.id) return { ...column, tasks: overColumn.tasks };
+        return column;
+      });
+
+      setBoard(newBoard);
     }
 
-    destinationColumn.tasks.splice(destination.index, 0, removedTask);
-
-    [sourceColumn, destinationColumn].forEach(column =>
-      column.tasks.forEach((task, i) => {
-        task.index = i;
+    [activeColumn, overColumn].forEach(column =>
+      column.tasks.forEach((task) => {
+        task.index = task.index;
         updateTask(task);
       }),
     );
-
-    setBoard(newBoard);
   };
 
   useEffect(() => {
     genBoard();
   }, [genBoard, tasks]);
 
-  useEffect(() => {
-    if (currentProjectId) {
-      refetch();
-    }
-  }, [currentProjectId, refetch]);
-
   return (
     <div className={styles.Board}>
-      <DragDropContext key="Board" onDragEnd={onDragEnd}>
+      <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
         {board.map(({ id, title, tasks }: ColumnType) => (
-          <div className={`${styles.column} ${styles[`column-${title}`]}`} key={`column-${id}`}>
+          <div className={`${styles.column} ${styles[`column-${title.name}`]}`} key={`column-${id.name}`}>
             <div className={styles.column__header}>
-              <div className={styles.column__title}>{upperCaseFirstLetter(title)}</div>
+              <div className={styles.column__title}>{upperCaseFirstLetter(title.name)}</div>
               <ButtonWithIcon
                 className={styles.column__menuBtn}
                 onClick={() => console.log('onClickMenu')}
@@ -102,41 +127,17 @@ export function Board({ currentProjectId }: BoardType) {
             </div>
             <div className={styles.column__CreateNewTask}>
               {currentProjectId && (
-                <CreateNewTask projectName={currentProjectId} taskStatus={title} />
+                <CreateNewTask projectName={currentProjectId.toString()} taskStatus={title} />
               )}
             </div>
-            <Droppable droppableId={id} type="column">
-              {(provided) => (
-                <div
-                  className={styles.column__body}
-                  {...provided.droppableProps}
-                  ref={provided.innerRef}
-                >
-                  {tasks.map((task: TaskType, i) => (
-                    <Draggable
-                      draggableId={`${task.number}`}
-                      key={task.number}
-                      index={i}
-                    >
-                      {(provided) => (
-                        <div
-                          key={task.number}
-                          {...provided.dragHandleProps}
-                          {...provided.draggableProps}
-                          ref={provided.innerRef}
-                        >
-                          <Task task={task} />
-                        </div>
-                      )}
-                    </Draggable>
-                  ))}
-                  {provided.placeholder}
-                </div>
-              )}
-            </Droppable>
+            <SortableContext items={tasks} strategy={verticalListSortingStrategy}>
+              {tasks.map((task: TaskType) => (
+                <SortableItem key={task.id} id={task.id.toString()} task={task} />
+              ))}
+            </SortableContext>
           </div>
         ))}
-      </DragDropContext>
+      </DndContext>
     </div>
   );
 }
