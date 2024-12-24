@@ -45,3 +45,5 @@ export const JwtPayloadSchema = z
     jti: z.string().optional(),
   })
   .catchall(z.any());
+
+export const toInt = z.coerce.number().int;

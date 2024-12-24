@@ -2,13 +2,16 @@ import { prisma } from "@/lib/prisma-client";
 import { Request, RequestHandler, Response } from "express";
 import { errorHandler } from "@/utils/error-handler";
 import { StatusSchema } from "@/zod-schemas/generated";
+import { toInt } from "@/zod-schemas/custom";
 
 export const getTaskStatuses: RequestHandler = async (
   req: Request,
   res: Response,
 ) => {
   try {
-    const projectId = StatusSchema.shape.projectId.parse(req.params.projectId);
+    const projectId = StatusSchema.shape.projectId.parse(
+      toInt(req.params.projectId),
+    );
 
     const taskStatuses = await prisma.status.findMany({
       where: { projectId },
@@ -25,7 +28,7 @@ export const getTaskStatus: RequestHandler = async (
   res: Response,
 ) => {
   try {
-    const id = StatusSchema.shape.id.parse(req.params.id);
+    const id = StatusSchema.shape.id.parse(toInt(req.params.id));
     const taskStatus = await prisma.status.findUnique({
       where: { id },
     });
@@ -48,7 +51,9 @@ export const createTaskStatus: RequestHandler = async (
 ) => {
   try {
     const name = StatusSchema.shape.name.parse(req.body.name);
-    const projectId = StatusSchema.shape.projectId.parse(req.params.projectId);
+    const projectId = StatusSchema.shape.projectId.parse(
+      toInt(req.params.projectId),
+    );
     const taskStatus = await prisma.status.create({
       data: { name, projectId },
     });
@@ -65,7 +70,7 @@ export const updateTaskStatus: RequestHandler = async (
   res: Response,
 ) => {
   try {
-    const id = StatusSchema.shape.id.parse(req.params.id);
+    const id = StatusSchema.shape.id.parse(toInt(req.params.id));
     const name = StatusSchema.shape.name.parse(req.body.name);
     const taskStatus = await prisma.status.update({
       where: { id },
@@ -84,7 +89,7 @@ export const deleteTaskStatus: RequestHandler = async (
   res: Response,
 ) => {
   try {
-    const id = StatusSchema.shape.id.parse(req.params.id);
+    const id = StatusSchema.shape.id.parse(toInt(req.params.id));
     await prisma.status.delete({
       where: { id },
     });

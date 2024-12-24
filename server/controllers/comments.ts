@@ -2,11 +2,11 @@ import { Request, Response } from "express";
 import { prisma } from "@/lib/prisma-client";
 import { CommentSchema } from "@/zod-schemas/generated";
 import { errorHandler } from "@/utils/error-handler";
+import { toInt } from "@/zod-schemas/custom";
 
 export const getComments = async (req: Request, res: Response) => {
   try {
-    // TODO: add pagination, sorting
-    const taskId = CommentSchema.shape.taskId.parse(req.params.taskId);
+    const taskId = CommentSchema.shape.taskId.parse(toInt(req.params.taskId));
     const comments = await prisma.comment.findMany({
       where: { taskId },
       orderBy: { created: "asc" },
@@ -20,7 +20,7 @@ export const getComments = async (req: Request, res: Response) => {
 
 export const getComment = async (req: Request, res: Response) => {
   try {
-    const id = CommentSchema.shape.id.parse(req.params.id);
+    const id = CommentSchema.shape.id.parse(toInt(req.params.id));
     const comment = await prisma.comment.findUnique({
       where: { id },
     });
@@ -54,7 +54,7 @@ export const createComment = async (req: Request, res: Response) => {
 
 export const updateComment = async (req: Request, res: Response) => {
   try {
-    const id = CommentSchema.shape.id.parse(req.params.id);
+    const id = CommentSchema.shape.id.parse(toInt(req.params.id));
     const comment = CommentSchema.omit({ id: true }).parse(req.body);
     const updatedComment = await prisma.comment.update({
       where: { id },
@@ -69,7 +69,7 @@ export const updateComment = async (req: Request, res: Response) => {
 
 export const deleteComment = async (req: Request, res: Response) => {
   try {
-    const id = CommentSchema.shape.id.parse(req.params.id);
+    const id = CommentSchema.shape.id.parse(toInt(req.params.id));
     await prisma.comment.delete({
       where: { id },
     });
