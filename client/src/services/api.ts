@@ -1,6 +1,15 @@
-import { createApi, fetchBaseQuery, retry } from '@reduxjs/toolkit/query/react';
+import {
+  BaseQueryFn,
+  createApi,
+  FetchArgs,
+  fetchBaseQuery,
+  FetchBaseQueryError,
+  retry,
+} from '@reduxjs/toolkit/query/react';
 import { RootState } from '@/lib/store';
 import { API_URL } from '@/constants';
+import { logout, setToken } from '@/lib/features/auth-slice.ts';
+import { z } from 'zod';
 
 // Create our baseQuery instance
 const baseQuery = fetchBaseQuery({
@@ -16,36 +25,39 @@ const baseQuery = fetchBaseQuery({
   },
 });
 
-const baseQueryWithRetry = retry(baseQuery, { maxRetries: 2 });
+const baseQueryWithRetry: BaseQueryFn<string | FetchArgs, unknown, FetchBaseQueryError> = async (args, api, extraOptions) => {
+  let result = await baseQuery(args, api, extraOptions);
 
-/**
- * Create a base API to inject endpoints into elsewhere.
- * Components using this API should import from the injected site,
- * in order to get the appropriate types,
- * and to ensure that the file injecting the endpoints is loaded
- */
+  if (result.error && result.error.status === 401) {
+    return result;
+  }
+
+  result = await retry(baseQuery, { maxRetries: 2 })(args, api, extraOptions);
+  return result;
+};
+
+const baseQueryWithReauth: BaseQueryFn<string | FetchArgs, unknown, FetchBaseQueryError> = async (args, api, extraOptions) => {
+  let result = await baseQueryWithRetry(args, api, extraOptions);
+
+  if (result.error && result.error.status === 401) {
+    const refreshResult = await baseQuery('/auth/refresh', api, extraOptions);
+
+    const data = z.object({ access_token: z.string() }).optional().parse(refreshResult.data);
+
+    if (data) {
+      api.dispatch(setToken(data.access_token));
+      result = await baseQueryWithRetry(args, api, extraOptions);
+    } else {
+      api.dispatch(logout());
+    }
+  }
+
+  return result;
+};
+
 export const api = createApi({
-  /**
-   * `reducerPath` is optional and will not be required by most users.
-   * This is useful if you have multiple API definitions,
-   * e.g. where each has a different domain, with no interaction between endpoints.
-   * Otherwise, a single API definition should be used in order to support tag invalidation,
-   * among other features
-   */
   reducerPath: 'splitApi',
-  /**
-   * A bare bones base query would just be `baseQuery: fetchBaseQuery({ baseUrl: '/' })`
-   */
-  baseQuery: baseQueryWithRetry,
-  /**
-   * Tag types must be defined in the original API definition
-   * for any tags that would be provided by injected endpoints
-   */
+  baseQuery: baseQueryWithReauth,
   tagTypes: ['comments', 'projects', 'tasks', 'auth'],
-  /**
-   * This api has endpoints injected in adjacent files,
-   * which is why no endpoints are shown below.
-   * If you want all endpoints defined in the same file, they could be included here instead
-   */
   endpoints: () => ({}),
 });

@@ -1,10 +1,15 @@
 import { NextFunction, Request, Response } from "express";
 import jwt from "jsonwebtoken";
 import { JWT_SECRET, TOKEN_COOKIE_NAME } from "@/constants";
-import errorHandler from "@/utils/error-handler";
+import { errorHandler } from "@/utils/error-handler";
 import { JwtPayloadSchema, UserWithoutPassSchema } from "@/zod-schemas/custom";
 import { z } from "zod";
 import { prisma } from "@/lib/prisma-client";
+
+const isTokenExpired = (token: string): boolean => {
+  const payload = JSON.parse(atob(token.split(".")[1]));
+  return payload.exp * 1000 < Date.now();
+};
 
 export const authCheck = async (
   req: Request,
@@ -15,18 +20,22 @@ export const authCheck = async (
     return next();
   }
 
+  if (req.path === "/api/auth/refresh") {
+    const refresh_token: string | undefined = req.cookies[TOKEN_COOKIE_NAME];
+
+    if (!refresh_token) {
+      res.status(403).json({ message: "Forbidden! No refresh token found!" });
+      return;
+    }
+
+    return next();
+  }
+
   try {
     const access_token = req.headers.authorization?.split(" ")[1];
 
     if (!access_token) {
       res.status(403).json({ message: "Forbidden! No access token found!" });
-      return;
-    }
-
-    const refresh_token: string | undefined = req.cookies[TOKEN_COOKIE_NAME];
-
-    if (!refresh_token) {
-      res.status(403).json({ message: "Forbidden! No refresh token found!" });
       return;
     }
 

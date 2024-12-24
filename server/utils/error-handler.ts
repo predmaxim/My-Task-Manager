@@ -39,5 +39,3 @@ export const errorHandler: ErrorHandler = (error) => {
 
   return "An unknown error occurred.";
 };
-
-export default errorHandler;

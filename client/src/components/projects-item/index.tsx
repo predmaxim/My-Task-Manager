@@ -1,6 +1,6 @@
 import { ProjectType } from '@/types';
 import { ButtonWithIcon } from '@/components/button-with-iIcon';
-import styles from '@/components/project-list/styles.module.scss';
+import styles from './styles.module.scss';
 import * as Icons from 'react-icons/ri';
 import { PopupMenu } from '@/components/popup-menu';
 import { useState } from 'react';
@@ -44,7 +44,7 @@ export function ProjectItem({ project, modalAction }: ProjectItemType) {
     console.log('edit');
   };
   return (
-    <div>
+    <div className={styles.ProjectItem}>
       <ButtonWithIcon
         key={project.id}
         className={styles.ProjectButton}

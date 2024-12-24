@@ -23,18 +23,18 @@ export const revalidateToken = () => async (dispatch: AppDispatch, getState: () 
   const state = getState();
   const token = state.auth.token;
 
-  const { data: access_token } = useRefreshQuery();
+  const { data } = useRefreshQuery();
 
   if (token && !isTokenExpired(token)) {
     return;
   }
 
-  console.log('revalidateToken', access_token);
+  console.log('revalidateToken', data?.access_token);
 
   try {
     // const result = await dispatch(authApi.endpoints.refresh.initiate());
-    if (access_token) {
-      dispatch(setToken(access_token));
+    if (data?.access_token) {
+      dispatch(setToken(data.access_token));
     } else {
       dispatch(logout());
     }

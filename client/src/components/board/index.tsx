@@ -21,7 +21,7 @@ export type ColumnType = {
 };
 
 export function Board({ currentProjectId }: BoardType) {
-  const { data: tasks = [], refetch } = useGetTasksQuery(currentProjectId, {
+  const { data: tasks = [] } = useGetTasksQuery(currentProjectId, {
     skip: !currentProjectId,
   });
   const [updateTask] = useUpdateTaskMutation();
@@ -31,7 +31,7 @@ export function Board({ currentProjectId }: BoardType) {
   const genColumn = useCallback((status: TaskStatusType): ColumnType => {
     const newQuery = new RegExp(query.toLowerCase());
     const tasksByStatus = tasks
-      .filter(task => task.status === status && (task.name.toLowerCase().match(newQuery) || String(task.number).toLowerCase().match(newQuery)))
+      .filter(task => task.statusId === status.id && (task.name.toLowerCase().match(newQuery)))
       .sort((a, b) => a.index - b.index);
 
     return {
@@ -42,7 +42,7 @@ export function Board({ currentProjectId }: BoardType) {
   }, [query, tasks]);
 
   const genBoard = useCallback(() => {
-    const newColumns = (Object.keys(TASK_STATUSES) as TaskStatusType[]).map((status: TaskStatusType) =>
+    const newColumns = (Object.keys(TASK_STATUSES) as TaskStatusType['name'][]).map((status: TaskStatusType) =>
       genColumn(status),
     );
     setBoard(newColumns);

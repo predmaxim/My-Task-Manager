@@ -16,7 +16,7 @@ import {
   RegisterSchema,
   UserWithoutPassSchema,
 } from "@/zod-schemas/custom";
-import errorHandler from "@/utils/error-handler";
+import { errorHandler } from "@/utils/error-handler";
 import { compare, hash } from "bcrypt-ts";
 import { z } from "zod";
 
@@ -164,7 +164,7 @@ export const refresh: RequestHandler = async (req: Request, res: Response) => {
     }).parse(jwt.verify(refresh_token, JWT_SECRET));
 
     const { id: userId } = JwtPayloadSchema.extend({ id: z.number() }).parse(
-      jwt.verify(access_token, JWT_SECRET),
+      jwt.decode(access_token),
     );
 
     const user = await prisma.user.findUnique({ where: { id: userId } });
@@ -177,8 +177,8 @@ export const refresh: RequestHandler = async (req: Request, res: Response) => {
     const newAccessToken = jwt.sign({ id: user.id }, JWT_SECRET, {
       expiresIn: JWT_ACCESS_TOKEN_EXPIRES,
     });
-
-    res.status(200).json(newAccessToken);
+ 
+    res.status(200).json({ access_token: newAccessToken });
   } catch (error) {
     const errorMessage = errorHandler(error);
     res.status(403).json({ message: errorMessage, error });

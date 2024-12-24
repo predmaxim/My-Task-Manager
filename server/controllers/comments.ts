@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import { prisma } from "@/lib/prisma-client";
 import { CommentSchema } from "@/zod-schemas/generated";
-import errorHandler from "@/utils/error-handler";
+import { errorHandler } from "@/utils/error-handler";
 
 export const getComments = async (req: Request, res: Response) => {
   try {
