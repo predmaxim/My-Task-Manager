@@ -19,7 +19,6 @@ export const commentsApi = api.injectEndpoints({
           await cacheDataLoaded;
           const listener = (event: MessageEvent) => {
             const data = JSON.parse(event.data);
-            console.log('Received data:', data);
             const parsedData = CommentSchema.array().safeParse(data);
             if (parsedData.success) {
               updateCachedData((draft) => {

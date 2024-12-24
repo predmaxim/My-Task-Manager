@@ -83,11 +83,11 @@ $modal-body-max-height: 80vh;
 }
 
 .okBtn {
-  @include button("xl", 150px, $color: "primary");
+  @include button($size: "xl", $color: "primary");
 }
 
 .cancelBtn {
-  @include button("xl", 150px, $color: "secondary");
+  @include button($size: "xl", $color: "secondary");
 }
 
 .closeBtn {

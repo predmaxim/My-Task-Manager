@@ -5,9 +5,10 @@
 }
 
 .button {
-  @include button("xl", auto, "primary");
+  @include button($size: "xl", $color: "primary");
   margin-top: 1rem;
   width: fit-content;
+  height: fit-content;
 }
 
 .title {

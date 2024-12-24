@@ -2,11 +2,9 @@
 @import "src/assets/mixins.scss";
 
 .ProjectItem {
-
+  position: relative;
 }
 
 .ProjectButton {
-  display: flex;
-  gap: 0.5rem;
   @include button($color: "secondary", $size: "xl");
 }

@@ -16,13 +16,11 @@ export const UserScalarFieldEnumSchema = z.enum(['id','name','email','password',
 
 export const ProjectScalarFieldEnumSchema = z.enum(['id','name','slug','created','icon','color','userId']);
 
-export const TaskScalarFieldEnumSchema = z.enum(['id','name','description','created','done','priorityId','statusId','parentId','projectId','order','due','inWork']);
+export const TaskScalarFieldEnumSchema = z.enum(['id','name','description','created','done','priority','statusId','parentId','projectId','order','due','inWork']);
 
 export const CommentScalarFieldEnumSchema = z.enum(['id','content','parentId','taskId','created']);
 
 export const FileScalarFieldEnumSchema = z.enum(['id','src','taskId','created']);
-
-export const PriorityScalarFieldEnumSchema = z.enum(['id','name','color']);
 
 export const StatusScalarFieldEnumSchema = z.enum(['id','name','projectId']);
 
@@ -31,6 +29,11 @@ export const SortOrderSchema = z.enum(['asc','desc']);
 export const QueryModeSchema = z.enum(['default','insensitive']);
 
 export const NullsOrderSchema = z.enum(['first','last']);
+
+export const PriorityLevelSchema = z.enum(['low','normal','high','critical']);
+
+export type PriorityLevelType = `${z.infer<typeof PriorityLevelSchema>}`
+
 /////////////////////////////////////////
 // MODELS
 /////////////////////////////////////////
@@ -71,12 +74,12 @@ export type Project = z.infer<typeof ProjectSchema>
 /////////////////////////////////////////
 
 export const TaskSchema = z.object({
+  priority: PriorityLevelSchema,
   id: z.number().int(),
   name: z.string(),
   description: z.string().nullable(),
   created: z.coerce.date(),
   done: z.coerce.date().nullable(),
-  priorityId: z.number().int(),
   statusId: z.number().int(),
   parentId: z.number().int().nullable(),
   projectId: z.number().int(),
@@ -113,18 +116,6 @@ export const FileSchema = z.object({
 })
 
 export type File = z.infer<typeof FileSchema>
-
-/////////////////////////////////////////
-// PRIORITY SCHEMA
-/////////////////////////////////////////
-
-export const PrioritySchema = z.object({
-  id: z.number().int(),
-  name: z.string(),
-  color: z.string(),
-})
-
-export type Priority = z.infer<typeof PrioritySchema>
 
 /////////////////////////////////////////
 // STATUS SCHEMA
@@ -216,7 +207,6 @@ export const ProjectSelectSchema: z.ZodType<Prisma.ProjectSelect> = z.object({
 //------------------------------------------------------
 
 export const TaskIncludeSchema: z.ZodType<Prisma.TaskInclude> = z.object({
-  priority: z.union([z.boolean(),z.lazy(() => PriorityArgsSchema)]).optional(),
   status: z.union([z.boolean(),z.lazy(() => StatusArgsSchema)]).optional(),
   parent: z.union([z.boolean(),z.lazy(() => TaskArgsSchema)]).optional(),
   project: z.union([z.boolean(),z.lazy(() => ProjectArgsSchema)]).optional(),
@@ -247,14 +237,13 @@ export const TaskSelectSchema: z.ZodType<Prisma.TaskSelect> = z.object({
   description: z.boolean().optional(),
   created: z.boolean().optional(),
   done: z.boolean().optional(),
-  priorityId: z.boolean().optional(),
+  priority: z.boolean().optional(),
   statusId: z.boolean().optional(),
   parentId: z.boolean().optional(),
   projectId: z.boolean().optional(),
   order: z.boolean().optional(),
   due: z.boolean().optional(),
   inWork: z.boolean().optional(),
-  priority: z.union([z.boolean(),z.lazy(() => PriorityArgsSchema)]).optional(),
   status: z.union([z.boolean(),z.lazy(() => StatusArgsSchema)]).optional(),
   parent: z.union([z.boolean(),z.lazy(() => TaskArgsSchema)]).optional(),
   project: z.union([z.boolean(),z.lazy(() => ProjectArgsSchema)]).optional(),
@@ -319,40 +308,11 @@ export const FileSelectSchema: z.ZodType<Prisma.FileSelect> = z.object({
   task: z.union([z.boolean(),z.lazy(() => TaskArgsSchema)]).optional(),
 }).strict()
 
-// PRIORITY
-//------------------------------------------------------
-
-export const PriorityIncludeSchema: z.ZodType<Prisma.PriorityInclude> = z.object({
-  task: z.union([z.boolean(),z.lazy(() => TaskFindManyArgsSchema)]).optional(),
-  _count: z.union([z.boolean(),z.lazy(() => PriorityCountOutputTypeArgsSchema)]).optional(),
-}).strict()
-
-export const PriorityArgsSchema: z.ZodType<Prisma.PriorityDefaultArgs> = z.object({
-  select: z.lazy(() => PrioritySelectSchema).optional(),
-  include: z.lazy(() => PriorityIncludeSchema).optional(),
-}).strict();
-
-export const PriorityCountOutputTypeArgsSchema: z.ZodType<Prisma.PriorityCountOutputTypeDefaultArgs> = z.object({
-  select: z.lazy(() => PriorityCountOutputTypeSelectSchema).nullish(),
-}).strict();
-
-export const PriorityCountOutputTypeSelectSchema: z.ZodType<Prisma.PriorityCountOutputTypeSelect> = z.object({
-  task: z.boolean().optional(),
-}).strict();
-
-export const PrioritySelectSchema: z.ZodType<Prisma.PrioritySelect> = z.object({
-  id: z.boolean().optional(),
-  name: z.boolean().optional(),
-  color: z.boolean().optional(),
-  task: z.union([z.boolean(),z.lazy(() => TaskFindManyArgsSchema)]).optional(),
-  _count: z.union([z.boolean(),z.lazy(() => PriorityCountOutputTypeArgsSchema)]).optional(),
-}).strict()
-
 // STATUS
 //------------------------------------------------------
 
 export const StatusIncludeSchema: z.ZodType<Prisma.StatusInclude> = z.object({
-  task: z.union([z.boolean(),z.lazy(() => TaskFindManyArgsSchema)]).optional(),
+  tasks: z.union([z.boolean(),z.lazy(() => TaskFindManyArgsSchema)]).optional(),
   project: z.union([z.boolean(),z.lazy(() => ProjectArgsSchema)]).optional(),
   _count: z.union([z.boolean(),z.lazy(() => StatusCountOutputTypeArgsSchema)]).optional(),
 }).strict()
@@ -367,14 +327,14 @@ export const StatusCountOutputTypeArgsSchema: z.ZodType<Prisma.StatusCountOutput
 }).strict();
 
 export const StatusCountOutputTypeSelectSchema: z.ZodType<Prisma.StatusCountOutputTypeSelect> = z.object({
-  task: z.boolean().optional(),
+  tasks: z.boolean().optional(),
 }).strict();
 
 export const StatusSelectSchema: z.ZodType<Prisma.StatusSelect> = z.object({
   id: z.boolean().optional(),
   name: z.boolean().optional(),
   projectId: z.boolean().optional(),
-  task: z.union([z.boolean(),z.lazy(() => TaskFindManyArgsSchema)]).optional(),
+  tasks: z.union([z.boolean(),z.lazy(() => TaskFindManyArgsSchema)]).optional(),
   project: z.union([z.boolean(),z.lazy(() => ProjectArgsSchema)]).optional(),
   _count: z.union([z.boolean(),z.lazy(() => StatusCountOutputTypeArgsSchema)]).optional(),
 }).strict()
@@ -552,14 +512,13 @@ export const TaskWhereInputSchema: z.ZodType<Prisma.TaskWhereInput> = z.object({
   description: z.union([ z.lazy(() => StringNullableFilterSchema),z.string() ]).optional().nullable(),
   created: z.union([ z.lazy(() => DateTimeFilterSchema),z.coerce.date() ]).optional(),
   done: z.union([ z.lazy(() => DateTimeNullableFilterSchema),z.coerce.date() ]).optional().nullable(),
-  priorityId: z.union([ z.lazy(() => IntFilterSchema),z.number() ]).optional(),
+  priority: z.union([ z.lazy(() => EnumPriorityLevelFilterSchema),z.lazy(() => PriorityLevelSchema) ]).optional(),
   statusId: z.union([ z.lazy(() => IntFilterSchema),z.number() ]).optional(),
   parentId: z.union([ z.lazy(() => IntNullableFilterSchema),z.number() ]).optional().nullable(),
   projectId: z.union([ z.lazy(() => IntFilterSchema),z.number() ]).optional(),
   order: z.union([ z.lazy(() => IntFilterSchema),z.number() ]).optional(),
   due: z.union([ z.lazy(() => DateTimeNullableFilterSchema),z.coerce.date() ]).optional().nullable(),
   inWork: z.union([ z.lazy(() => DateTimeNullableFilterSchema),z.coerce.date() ]).optional().nullable(),
-  priority: z.union([ z.lazy(() => PriorityRelationFilterSchema),z.lazy(() => PriorityWhereInputSchema) ]).optional(),
   status: z.union([ z.lazy(() => StatusRelationFilterSchema),z.lazy(() => StatusWhereInputSchema) ]).optional(),
   parent: z.union([ z.lazy(() => TaskNullableRelationFilterSchema),z.lazy(() => TaskWhereInputSchema) ]).optional().nullable(),
   project: z.union([ z.lazy(() => ProjectRelationFilterSchema),z.lazy(() => ProjectWhereInputSchema) ]).optional(),
@@ -574,14 +533,13 @@ export const TaskOrderByWithRelationInputSchema: z.ZodType<Prisma.TaskOrderByWit
   description: z.union([ z.lazy(() => SortOrderSchema),z.lazy(() => SortOrderInputSchema) ]).optional(),
   created: z.lazy(() => SortOrderSchema).optional(),
   done: z.union([ z.lazy(() => SortOrderSchema),z.lazy(() => SortOrderInputSchema) ]).optional(),
-  priorityId: z.lazy(() => SortOrderSchema).optional(),
+  priority: z.lazy(() => SortOrderSchema).optional(),
   statusId: z.lazy(() => SortOrderSchema).optional(),
   parentId: z.union([ z.lazy(() => SortOrderSchema),z.lazy(() => SortOrderInputSchema) ]).optional(),
   projectId: z.lazy(() => SortOrderSchema).optional(),
   order: z.lazy(() => SortOrderSchema).optional(),
   due: z.union([ z.lazy(() => SortOrderSchema),z.lazy(() => SortOrderInputSchema) ]).optional(),
   inWork: z.union([ z.lazy(() => SortOrderSchema),z.lazy(() => SortOrderInputSchema) ]).optional(),
-  priority: z.lazy(() => PriorityOrderByWithRelationInputSchema).optional(),
   status: z.lazy(() => StatusOrderByWithRelationInputSchema).optional(),
   parent: z.lazy(() => TaskOrderByWithRelationInputSchema).optional(),
   project: z.lazy(() => ProjectOrderByWithRelationInputSchema).optional(),
@@ -602,14 +560,13 @@ export const TaskWhereUniqueInputSchema: z.ZodType<Prisma.TaskWhereUniqueInput> 
   description: z.union([ z.lazy(() => StringNullableFilterSchema),z.string() ]).optional().nullable(),
   created: z.union([ z.lazy(() => DateTimeFilterSchema),z.coerce.date() ]).optional(),
   done: z.union([ z.lazy(() => DateTimeNullableFilterSchema),z.coerce.date() ]).optional().nullable(),
-  priorityId: z.union([ z.lazy(() => IntFilterSchema),z.number().int() ]).optional(),
+  priority: z.union([ z.lazy(() => EnumPriorityLevelFilterSchema),z.lazy(() => PriorityLevelSchema) ]).optional(),
   statusId: z.union([ z.lazy(() => IntFilterSchema),z.number().int() ]).optional(),
   parentId: z.union([ z.lazy(() => IntNullableFilterSchema),z.number().int() ]).optional().nullable(),
   projectId: z.union([ z.lazy(() => IntFilterSchema),z.number().int() ]).optional(),
   order: z.union([ z.lazy(() => IntFilterSchema),z.number().int() ]).optional(),
   due: z.union([ z.lazy(() => DateTimeNullableFilterSchema),z.coerce.date() ]).optional().nullable(),
   inWork: z.union([ z.lazy(() => DateTimeNullableFilterSchema),z.coerce.date() ]).optional().nullable(),
-  priority: z.union([ z.lazy(() => PriorityRelationFilterSchema),z.lazy(() => PriorityWhereInputSchema) ]).optional(),
   status: z.union([ z.lazy(() => StatusRelationFilterSchema),z.lazy(() => StatusWhereInputSchema) ]).optional(),
   parent: z.union([ z.lazy(() => TaskNullableRelationFilterSchema),z.lazy(() => TaskWhereInputSchema) ]).optional().nullable(),
   project: z.union([ z.lazy(() => ProjectRelationFilterSchema),z.lazy(() => ProjectWhereInputSchema) ]).optional(),
@@ -624,7 +581,7 @@ export const TaskOrderByWithAggregationInputSchema: z.ZodType<Prisma.TaskOrderBy
   description: z.union([ z.lazy(() => SortOrderSchema),z.lazy(() => SortOrderInputSchema) ]).optional(),
   created: z.lazy(() => SortOrderSchema).optional(),
   done: z.union([ z.lazy(() => SortOrderSchema),z.lazy(() => SortOrderInputSchema) ]).optional(),
-  priorityId: z.lazy(() => SortOrderSchema).optional(),
+  priority: z.lazy(() => SortOrderSchema).optional(),
   statusId: z.lazy(() => SortOrderSchema).optional(),
   parentId: z.union([ z.lazy(() => SortOrderSchema),z.lazy(() => SortOrderInputSchema) ]).optional(),
   projectId: z.lazy(() => SortOrderSchema).optional(),
@@ -647,7 +604,7 @@ export const TaskScalarWhereWithAggregatesInputSchema: z.ZodType<Prisma.TaskScal
   description: z.union([ z.lazy(() => StringNullableWithAggregatesFilterSchema),z.string() ]).optional().nullable(),
   created: z.union([ z.lazy(() => DateTimeWithAggregatesFilterSchema),z.coerce.date() ]).optional(),
   done: z.union([ z.lazy(() => DateTimeNullableWithAggregatesFilterSchema),z.coerce.date() ]).optional().nullable(),
-  priorityId: z.union([ z.lazy(() => IntWithAggregatesFilterSchema),z.number() ]).optional(),
+  priority: z.union([ z.lazy(() => EnumPriorityLevelWithAggregatesFilterSchema),z.lazy(() => PriorityLevelSchema) ]).optional(),
   statusId: z.union([ z.lazy(() => IntWithAggregatesFilterSchema),z.number() ]).optional(),
   parentId: z.union([ z.lazy(() => IntNullableWithAggregatesFilterSchema),z.number() ]).optional().nullable(),
   projectId: z.union([ z.lazy(() => IntWithAggregatesFilterSchema),z.number() ]).optional(),
@@ -777,56 +734,6 @@ export const FileScalarWhereWithAggregatesInputSchema: z.ZodType<Prisma.FileScal
   created: z.union([ z.lazy(() => DateTimeWithAggregatesFilterSchema),z.coerce.date() ]).optional(),
 }).strict();
 
-export const PriorityWhereInputSchema: z.ZodType<Prisma.PriorityWhereInput> = z.object({
-  AND: z.union([ z.lazy(() => PriorityWhereInputSchema),z.lazy(() => PriorityWhereInputSchema).array() ]).optional(),
-  OR: z.lazy(() => PriorityWhereInputSchema).array().optional(),
-  NOT: z.union([ z.lazy(() => PriorityWhereInputSchema),z.lazy(() => PriorityWhereInputSchema).array() ]).optional(),
-  id: z.union([ z.lazy(() => IntFilterSchema),z.number() ]).optional(),
-  name: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
-  color: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
-  task: z.lazy(() => TaskListRelationFilterSchema).optional()
-}).strict();
-
-export const PriorityOrderByWithRelationInputSchema: z.ZodType<Prisma.PriorityOrderByWithRelationInput> = z.object({
-  id: z.lazy(() => SortOrderSchema).optional(),
-  name: z.lazy(() => SortOrderSchema).optional(),
-  color: z.lazy(() => SortOrderSchema).optional(),
-  task: z.lazy(() => TaskOrderByRelationAggregateInputSchema).optional()
-}).strict();
-
-export const PriorityWhereUniqueInputSchema: z.ZodType<Prisma.PriorityWhereUniqueInput> = z.object({
-  id: z.number().int()
-})
-.and(z.object({
-  id: z.number().int().optional(),
-  AND: z.union([ z.lazy(() => PriorityWhereInputSchema),z.lazy(() => PriorityWhereInputSchema).array() ]).optional(),
-  OR: z.lazy(() => PriorityWhereInputSchema).array().optional(),
-  NOT: z.union([ z.lazy(() => PriorityWhereInputSchema),z.lazy(() => PriorityWhereInputSchema).array() ]).optional(),
-  name: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
-  color: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
-  task: z.lazy(() => TaskListRelationFilterSchema).optional()
-}).strict());
-
-export const PriorityOrderByWithAggregationInputSchema: z.ZodType<Prisma.PriorityOrderByWithAggregationInput> = z.object({
-  id: z.lazy(() => SortOrderSchema).optional(),
-  name: z.lazy(() => SortOrderSchema).optional(),
-  color: z.lazy(() => SortOrderSchema).optional(),
-  _count: z.lazy(() => PriorityCountOrderByAggregateInputSchema).optional(),
-  _avg: z.lazy(() => PriorityAvgOrderByAggregateInputSchema).optional(),
-  _max: z.lazy(() => PriorityMaxOrderByAggregateInputSchema).optional(),
-  _min: z.lazy(() => PriorityMinOrderByAggregateInputSchema).optional(),
-  _sum: z.lazy(() => PrioritySumOrderByAggregateInputSchema).optional()
-}).strict();
-
-export const PriorityScalarWhereWithAggregatesInputSchema: z.ZodType<Prisma.PriorityScalarWhereWithAggregatesInput> = z.object({
-  AND: z.union([ z.lazy(() => PriorityScalarWhereWithAggregatesInputSchema),z.lazy(() => PriorityScalarWhereWithAggregatesInputSchema).array() ]).optional(),
-  OR: z.lazy(() => PriorityScalarWhereWithAggregatesInputSchema).array().optional(),
-  NOT: z.union([ z.lazy(() => PriorityScalarWhereWithAggregatesInputSchema),z.lazy(() => PriorityScalarWhereWithAggregatesInputSchema).array() ]).optional(),
-  id: z.union([ z.lazy(() => IntWithAggregatesFilterSchema),z.number() ]).optional(),
-  name: z.union([ z.lazy(() => StringWithAggregatesFilterSchema),z.string() ]).optional(),
-  color: z.union([ z.lazy(() => StringWithAggregatesFilterSchema),z.string() ]).optional(),
-}).strict();
-
 export const StatusWhereInputSchema: z.ZodType<Prisma.StatusWhereInput> = z.object({
   AND: z.union([ z.lazy(() => StatusWhereInputSchema),z.lazy(() => StatusWhereInputSchema).array() ]).optional(),
   OR: z.lazy(() => StatusWhereInputSchema).array().optional(),
@@ -834,7 +741,7 @@ export const StatusWhereInputSchema: z.ZodType<Prisma.StatusWhereInput> = z.obje
   id: z.union([ z.lazy(() => IntFilterSchema),z.number() ]).optional(),
   name: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
   projectId: z.union([ z.lazy(() => IntFilterSchema),z.number() ]).optional(),
-  task: z.lazy(() => TaskListRelationFilterSchema).optional(),
+  tasks: z.lazy(() => TaskListRelationFilterSchema).optional(),
   project: z.union([ z.lazy(() => ProjectRelationFilterSchema),z.lazy(() => ProjectWhereInputSchema) ]).optional(),
 }).strict();
 
@@ -842,7 +749,7 @@ export const StatusOrderByWithRelationInputSchema: z.ZodType<Prisma.StatusOrderB
   id: z.lazy(() => SortOrderSchema).optional(),
   name: z.lazy(() => SortOrderSchema).optional(),
   projectId: z.lazy(() => SortOrderSchema).optional(),
-  task: z.lazy(() => TaskOrderByRelationAggregateInputSchema).optional(),
+  tasks: z.lazy(() => TaskOrderByRelationAggregateInputSchema).optional(),
   project: z.lazy(() => ProjectOrderByWithRelationInputSchema).optional()
 }).strict();
 
@@ -856,7 +763,7 @@ export const StatusWhereUniqueInputSchema: z.ZodType<Prisma.StatusWhereUniqueInp
   NOT: z.union([ z.lazy(() => StatusWhereInputSchema),z.lazy(() => StatusWhereInputSchema).array() ]).optional(),
   name: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
   projectId: z.union([ z.lazy(() => IntFilterSchema),z.number().int() ]).optional(),
-  task: z.lazy(() => TaskListRelationFilterSchema).optional(),
+  tasks: z.lazy(() => TaskListRelationFilterSchema).optional(),
   project: z.union([ z.lazy(() => ProjectRelationFilterSchema),z.lazy(() => ProjectWhereInputSchema) ]).optional(),
 }).strict());
 
@@ -1023,11 +930,11 @@ export const TaskCreateInputSchema: z.ZodType<Prisma.TaskCreateInput> = z.object
   description: z.string().optional().nullable(),
   created: z.coerce.date().optional(),
   done: z.coerce.date().optional().nullable(),
+  priority: z.lazy(() => PriorityLevelSchema),
   order: z.number().int().optional(),
   due: z.coerce.date().optional().nullable(),
   inWork: z.coerce.date().optional().nullable(),
-  priority: z.lazy(() => PriorityCreateNestedOneWithoutTaskInputSchema),
-  status: z.lazy(() => StatusCreateNestedOneWithoutTaskInputSchema),
+  status: z.lazy(() => StatusCreateNestedOneWithoutTasksInputSchema),
   parent: z.lazy(() => TaskCreateNestedOneWithoutChildrenInputSchema).optional(),
   project: z.lazy(() => ProjectCreateNestedOneWithoutTasksInputSchema),
   files: z.lazy(() => FileCreateNestedManyWithoutTaskInputSchema).optional(),
@@ -1041,7 +948,7 @@ export const TaskUncheckedCreateInputSchema: z.ZodType<Prisma.TaskUncheckedCreat
   description: z.string().optional().nullable(),
   created: z.coerce.date().optional(),
   done: z.coerce.date().optional().nullable(),
-  priorityId: z.number().int(),
+  priority: z.lazy(() => PriorityLevelSchema),
   statusId: z.number().int(),
   parentId: z.number().int().optional().nullable(),
   projectId: z.number().int(),
@@ -1058,11 +965,11 @@ export const TaskUpdateInputSchema: z.ZodType<Prisma.TaskUpdateInput> = z.object
   description: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   created: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
   done: z.union([ z.coerce.date(),z.lazy(() => NullableDateTimeFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  priority: z.union([ z.lazy(() => PriorityLevelSchema),z.lazy(() => EnumPriorityLevelFieldUpdateOperationsInputSchema) ]).optional(),
   order: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
   due: z.union([ z.coerce.date(),z.lazy(() => NullableDateTimeFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   inWork: z.union([ z.coerce.date(),z.lazy(() => NullableDateTimeFieldUpdateOperationsInputSchema) ]).optional().nullable(),
-  priority: z.lazy(() => PriorityUpdateOneRequiredWithoutTaskNestedInputSchema).optional(),
-  status: z.lazy(() => StatusUpdateOneRequiredWithoutTaskNestedInputSchema).optional(),
+  status: z.lazy(() => StatusUpdateOneRequiredWithoutTasksNestedInputSchema).optional(),
   parent: z.lazy(() => TaskUpdateOneWithoutChildrenNestedInputSchema).optional(),
   project: z.lazy(() => ProjectUpdateOneRequiredWithoutTasksNestedInputSchema).optional(),
   files: z.lazy(() => FileUpdateManyWithoutTaskNestedInputSchema).optional(),
@@ -1076,7 +983,7 @@ export const TaskUncheckedUpdateInputSchema: z.ZodType<Prisma.TaskUncheckedUpdat
   description: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   created: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
   done: z.union([ z.coerce.date(),z.lazy(() => NullableDateTimeFieldUpdateOperationsInputSchema) ]).optional().nullable(),
-  priorityId: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+  priority: z.union([ z.lazy(() => PriorityLevelSchema),z.lazy(() => EnumPriorityLevelFieldUpdateOperationsInputSchema) ]).optional(),
   statusId: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
   parentId: z.union([ z.number().int(),z.lazy(() => NullableIntFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   projectId: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
@@ -1094,7 +1001,7 @@ export const TaskCreateManyInputSchema: z.ZodType<Prisma.TaskCreateManyInput> = 
   description: z.string().optional().nullable(),
   created: z.coerce.date().optional(),
   done: z.coerce.date().optional().nullable(),
-  priorityId: z.number().int(),
+  priority: z.lazy(() => PriorityLevelSchema),
   statusId: z.number().int(),
   parentId: z.number().int().optional().nullable(),
   projectId: z.number().int(),
@@ -1108,6 +1015,7 @@ export const TaskUpdateManyMutationInputSchema: z.ZodType<Prisma.TaskUpdateManyM
   description: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   created: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
   done: z.union([ z.coerce.date(),z.lazy(() => NullableDateTimeFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  priority: z.union([ z.lazy(() => PriorityLevelSchema),z.lazy(() => EnumPriorityLevelFieldUpdateOperationsInputSchema) ]).optional(),
   order: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
   due: z.union([ z.coerce.date(),z.lazy(() => NullableDateTimeFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   inWork: z.union([ z.coerce.date(),z.lazy(() => NullableDateTimeFieldUpdateOperationsInputSchema) ]).optional().nullable(),
@@ -1119,7 +1027,7 @@ export const TaskUncheckedUpdateManyInputSchema: z.ZodType<Prisma.TaskUncheckedU
   description: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   created: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
   done: z.union([ z.coerce.date(),z.lazy(() => NullableDateTimeFieldUpdateOperationsInputSchema) ]).optional().nullable(),
-  priorityId: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+  priority: z.union([ z.lazy(() => PriorityLevelSchema),z.lazy(() => EnumPriorityLevelFieldUpdateOperationsInputSchema) ]).optional(),
   statusId: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
   parentId: z.union([ z.number().int(),z.lazy(() => NullableIntFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   projectId: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
@@ -1228,52 +1136,9 @@ export const FileUncheckedUpdateManyInputSchema: z.ZodType<Prisma.FileUncheckedU
   created: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
 }).strict();
 
-export const PriorityCreateInputSchema: z.ZodType<Prisma.PriorityCreateInput> = z.object({
-  name: z.string(),
-  color: z.string(),
-  task: z.lazy(() => TaskCreateNestedManyWithoutPriorityInputSchema).optional()
-}).strict();
-
-export const PriorityUncheckedCreateInputSchema: z.ZodType<Prisma.PriorityUncheckedCreateInput> = z.object({
-  id: z.number().int().optional(),
-  name: z.string(),
-  color: z.string(),
-  task: z.lazy(() => TaskUncheckedCreateNestedManyWithoutPriorityInputSchema).optional()
-}).strict();
-
-export const PriorityUpdateInputSchema: z.ZodType<Prisma.PriorityUpdateInput> = z.object({
-  name: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
-  color: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
-  task: z.lazy(() => TaskUpdateManyWithoutPriorityNestedInputSchema).optional()
-}).strict();
-
-export const PriorityUncheckedUpdateInputSchema: z.ZodType<Prisma.PriorityUncheckedUpdateInput> = z.object({
-  id: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
-  name: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
-  color: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
-  task: z.lazy(() => TaskUncheckedUpdateManyWithoutPriorityNestedInputSchema).optional()
-}).strict();
-
-export const PriorityCreateManyInputSchema: z.ZodType<Prisma.PriorityCreateManyInput> = z.object({
-  id: z.number().int().optional(),
-  name: z.string(),
-  color: z.string()
-}).strict();
-
-export const PriorityUpdateManyMutationInputSchema: z.ZodType<Prisma.PriorityUpdateManyMutationInput> = z.object({
-  name: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
-  color: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
-}).strict();
-
-export const PriorityUncheckedUpdateManyInputSchema: z.ZodType<Prisma.PriorityUncheckedUpdateManyInput> = z.object({
-  id: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
-  name: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
-  color: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
-}).strict();
-
 export const StatusCreateInputSchema: z.ZodType<Prisma.StatusCreateInput> = z.object({
   name: z.string(),
-  task: z.lazy(() => TaskCreateNestedManyWithoutStatusInputSchema).optional(),
+  tasks: z.lazy(() => TaskCreateNestedManyWithoutStatusInputSchema).optional(),
   project: z.lazy(() => ProjectCreateNestedOneWithoutStatusesInputSchema)
 }).strict();
 
@@ -1281,12 +1146,12 @@ export const StatusUncheckedCreateInputSchema: z.ZodType<Prisma.StatusUncheckedC
   id: z.number().int().optional(),
   name: z.string(),
   projectId: z.number().int(),
-  task: z.lazy(() => TaskUncheckedCreateNestedManyWithoutStatusInputSchema).optional()
+  tasks: z.lazy(() => TaskUncheckedCreateNestedManyWithoutStatusInputSchema).optional()
 }).strict();
 
 export const StatusUpdateInputSchema: z.ZodType<Prisma.StatusUpdateInput> = z.object({
   name: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
-  task: z.lazy(() => TaskUpdateManyWithoutStatusNestedInputSchema).optional(),
+  tasks: z.lazy(() => TaskUpdateManyWithoutStatusNestedInputSchema).optional(),
   project: z.lazy(() => ProjectUpdateOneRequiredWithoutStatusesNestedInputSchema).optional()
 }).strict();
 
@@ -1294,7 +1159,7 @@ export const StatusUncheckedUpdateInputSchema: z.ZodType<Prisma.StatusUncheckedU
   id: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
   name: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   projectId: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
-  task: z.lazy(() => TaskUncheckedUpdateManyWithoutStatusNestedInputSchema).optional()
+  tasks: z.lazy(() => TaskUncheckedUpdateManyWithoutStatusNestedInputSchema).optional()
 }).strict();
 
 export const StatusCreateManyInputSchema: z.ZodType<Prisma.StatusCreateManyInput> = z.object({
@@ -1557,6 +1422,13 @@ export const DateTimeNullableFilterSchema: z.ZodType<Prisma.DateTimeNullableFilt
   not: z.union([ z.coerce.date(),z.lazy(() => NestedDateTimeNullableFilterSchema) ]).optional().nullable(),
 }).strict();
 
+export const EnumPriorityLevelFilterSchema: z.ZodType<Prisma.EnumPriorityLevelFilter> = z.object({
+  equals: z.lazy(() => PriorityLevelSchema).optional(),
+  in: z.lazy(() => PriorityLevelSchema).array().optional(),
+  notIn: z.lazy(() => PriorityLevelSchema).array().optional(),
+  not: z.union([ z.lazy(() => PriorityLevelSchema),z.lazy(() => NestedEnumPriorityLevelFilterSchema) ]).optional(),
+}).strict();
+
 export const IntNullableFilterSchema: z.ZodType<Prisma.IntNullableFilter> = z.object({
   equals: z.number().optional().nullable(),
   in: z.number().array().optional().nullable(),
@@ -1566,11 +1438,6 @@ export const IntNullableFilterSchema: z.ZodType<Prisma.IntNullableFilter> = z.ob
   gt: z.number().optional(),
   gte: z.number().optional(),
   not: z.union([ z.number(),z.lazy(() => NestedIntNullableFilterSchema) ]).optional().nullable(),
-}).strict();
-
-export const PriorityRelationFilterSchema: z.ZodType<Prisma.PriorityRelationFilter> = z.object({
-  is: z.lazy(() => PriorityWhereInputSchema).optional(),
-  isNot: z.lazy(() => PriorityWhereInputSchema).optional()
 }).strict();
 
 export const StatusRelationFilterSchema: z.ZodType<Prisma.StatusRelationFilter> = z.object({
@@ -1614,7 +1481,7 @@ export const TaskCountOrderByAggregateInputSchema: z.ZodType<Prisma.TaskCountOrd
   description: z.lazy(() => SortOrderSchema).optional(),
   created: z.lazy(() => SortOrderSchema).optional(),
   done: z.lazy(() => SortOrderSchema).optional(),
-  priorityId: z.lazy(() => SortOrderSchema).optional(),
+  priority: z.lazy(() => SortOrderSchema).optional(),
   statusId: z.lazy(() => SortOrderSchema).optional(),
   parentId: z.lazy(() => SortOrderSchema).optional(),
   projectId: z.lazy(() => SortOrderSchema).optional(),
@@ -1625,7 +1492,6 @@ export const TaskCountOrderByAggregateInputSchema: z.ZodType<Prisma.TaskCountOrd
 
 export const TaskAvgOrderByAggregateInputSchema: z.ZodType<Prisma.TaskAvgOrderByAggregateInput> = z.object({
   id: z.lazy(() => SortOrderSchema).optional(),
-  priorityId: z.lazy(() => SortOrderSchema).optional(),
   statusId: z.lazy(() => SortOrderSchema).optional(),
   parentId: z.lazy(() => SortOrderSchema).optional(),
   projectId: z.lazy(() => SortOrderSchema).optional(),
@@ -1638,7 +1504,7 @@ export const TaskMaxOrderByAggregateInputSchema: z.ZodType<Prisma.TaskMaxOrderBy
   description: z.lazy(() => SortOrderSchema).optional(),
   created: z.lazy(() => SortOrderSchema).optional(),
   done: z.lazy(() => SortOrderSchema).optional(),
-  priorityId: z.lazy(() => SortOrderSchema).optional(),
+  priority: z.lazy(() => SortOrderSchema).optional(),
   statusId: z.lazy(() => SortOrderSchema).optional(),
   parentId: z.lazy(() => SortOrderSchema).optional(),
   projectId: z.lazy(() => SortOrderSchema).optional(),
@@ -1653,7 +1519,7 @@ export const TaskMinOrderByAggregateInputSchema: z.ZodType<Prisma.TaskMinOrderBy
   description: z.lazy(() => SortOrderSchema).optional(),
   created: z.lazy(() => SortOrderSchema).optional(),
   done: z.lazy(() => SortOrderSchema).optional(),
-  priorityId: z.lazy(() => SortOrderSchema).optional(),
+  priority: z.lazy(() => SortOrderSchema).optional(),
   statusId: z.lazy(() => SortOrderSchema).optional(),
   parentId: z.lazy(() => SortOrderSchema).optional(),
   projectId: z.lazy(() => SortOrderSchema).optional(),
@@ -1664,7 +1530,6 @@ export const TaskMinOrderByAggregateInputSchema: z.ZodType<Prisma.TaskMinOrderBy
 
 export const TaskSumOrderByAggregateInputSchema: z.ZodType<Prisma.TaskSumOrderByAggregateInput> = z.object({
   id: z.lazy(() => SortOrderSchema).optional(),
-  priorityId: z.lazy(() => SortOrderSchema).optional(),
   statusId: z.lazy(() => SortOrderSchema).optional(),
   parentId: z.lazy(() => SortOrderSchema).optional(),
   projectId: z.lazy(() => SortOrderSchema).optional(),
@@ -1683,6 +1548,16 @@ export const DateTimeNullableWithAggregatesFilterSchema: z.ZodType<Prisma.DateTi
   _count: z.lazy(() => NestedIntNullableFilterSchema).optional(),
   _min: z.lazy(() => NestedDateTimeNullableFilterSchema).optional(),
   _max: z.lazy(() => NestedDateTimeNullableFilterSchema).optional()
+}).strict();
+
+export const EnumPriorityLevelWithAggregatesFilterSchema: z.ZodType<Prisma.EnumPriorityLevelWithAggregatesFilter> = z.object({
+  equals: z.lazy(() => PriorityLevelSchema).optional(),
+  in: z.lazy(() => PriorityLevelSchema).array().optional(),
+  notIn: z.lazy(() => PriorityLevelSchema).array().optional(),
+  not: z.union([ z.lazy(() => PriorityLevelSchema),z.lazy(() => NestedEnumPriorityLevelWithAggregatesFilterSchema) ]).optional(),
+  _count: z.lazy(() => NestedIntFilterSchema).optional(),
+  _min: z.lazy(() => NestedEnumPriorityLevelFilterSchema).optional(),
+  _max: z.lazy(() => NestedEnumPriorityLevelFilterSchema).optional()
 }).strict();
 
 export const IntNullableWithAggregatesFilterSchema: z.ZodType<Prisma.IntNullableWithAggregatesFilter> = z.object({
@@ -1776,32 +1651,6 @@ export const FileMinOrderByAggregateInputSchema: z.ZodType<Prisma.FileMinOrderBy
 export const FileSumOrderByAggregateInputSchema: z.ZodType<Prisma.FileSumOrderByAggregateInput> = z.object({
   id: z.lazy(() => SortOrderSchema).optional(),
   taskId: z.lazy(() => SortOrderSchema).optional()
-}).strict();
-
-export const PriorityCountOrderByAggregateInputSchema: z.ZodType<Prisma.PriorityCountOrderByAggregateInput> = z.object({
-  id: z.lazy(() => SortOrderSchema).optional(),
-  name: z.lazy(() => SortOrderSchema).optional(),
-  color: z.lazy(() => SortOrderSchema).optional()
-}).strict();
-
-export const PriorityAvgOrderByAggregateInputSchema: z.ZodType<Prisma.PriorityAvgOrderByAggregateInput> = z.object({
-  id: z.lazy(() => SortOrderSchema).optional()
-}).strict();
-
-export const PriorityMaxOrderByAggregateInputSchema: z.ZodType<Prisma.PriorityMaxOrderByAggregateInput> = z.object({
-  id: z.lazy(() => SortOrderSchema).optional(),
-  name: z.lazy(() => SortOrderSchema).optional(),
-  color: z.lazy(() => SortOrderSchema).optional()
-}).strict();
-
-export const PriorityMinOrderByAggregateInputSchema: z.ZodType<Prisma.PriorityMinOrderByAggregateInput> = z.object({
-  id: z.lazy(() => SortOrderSchema).optional(),
-  name: z.lazy(() => SortOrderSchema).optional(),
-  color: z.lazy(() => SortOrderSchema).optional()
-}).strict();
-
-export const PrioritySumOrderByAggregateInputSchema: z.ZodType<Prisma.PrioritySumOrderByAggregateInput> = z.object({
-  id: z.lazy(() => SortOrderSchema).optional()
 }).strict();
 
 export const StatusCountOrderByAggregateInputSchema: z.ZodType<Prisma.StatusCountOrderByAggregateInput> = z.object({
@@ -1992,15 +1841,9 @@ export const StatusUncheckedUpdateManyWithoutProjectNestedInputSchema: z.ZodType
   deleteMany: z.union([ z.lazy(() => StatusScalarWhereInputSchema),z.lazy(() => StatusScalarWhereInputSchema).array() ]).optional(),
 }).strict();
 
-export const PriorityCreateNestedOneWithoutTaskInputSchema: z.ZodType<Prisma.PriorityCreateNestedOneWithoutTaskInput> = z.object({
-  create: z.union([ z.lazy(() => PriorityCreateWithoutTaskInputSchema),z.lazy(() => PriorityUncheckedCreateWithoutTaskInputSchema) ]).optional(),
-  connectOrCreate: z.lazy(() => PriorityCreateOrConnectWithoutTaskInputSchema).optional(),
-  connect: z.lazy(() => PriorityWhereUniqueInputSchema).optional()
-}).strict();
-
-export const StatusCreateNestedOneWithoutTaskInputSchema: z.ZodType<Prisma.StatusCreateNestedOneWithoutTaskInput> = z.object({
-  create: z.union([ z.lazy(() => StatusCreateWithoutTaskInputSchema),z.lazy(() => StatusUncheckedCreateWithoutTaskInputSchema) ]).optional(),
-  connectOrCreate: z.lazy(() => StatusCreateOrConnectWithoutTaskInputSchema).optional(),
+export const StatusCreateNestedOneWithoutTasksInputSchema: z.ZodType<Prisma.StatusCreateNestedOneWithoutTasksInput> = z.object({
+  create: z.union([ z.lazy(() => StatusCreateWithoutTasksInputSchema),z.lazy(() => StatusUncheckedCreateWithoutTasksInputSchema) ]).optional(),
+  connectOrCreate: z.lazy(() => StatusCreateOrConnectWithoutTasksInputSchema).optional(),
   connect: z.lazy(() => StatusWhereUniqueInputSchema).optional()
 }).strict();
 
@@ -2062,20 +1905,16 @@ export const NullableDateTimeFieldUpdateOperationsInputSchema: z.ZodType<Prisma.
   set: z.coerce.date().optional().nullable()
 }).strict();
 
-export const PriorityUpdateOneRequiredWithoutTaskNestedInputSchema: z.ZodType<Prisma.PriorityUpdateOneRequiredWithoutTaskNestedInput> = z.object({
-  create: z.union([ z.lazy(() => PriorityCreateWithoutTaskInputSchema),z.lazy(() => PriorityUncheckedCreateWithoutTaskInputSchema) ]).optional(),
-  connectOrCreate: z.lazy(() => PriorityCreateOrConnectWithoutTaskInputSchema).optional(),
-  upsert: z.lazy(() => PriorityUpsertWithoutTaskInputSchema).optional(),
-  connect: z.lazy(() => PriorityWhereUniqueInputSchema).optional(),
-  update: z.union([ z.lazy(() => PriorityUpdateToOneWithWhereWithoutTaskInputSchema),z.lazy(() => PriorityUpdateWithoutTaskInputSchema),z.lazy(() => PriorityUncheckedUpdateWithoutTaskInputSchema) ]).optional(),
+export const EnumPriorityLevelFieldUpdateOperationsInputSchema: z.ZodType<Prisma.EnumPriorityLevelFieldUpdateOperationsInput> = z.object({
+  set: z.lazy(() => PriorityLevelSchema).optional()
 }).strict();
 
-export const StatusUpdateOneRequiredWithoutTaskNestedInputSchema: z.ZodType<Prisma.StatusUpdateOneRequiredWithoutTaskNestedInput> = z.object({
-  create: z.union([ z.lazy(() => StatusCreateWithoutTaskInputSchema),z.lazy(() => StatusUncheckedCreateWithoutTaskInputSchema) ]).optional(),
-  connectOrCreate: z.lazy(() => StatusCreateOrConnectWithoutTaskInputSchema).optional(),
-  upsert: z.lazy(() => StatusUpsertWithoutTaskInputSchema).optional(),
+export const StatusUpdateOneRequiredWithoutTasksNestedInputSchema: z.ZodType<Prisma.StatusUpdateOneRequiredWithoutTasksNestedInput> = z.object({
+  create: z.union([ z.lazy(() => StatusCreateWithoutTasksInputSchema),z.lazy(() => StatusUncheckedCreateWithoutTasksInputSchema) ]).optional(),
+  connectOrCreate: z.lazy(() => StatusCreateOrConnectWithoutTasksInputSchema).optional(),
+  upsert: z.lazy(() => StatusUpsertWithoutTasksInputSchema).optional(),
   connect: z.lazy(() => StatusWhereUniqueInputSchema).optional(),
-  update: z.union([ z.lazy(() => StatusUpdateToOneWithWhereWithoutTaskInputSchema),z.lazy(() => StatusUpdateWithoutTaskInputSchema),z.lazy(() => StatusUncheckedUpdateWithoutTaskInputSchema) ]).optional(),
+  update: z.union([ z.lazy(() => StatusUpdateToOneWithWhereWithoutTasksInputSchema),z.lazy(() => StatusUpdateWithoutTasksInputSchema),z.lazy(() => StatusUncheckedUpdateWithoutTasksInputSchema) ]).optional(),
 }).strict();
 
 export const TaskUpdateOneWithoutChildrenNestedInputSchema: z.ZodType<Prisma.TaskUpdateOneWithoutChildrenNestedInput> = z.object({
@@ -2272,48 +2111,6 @@ export const TaskUpdateOneRequiredWithoutFilesNestedInputSchema: z.ZodType<Prism
   upsert: z.lazy(() => TaskUpsertWithoutFilesInputSchema).optional(),
   connect: z.lazy(() => TaskWhereUniqueInputSchema).optional(),
   update: z.union([ z.lazy(() => TaskUpdateToOneWithWhereWithoutFilesInputSchema),z.lazy(() => TaskUpdateWithoutFilesInputSchema),z.lazy(() => TaskUncheckedUpdateWithoutFilesInputSchema) ]).optional(),
-}).strict();
-
-export const TaskCreateNestedManyWithoutPriorityInputSchema: z.ZodType<Prisma.TaskCreateNestedManyWithoutPriorityInput> = z.object({
-  create: z.union([ z.lazy(() => TaskCreateWithoutPriorityInputSchema),z.lazy(() => TaskCreateWithoutPriorityInputSchema).array(),z.lazy(() => TaskUncheckedCreateWithoutPriorityInputSchema),z.lazy(() => TaskUncheckedCreateWithoutPriorityInputSchema).array() ]).optional(),
-  connectOrCreate: z.union([ z.lazy(() => TaskCreateOrConnectWithoutPriorityInputSchema),z.lazy(() => TaskCreateOrConnectWithoutPriorityInputSchema).array() ]).optional(),
-  createMany: z.lazy(() => TaskCreateManyPriorityInputEnvelopeSchema).optional(),
-  connect: z.union([ z.lazy(() => TaskWhereUniqueInputSchema),z.lazy(() => TaskWhereUniqueInputSchema).array() ]).optional(),
-}).strict();
-
-export const TaskUncheckedCreateNestedManyWithoutPriorityInputSchema: z.ZodType<Prisma.TaskUncheckedCreateNestedManyWithoutPriorityInput> = z.object({
-  create: z.union([ z.lazy(() => TaskCreateWithoutPriorityInputSchema),z.lazy(() => TaskCreateWithoutPriorityInputSchema).array(),z.lazy(() => TaskUncheckedCreateWithoutPriorityInputSchema),z.lazy(() => TaskUncheckedCreateWithoutPriorityInputSchema).array() ]).optional(),
-  connectOrCreate: z.union([ z.lazy(() => TaskCreateOrConnectWithoutPriorityInputSchema),z.lazy(() => TaskCreateOrConnectWithoutPriorityInputSchema).array() ]).optional(),
-  createMany: z.lazy(() => TaskCreateManyPriorityInputEnvelopeSchema).optional(),
-  connect: z.union([ z.lazy(() => TaskWhereUniqueInputSchema),z.lazy(() => TaskWhereUniqueInputSchema).array() ]).optional(),
-}).strict();
-
-export const TaskUpdateManyWithoutPriorityNestedInputSchema: z.ZodType<Prisma.TaskUpdateManyWithoutPriorityNestedInput> = z.object({
-  create: z.union([ z.lazy(() => TaskCreateWithoutPriorityInputSchema),z.lazy(() => TaskCreateWithoutPriorityInputSchema).array(),z.lazy(() => TaskUncheckedCreateWithoutPriorityInputSchema),z.lazy(() => TaskUncheckedCreateWithoutPriorityInputSchema).array() ]).optional(),
-  connectOrCreate: z.union([ z.lazy(() => TaskCreateOrConnectWithoutPriorityInputSchema),z.lazy(() => TaskCreateOrConnectWithoutPriorityInputSchema).array() ]).optional(),
-  upsert: z.union([ z.lazy(() => TaskUpsertWithWhereUniqueWithoutPriorityInputSchema),z.lazy(() => TaskUpsertWithWhereUniqueWithoutPriorityInputSchema).array() ]).optional(),
-  createMany: z.lazy(() => TaskCreateManyPriorityInputEnvelopeSchema).optional(),
-  set: z.union([ z.lazy(() => TaskWhereUniqueInputSchema),z.lazy(() => TaskWhereUniqueInputSchema).array() ]).optional(),
-  disconnect: z.union([ z.lazy(() => TaskWhereUniqueInputSchema),z.lazy(() => TaskWhereUniqueInputSchema).array() ]).optional(),
-  delete: z.union([ z.lazy(() => TaskWhereUniqueInputSchema),z.lazy(() => TaskWhereUniqueInputSchema).array() ]).optional(),
-  connect: z.union([ z.lazy(() => TaskWhereUniqueInputSchema),z.lazy(() => TaskWhereUniqueInputSchema).array() ]).optional(),
-  update: z.union([ z.lazy(() => TaskUpdateWithWhereUniqueWithoutPriorityInputSchema),z.lazy(() => TaskUpdateWithWhereUniqueWithoutPriorityInputSchema).array() ]).optional(),
-  updateMany: z.union([ z.lazy(() => TaskUpdateManyWithWhereWithoutPriorityInputSchema),z.lazy(() => TaskUpdateManyWithWhereWithoutPriorityInputSchema).array() ]).optional(),
-  deleteMany: z.union([ z.lazy(() => TaskScalarWhereInputSchema),z.lazy(() => TaskScalarWhereInputSchema).array() ]).optional(),
-}).strict();
-
-export const TaskUncheckedUpdateManyWithoutPriorityNestedInputSchema: z.ZodType<Prisma.TaskUncheckedUpdateManyWithoutPriorityNestedInput> = z.object({
-  create: z.union([ z.lazy(() => TaskCreateWithoutPriorityInputSchema),z.lazy(() => TaskCreateWithoutPriorityInputSchema).array(),z.lazy(() => TaskUncheckedCreateWithoutPriorityInputSchema),z.lazy(() => TaskUncheckedCreateWithoutPriorityInputSchema).array() ]).optional(),
-  connectOrCreate: z.union([ z.lazy(() => TaskCreateOrConnectWithoutPriorityInputSchema),z.lazy(() => TaskCreateOrConnectWithoutPriorityInputSchema).array() ]).optional(),
-  upsert: z.union([ z.lazy(() => TaskUpsertWithWhereUniqueWithoutPriorityInputSchema),z.lazy(() => TaskUpsertWithWhereUniqueWithoutPriorityInputSchema).array() ]).optional(),
-  createMany: z.lazy(() => TaskCreateManyPriorityInputEnvelopeSchema).optional(),
-  set: z.union([ z.lazy(() => TaskWhereUniqueInputSchema),z.lazy(() => TaskWhereUniqueInputSchema).array() ]).optional(),
-  disconnect: z.union([ z.lazy(() => TaskWhereUniqueInputSchema),z.lazy(() => TaskWhereUniqueInputSchema).array() ]).optional(),
-  delete: z.union([ z.lazy(() => TaskWhereUniqueInputSchema),z.lazy(() => TaskWhereUniqueInputSchema).array() ]).optional(),
-  connect: z.union([ z.lazy(() => TaskWhereUniqueInputSchema),z.lazy(() => TaskWhereUniqueInputSchema).array() ]).optional(),
-  update: z.union([ z.lazy(() => TaskUpdateWithWhereUniqueWithoutPriorityInputSchema),z.lazy(() => TaskUpdateWithWhereUniqueWithoutPriorityInputSchema).array() ]).optional(),
-  updateMany: z.union([ z.lazy(() => TaskUpdateManyWithWhereWithoutPriorityInputSchema),z.lazy(() => TaskUpdateManyWithWhereWithoutPriorityInputSchema).array() ]).optional(),
-  deleteMany: z.union([ z.lazy(() => TaskScalarWhereInputSchema),z.lazy(() => TaskScalarWhereInputSchema).array() ]).optional(),
 }).strict();
 
 export const TaskCreateNestedManyWithoutStatusInputSchema: z.ZodType<Prisma.TaskCreateNestedManyWithoutStatusInput> = z.object({
@@ -2519,6 +2316,13 @@ export const NestedDateTimeNullableFilterSchema: z.ZodType<Prisma.NestedDateTime
   not: z.union([ z.coerce.date(),z.lazy(() => NestedDateTimeNullableFilterSchema) ]).optional().nullable(),
 }).strict();
 
+export const NestedEnumPriorityLevelFilterSchema: z.ZodType<Prisma.NestedEnumPriorityLevelFilter> = z.object({
+  equals: z.lazy(() => PriorityLevelSchema).optional(),
+  in: z.lazy(() => PriorityLevelSchema).array().optional(),
+  notIn: z.lazy(() => PriorityLevelSchema).array().optional(),
+  not: z.union([ z.lazy(() => PriorityLevelSchema),z.lazy(() => NestedEnumPriorityLevelFilterSchema) ]).optional(),
+}).strict();
+
 export const NestedDateTimeNullableWithAggregatesFilterSchema: z.ZodType<Prisma.NestedDateTimeNullableWithAggregatesFilter> = z.object({
   equals: z.coerce.date().optional().nullable(),
   in: z.coerce.date().array().optional().nullable(),
@@ -2531,6 +2335,16 @@ export const NestedDateTimeNullableWithAggregatesFilterSchema: z.ZodType<Prisma.
   _count: z.lazy(() => NestedIntNullableFilterSchema).optional(),
   _min: z.lazy(() => NestedDateTimeNullableFilterSchema).optional(),
   _max: z.lazy(() => NestedDateTimeNullableFilterSchema).optional()
+}).strict();
+
+export const NestedEnumPriorityLevelWithAggregatesFilterSchema: z.ZodType<Prisma.NestedEnumPriorityLevelWithAggregatesFilter> = z.object({
+  equals: z.lazy(() => PriorityLevelSchema).optional(),
+  in: z.lazy(() => PriorityLevelSchema).array().optional(),
+  notIn: z.lazy(() => PriorityLevelSchema).array().optional(),
+  not: z.union([ z.lazy(() => PriorityLevelSchema),z.lazy(() => NestedEnumPriorityLevelWithAggregatesFilterSchema) ]).optional(),
+  _count: z.lazy(() => NestedIntFilterSchema).optional(),
+  _min: z.lazy(() => NestedEnumPriorityLevelFilterSchema).optional(),
+  _max: z.lazy(() => NestedEnumPriorityLevelFilterSchema).optional()
 }).strict();
 
 export const NestedIntNullableWithAggregatesFilterSchema: z.ZodType<Prisma.NestedIntNullableWithAggregatesFilter> = z.object({
@@ -2625,11 +2439,11 @@ export const TaskCreateWithoutProjectInputSchema: z.ZodType<Prisma.TaskCreateWit
   description: z.string().optional().nullable(),
   created: z.coerce.date().optional(),
   done: z.coerce.date().optional().nullable(),
+  priority: z.lazy(() => PriorityLevelSchema),
   order: z.number().int().optional(),
   due: z.coerce.date().optional().nullable(),
   inWork: z.coerce.date().optional().nullable(),
-  priority: z.lazy(() => PriorityCreateNestedOneWithoutTaskInputSchema),
-  status: z.lazy(() => StatusCreateNestedOneWithoutTaskInputSchema),
+  status: z.lazy(() => StatusCreateNestedOneWithoutTasksInputSchema),
   parent: z.lazy(() => TaskCreateNestedOneWithoutChildrenInputSchema).optional(),
   files: z.lazy(() => FileCreateNestedManyWithoutTaskInputSchema).optional(),
   children: z.lazy(() => TaskCreateNestedManyWithoutParentInputSchema).optional(),
@@ -2642,7 +2456,7 @@ export const TaskUncheckedCreateWithoutProjectInputSchema: z.ZodType<Prisma.Task
   description: z.string().optional().nullable(),
   created: z.coerce.date().optional(),
   done: z.coerce.date().optional().nullable(),
-  priorityId: z.number().int(),
+  priority: z.lazy(() => PriorityLevelSchema),
   statusId: z.number().int(),
   parentId: z.number().int().optional().nullable(),
   order: z.number().int().optional(),
@@ -2665,13 +2479,13 @@ export const TaskCreateManyProjectInputEnvelopeSchema: z.ZodType<Prisma.TaskCrea
 
 export const StatusCreateWithoutProjectInputSchema: z.ZodType<Prisma.StatusCreateWithoutProjectInput> = z.object({
   name: z.string(),
-  task: z.lazy(() => TaskCreateNestedManyWithoutStatusInputSchema).optional()
+  tasks: z.lazy(() => TaskCreateNestedManyWithoutStatusInputSchema).optional()
 }).strict();
 
 export const StatusUncheckedCreateWithoutProjectInputSchema: z.ZodType<Prisma.StatusUncheckedCreateWithoutProjectInput> = z.object({
   id: z.number().int().optional(),
   name: z.string(),
-  task: z.lazy(() => TaskUncheckedCreateNestedManyWithoutStatusInputSchema).optional()
+  tasks: z.lazy(() => TaskUncheckedCreateNestedManyWithoutStatusInputSchema).optional()
 }).strict();
 
 export const StatusCreateOrConnectWithoutProjectInputSchema: z.ZodType<Prisma.StatusCreateOrConnectWithoutProjectInput> = z.object({
@@ -2731,7 +2545,7 @@ export const TaskScalarWhereInputSchema: z.ZodType<Prisma.TaskScalarWhereInput> 
   description: z.union([ z.lazy(() => StringNullableFilterSchema),z.string() ]).optional().nullable(),
   created: z.union([ z.lazy(() => DateTimeFilterSchema),z.coerce.date() ]).optional(),
   done: z.union([ z.lazy(() => DateTimeNullableFilterSchema),z.coerce.date() ]).optional().nullable(),
-  priorityId: z.union([ z.lazy(() => IntFilterSchema),z.number() ]).optional(),
+  priority: z.union([ z.lazy(() => EnumPriorityLevelFilterSchema),z.lazy(() => PriorityLevelSchema) ]).optional(),
   statusId: z.union([ z.lazy(() => IntFilterSchema),z.number() ]).optional(),
   parentId: z.union([ z.lazy(() => IntNullableFilterSchema),z.number() ]).optional().nullable(),
   projectId: z.union([ z.lazy(() => IntFilterSchema),z.number() ]).optional(),
@@ -2793,36 +2607,20 @@ export const UserUncheckedUpdateWithoutProjectsInputSchema: z.ZodType<Prisma.Use
   created: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
 }).strict();
 
-export const PriorityCreateWithoutTaskInputSchema: z.ZodType<Prisma.PriorityCreateWithoutTaskInput> = z.object({
-  name: z.string(),
-  color: z.string()
-}).strict();
-
-export const PriorityUncheckedCreateWithoutTaskInputSchema: z.ZodType<Prisma.PriorityUncheckedCreateWithoutTaskInput> = z.object({
-  id: z.number().int().optional(),
-  name: z.string(),
-  color: z.string()
-}).strict();
-
-export const PriorityCreateOrConnectWithoutTaskInputSchema: z.ZodType<Prisma.PriorityCreateOrConnectWithoutTaskInput> = z.object({
-  where: z.lazy(() => PriorityWhereUniqueInputSchema),
-  create: z.union([ z.lazy(() => PriorityCreateWithoutTaskInputSchema),z.lazy(() => PriorityUncheckedCreateWithoutTaskInputSchema) ]),
-}).strict();
-
-export const StatusCreateWithoutTaskInputSchema: z.ZodType<Prisma.StatusCreateWithoutTaskInput> = z.object({
+export const StatusCreateWithoutTasksInputSchema: z.ZodType<Prisma.StatusCreateWithoutTasksInput> = z.object({
   name: z.string(),
   project: z.lazy(() => ProjectCreateNestedOneWithoutStatusesInputSchema)
 }).strict();
 
-export const StatusUncheckedCreateWithoutTaskInputSchema: z.ZodType<Prisma.StatusUncheckedCreateWithoutTaskInput> = z.object({
+export const StatusUncheckedCreateWithoutTasksInputSchema: z.ZodType<Prisma.StatusUncheckedCreateWithoutTasksInput> = z.object({
   id: z.number().int().optional(),
   name: z.string(),
   projectId: z.number().int()
 }).strict();
 
-export const StatusCreateOrConnectWithoutTaskInputSchema: z.ZodType<Prisma.StatusCreateOrConnectWithoutTaskInput> = z.object({
+export const StatusCreateOrConnectWithoutTasksInputSchema: z.ZodType<Prisma.StatusCreateOrConnectWithoutTasksInput> = z.object({
   where: z.lazy(() => StatusWhereUniqueInputSchema),
-  create: z.union([ z.lazy(() => StatusCreateWithoutTaskInputSchema),z.lazy(() => StatusUncheckedCreateWithoutTaskInputSchema) ]),
+  create: z.union([ z.lazy(() => StatusCreateWithoutTasksInputSchema),z.lazy(() => StatusUncheckedCreateWithoutTasksInputSchema) ]),
 }).strict();
 
 export const TaskCreateWithoutChildrenInputSchema: z.ZodType<Prisma.TaskCreateWithoutChildrenInput> = z.object({
@@ -2830,11 +2628,11 @@ export const TaskCreateWithoutChildrenInputSchema: z.ZodType<Prisma.TaskCreateWi
   description: z.string().optional().nullable(),
   created: z.coerce.date().optional(),
   done: z.coerce.date().optional().nullable(),
+  priority: z.lazy(() => PriorityLevelSchema),
   order: z.number().int().optional(),
   due: z.coerce.date().optional().nullable(),
   inWork: z.coerce.date().optional().nullable(),
-  priority: z.lazy(() => PriorityCreateNestedOneWithoutTaskInputSchema),
-  status: z.lazy(() => StatusCreateNestedOneWithoutTaskInputSchema),
+  status: z.lazy(() => StatusCreateNestedOneWithoutTasksInputSchema),
   parent: z.lazy(() => TaskCreateNestedOneWithoutChildrenInputSchema).optional(),
   project: z.lazy(() => ProjectCreateNestedOneWithoutTasksInputSchema),
   files: z.lazy(() => FileCreateNestedManyWithoutTaskInputSchema).optional(),
@@ -2847,7 +2645,7 @@ export const TaskUncheckedCreateWithoutChildrenInputSchema: z.ZodType<Prisma.Tas
   description: z.string().optional().nullable(),
   created: z.coerce.date().optional(),
   done: z.coerce.date().optional().nullable(),
-  priorityId: z.number().int(),
+  priority: z.lazy(() => PriorityLevelSchema),
   statusId: z.number().int(),
   parentId: z.number().int().optional().nullable(),
   projectId: z.number().int(),
@@ -2915,11 +2713,11 @@ export const TaskCreateWithoutParentInputSchema: z.ZodType<Prisma.TaskCreateWith
   description: z.string().optional().nullable(),
   created: z.coerce.date().optional(),
   done: z.coerce.date().optional().nullable(),
+  priority: z.lazy(() => PriorityLevelSchema),
   order: z.number().int().optional(),
   due: z.coerce.date().optional().nullable(),
   inWork: z.coerce.date().optional().nullable(),
-  priority: z.lazy(() => PriorityCreateNestedOneWithoutTaskInputSchema),
-  status: z.lazy(() => StatusCreateNestedOneWithoutTaskInputSchema),
+  status: z.lazy(() => StatusCreateNestedOneWithoutTasksInputSchema),
   project: z.lazy(() => ProjectCreateNestedOneWithoutTasksInputSchema),
   files: z.lazy(() => FileCreateNestedManyWithoutTaskInputSchema).optional(),
   children: z.lazy(() => TaskCreateNestedManyWithoutParentInputSchema).optional(),
@@ -2932,7 +2730,7 @@ export const TaskUncheckedCreateWithoutParentInputSchema: z.ZodType<Prisma.TaskU
   description: z.string().optional().nullable(),
   created: z.coerce.date().optional(),
   done: z.coerce.date().optional().nullable(),
-  priorityId: z.number().int(),
+  priority: z.lazy(() => PriorityLevelSchema),
   statusId: z.number().int(),
   projectId: z.number().int(),
   order: z.number().int().optional(),
@@ -2978,45 +2776,23 @@ export const CommentCreateManyTaskInputEnvelopeSchema: z.ZodType<Prisma.CommentC
   skipDuplicates: z.boolean().optional()
 }).strict();
 
-export const PriorityUpsertWithoutTaskInputSchema: z.ZodType<Prisma.PriorityUpsertWithoutTaskInput> = z.object({
-  update: z.union([ z.lazy(() => PriorityUpdateWithoutTaskInputSchema),z.lazy(() => PriorityUncheckedUpdateWithoutTaskInputSchema) ]),
-  create: z.union([ z.lazy(() => PriorityCreateWithoutTaskInputSchema),z.lazy(() => PriorityUncheckedCreateWithoutTaskInputSchema) ]),
-  where: z.lazy(() => PriorityWhereInputSchema).optional()
-}).strict();
-
-export const PriorityUpdateToOneWithWhereWithoutTaskInputSchema: z.ZodType<Prisma.PriorityUpdateToOneWithWhereWithoutTaskInput> = z.object({
-  where: z.lazy(() => PriorityWhereInputSchema).optional(),
-  data: z.union([ z.lazy(() => PriorityUpdateWithoutTaskInputSchema),z.lazy(() => PriorityUncheckedUpdateWithoutTaskInputSchema) ]),
-}).strict();
-
-export const PriorityUpdateWithoutTaskInputSchema: z.ZodType<Prisma.PriorityUpdateWithoutTaskInput> = z.object({
-  name: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
-  color: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
-}).strict();
-
-export const PriorityUncheckedUpdateWithoutTaskInputSchema: z.ZodType<Prisma.PriorityUncheckedUpdateWithoutTaskInput> = z.object({
-  id: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
-  name: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
-  color: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
-}).strict();
-
-export const StatusUpsertWithoutTaskInputSchema: z.ZodType<Prisma.StatusUpsertWithoutTaskInput> = z.object({
-  update: z.union([ z.lazy(() => StatusUpdateWithoutTaskInputSchema),z.lazy(() => StatusUncheckedUpdateWithoutTaskInputSchema) ]),
-  create: z.union([ z.lazy(() => StatusCreateWithoutTaskInputSchema),z.lazy(() => StatusUncheckedCreateWithoutTaskInputSchema) ]),
+export const StatusUpsertWithoutTasksInputSchema: z.ZodType<Prisma.StatusUpsertWithoutTasksInput> = z.object({
+  update: z.union([ z.lazy(() => StatusUpdateWithoutTasksInputSchema),z.lazy(() => StatusUncheckedUpdateWithoutTasksInputSchema) ]),
+  create: z.union([ z.lazy(() => StatusCreateWithoutTasksInputSchema),z.lazy(() => StatusUncheckedCreateWithoutTasksInputSchema) ]),
   where: z.lazy(() => StatusWhereInputSchema).optional()
 }).strict();
 
-export const StatusUpdateToOneWithWhereWithoutTaskInputSchema: z.ZodType<Prisma.StatusUpdateToOneWithWhereWithoutTaskInput> = z.object({
+export const StatusUpdateToOneWithWhereWithoutTasksInputSchema: z.ZodType<Prisma.StatusUpdateToOneWithWhereWithoutTasksInput> = z.object({
   where: z.lazy(() => StatusWhereInputSchema).optional(),
-  data: z.union([ z.lazy(() => StatusUpdateWithoutTaskInputSchema),z.lazy(() => StatusUncheckedUpdateWithoutTaskInputSchema) ]),
+  data: z.union([ z.lazy(() => StatusUpdateWithoutTasksInputSchema),z.lazy(() => StatusUncheckedUpdateWithoutTasksInputSchema) ]),
 }).strict();
 
-export const StatusUpdateWithoutTaskInputSchema: z.ZodType<Prisma.StatusUpdateWithoutTaskInput> = z.object({
+export const StatusUpdateWithoutTasksInputSchema: z.ZodType<Prisma.StatusUpdateWithoutTasksInput> = z.object({
   name: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   project: z.lazy(() => ProjectUpdateOneRequiredWithoutStatusesNestedInputSchema).optional()
 }).strict();
 
-export const StatusUncheckedUpdateWithoutTaskInputSchema: z.ZodType<Prisma.StatusUncheckedUpdateWithoutTaskInput> = z.object({
+export const StatusUncheckedUpdateWithoutTasksInputSchema: z.ZodType<Prisma.StatusUncheckedUpdateWithoutTasksInput> = z.object({
   id: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
   name: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   projectId: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
@@ -3038,11 +2814,11 @@ export const TaskUpdateWithoutChildrenInputSchema: z.ZodType<Prisma.TaskUpdateWi
   description: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   created: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
   done: z.union([ z.coerce.date(),z.lazy(() => NullableDateTimeFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  priority: z.union([ z.lazy(() => PriorityLevelSchema),z.lazy(() => EnumPriorityLevelFieldUpdateOperationsInputSchema) ]).optional(),
   order: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
   due: z.union([ z.coerce.date(),z.lazy(() => NullableDateTimeFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   inWork: z.union([ z.coerce.date(),z.lazy(() => NullableDateTimeFieldUpdateOperationsInputSchema) ]).optional().nullable(),
-  priority: z.lazy(() => PriorityUpdateOneRequiredWithoutTaskNestedInputSchema).optional(),
-  status: z.lazy(() => StatusUpdateOneRequiredWithoutTaskNestedInputSchema).optional(),
+  status: z.lazy(() => StatusUpdateOneRequiredWithoutTasksNestedInputSchema).optional(),
   parent: z.lazy(() => TaskUpdateOneWithoutChildrenNestedInputSchema).optional(),
   project: z.lazy(() => ProjectUpdateOneRequiredWithoutTasksNestedInputSchema).optional(),
   files: z.lazy(() => FileUpdateManyWithoutTaskNestedInputSchema).optional(),
@@ -3055,7 +2831,7 @@ export const TaskUncheckedUpdateWithoutChildrenInputSchema: z.ZodType<Prisma.Tas
   description: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   created: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
   done: z.union([ z.coerce.date(),z.lazy(() => NullableDateTimeFieldUpdateOperationsInputSchema) ]).optional().nullable(),
-  priorityId: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+  priority: z.union([ z.lazy(() => PriorityLevelSchema),z.lazy(() => EnumPriorityLevelFieldUpdateOperationsInputSchema) ]).optional(),
   statusId: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
   parentId: z.union([ z.number().int(),z.lazy(() => NullableIntFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   projectId: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
@@ -3217,11 +2993,11 @@ export const TaskCreateWithoutCommentsInputSchema: z.ZodType<Prisma.TaskCreateWi
   description: z.string().optional().nullable(),
   created: z.coerce.date().optional(),
   done: z.coerce.date().optional().nullable(),
+  priority: z.lazy(() => PriorityLevelSchema),
   order: z.number().int().optional(),
   due: z.coerce.date().optional().nullable(),
   inWork: z.coerce.date().optional().nullable(),
-  priority: z.lazy(() => PriorityCreateNestedOneWithoutTaskInputSchema),
-  status: z.lazy(() => StatusCreateNestedOneWithoutTaskInputSchema),
+  status: z.lazy(() => StatusCreateNestedOneWithoutTasksInputSchema),
   parent: z.lazy(() => TaskCreateNestedOneWithoutChildrenInputSchema).optional(),
   project: z.lazy(() => ProjectCreateNestedOneWithoutTasksInputSchema),
   files: z.lazy(() => FileCreateNestedManyWithoutTaskInputSchema).optional(),
@@ -3234,7 +3010,7 @@ export const TaskUncheckedCreateWithoutCommentsInputSchema: z.ZodType<Prisma.Tas
   description: z.string().optional().nullable(),
   created: z.coerce.date().optional(),
   done: z.coerce.date().optional().nullable(),
-  priorityId: z.number().int(),
+  priority: z.lazy(() => PriorityLevelSchema),
   statusId: z.number().int(),
   parentId: z.number().int().optional().nullable(),
   projectId: z.number().int(),
@@ -3308,11 +3084,11 @@ export const TaskUpdateWithoutCommentsInputSchema: z.ZodType<Prisma.TaskUpdateWi
   description: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   created: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
   done: z.union([ z.coerce.date(),z.lazy(() => NullableDateTimeFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  priority: z.union([ z.lazy(() => PriorityLevelSchema),z.lazy(() => EnumPriorityLevelFieldUpdateOperationsInputSchema) ]).optional(),
   order: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
   due: z.union([ z.coerce.date(),z.lazy(() => NullableDateTimeFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   inWork: z.union([ z.coerce.date(),z.lazy(() => NullableDateTimeFieldUpdateOperationsInputSchema) ]).optional().nullable(),
-  priority: z.lazy(() => PriorityUpdateOneRequiredWithoutTaskNestedInputSchema).optional(),
-  status: z.lazy(() => StatusUpdateOneRequiredWithoutTaskNestedInputSchema).optional(),
+  status: z.lazy(() => StatusUpdateOneRequiredWithoutTasksNestedInputSchema).optional(),
   parent: z.lazy(() => TaskUpdateOneWithoutChildrenNestedInputSchema).optional(),
   project: z.lazy(() => ProjectUpdateOneRequiredWithoutTasksNestedInputSchema).optional(),
   files: z.lazy(() => FileUpdateManyWithoutTaskNestedInputSchema).optional(),
@@ -3325,7 +3101,7 @@ export const TaskUncheckedUpdateWithoutCommentsInputSchema: z.ZodType<Prisma.Tas
   description: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   created: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
   done: z.union([ z.coerce.date(),z.lazy(() => NullableDateTimeFieldUpdateOperationsInputSchema) ]).optional().nullable(),
-  priorityId: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+  priority: z.union([ z.lazy(() => PriorityLevelSchema),z.lazy(() => EnumPriorityLevelFieldUpdateOperationsInputSchema) ]).optional(),
   statusId: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
   parentId: z.union([ z.number().int(),z.lazy(() => NullableIntFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   projectId: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
@@ -3341,11 +3117,11 @@ export const TaskCreateWithoutFilesInputSchema: z.ZodType<Prisma.TaskCreateWitho
   description: z.string().optional().nullable(),
   created: z.coerce.date().optional(),
   done: z.coerce.date().optional().nullable(),
+  priority: z.lazy(() => PriorityLevelSchema),
   order: z.number().int().optional(),
   due: z.coerce.date().optional().nullable(),
   inWork: z.coerce.date().optional().nullable(),
-  priority: z.lazy(() => PriorityCreateNestedOneWithoutTaskInputSchema),
-  status: z.lazy(() => StatusCreateNestedOneWithoutTaskInputSchema),
+  status: z.lazy(() => StatusCreateNestedOneWithoutTasksInputSchema),
   parent: z.lazy(() => TaskCreateNestedOneWithoutChildrenInputSchema).optional(),
   project: z.lazy(() => ProjectCreateNestedOneWithoutTasksInputSchema),
   children: z.lazy(() => TaskCreateNestedManyWithoutParentInputSchema).optional(),
@@ -3358,7 +3134,7 @@ export const TaskUncheckedCreateWithoutFilesInputSchema: z.ZodType<Prisma.TaskUn
   description: z.string().optional().nullable(),
   created: z.coerce.date().optional(),
   done: z.coerce.date().optional().nullable(),
-  priorityId: z.number().int(),
+  priority: z.lazy(() => PriorityLevelSchema),
   statusId: z.number().int(),
   parentId: z.number().int().optional().nullable(),
   projectId: z.number().int(),
@@ -3390,11 +3166,11 @@ export const TaskUpdateWithoutFilesInputSchema: z.ZodType<Prisma.TaskUpdateWitho
   description: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   created: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
   done: z.union([ z.coerce.date(),z.lazy(() => NullableDateTimeFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  priority: z.union([ z.lazy(() => PriorityLevelSchema),z.lazy(() => EnumPriorityLevelFieldUpdateOperationsInputSchema) ]).optional(),
   order: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
   due: z.union([ z.coerce.date(),z.lazy(() => NullableDateTimeFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   inWork: z.union([ z.coerce.date(),z.lazy(() => NullableDateTimeFieldUpdateOperationsInputSchema) ]).optional().nullable(),
-  priority: z.lazy(() => PriorityUpdateOneRequiredWithoutTaskNestedInputSchema).optional(),
-  status: z.lazy(() => StatusUpdateOneRequiredWithoutTaskNestedInputSchema).optional(),
+  status: z.lazy(() => StatusUpdateOneRequiredWithoutTasksNestedInputSchema).optional(),
   parent: z.lazy(() => TaskUpdateOneWithoutChildrenNestedInputSchema).optional(),
   project: z.lazy(() => ProjectUpdateOneRequiredWithoutTasksNestedInputSchema).optional(),
   children: z.lazy(() => TaskUpdateManyWithoutParentNestedInputSchema).optional(),
@@ -3407,7 +3183,7 @@ export const TaskUncheckedUpdateWithoutFilesInputSchema: z.ZodType<Prisma.TaskUn
   description: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   created: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
   done: z.union([ z.coerce.date(),z.lazy(() => NullableDateTimeFieldUpdateOperationsInputSchema) ]).optional().nullable(),
-  priorityId: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+  priority: z.union([ z.lazy(() => PriorityLevelSchema),z.lazy(() => EnumPriorityLevelFieldUpdateOperationsInputSchema) ]).optional(),
   statusId: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
   parentId: z.union([ z.number().int(),z.lazy(() => NullableIntFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   projectId: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
@@ -3418,74 +3194,15 @@ export const TaskUncheckedUpdateWithoutFilesInputSchema: z.ZodType<Prisma.TaskUn
   comments: z.lazy(() => CommentUncheckedUpdateManyWithoutTaskNestedInputSchema).optional()
 }).strict();
 
-export const TaskCreateWithoutPriorityInputSchema: z.ZodType<Prisma.TaskCreateWithoutPriorityInput> = z.object({
-  name: z.string(),
-  description: z.string().optional().nullable(),
-  created: z.coerce.date().optional(),
-  done: z.coerce.date().optional().nullable(),
-  order: z.number().int().optional(),
-  due: z.coerce.date().optional().nullable(),
-  inWork: z.coerce.date().optional().nullable(),
-  status: z.lazy(() => StatusCreateNestedOneWithoutTaskInputSchema),
-  parent: z.lazy(() => TaskCreateNestedOneWithoutChildrenInputSchema).optional(),
-  project: z.lazy(() => ProjectCreateNestedOneWithoutTasksInputSchema),
-  files: z.lazy(() => FileCreateNestedManyWithoutTaskInputSchema).optional(),
-  children: z.lazy(() => TaskCreateNestedManyWithoutParentInputSchema).optional(),
-  comments: z.lazy(() => CommentCreateNestedManyWithoutTaskInputSchema).optional()
-}).strict();
-
-export const TaskUncheckedCreateWithoutPriorityInputSchema: z.ZodType<Prisma.TaskUncheckedCreateWithoutPriorityInput> = z.object({
-  id: z.number().int().optional(),
-  name: z.string(),
-  description: z.string().optional().nullable(),
-  created: z.coerce.date().optional(),
-  done: z.coerce.date().optional().nullable(),
-  statusId: z.number().int(),
-  parentId: z.number().int().optional().nullable(),
-  projectId: z.number().int(),
-  order: z.number().int().optional(),
-  due: z.coerce.date().optional().nullable(),
-  inWork: z.coerce.date().optional().nullable(),
-  files: z.lazy(() => FileUncheckedCreateNestedManyWithoutTaskInputSchema).optional(),
-  children: z.lazy(() => TaskUncheckedCreateNestedManyWithoutParentInputSchema).optional(),
-  comments: z.lazy(() => CommentUncheckedCreateNestedManyWithoutTaskInputSchema).optional()
-}).strict();
-
-export const TaskCreateOrConnectWithoutPriorityInputSchema: z.ZodType<Prisma.TaskCreateOrConnectWithoutPriorityInput> = z.object({
-  where: z.lazy(() => TaskWhereUniqueInputSchema),
-  create: z.union([ z.lazy(() => TaskCreateWithoutPriorityInputSchema),z.lazy(() => TaskUncheckedCreateWithoutPriorityInputSchema) ]),
-}).strict();
-
-export const TaskCreateManyPriorityInputEnvelopeSchema: z.ZodType<Prisma.TaskCreateManyPriorityInputEnvelope> = z.object({
-  data: z.union([ z.lazy(() => TaskCreateManyPriorityInputSchema),z.lazy(() => TaskCreateManyPriorityInputSchema).array() ]),
-  skipDuplicates: z.boolean().optional()
-}).strict();
-
-export const TaskUpsertWithWhereUniqueWithoutPriorityInputSchema: z.ZodType<Prisma.TaskUpsertWithWhereUniqueWithoutPriorityInput> = z.object({
-  where: z.lazy(() => TaskWhereUniqueInputSchema),
-  update: z.union([ z.lazy(() => TaskUpdateWithoutPriorityInputSchema),z.lazy(() => TaskUncheckedUpdateWithoutPriorityInputSchema) ]),
-  create: z.union([ z.lazy(() => TaskCreateWithoutPriorityInputSchema),z.lazy(() => TaskUncheckedCreateWithoutPriorityInputSchema) ]),
-}).strict();
-
-export const TaskUpdateWithWhereUniqueWithoutPriorityInputSchema: z.ZodType<Prisma.TaskUpdateWithWhereUniqueWithoutPriorityInput> = z.object({
-  where: z.lazy(() => TaskWhereUniqueInputSchema),
-  data: z.union([ z.lazy(() => TaskUpdateWithoutPriorityInputSchema),z.lazy(() => TaskUncheckedUpdateWithoutPriorityInputSchema) ]),
-}).strict();
-
-export const TaskUpdateManyWithWhereWithoutPriorityInputSchema: z.ZodType<Prisma.TaskUpdateManyWithWhereWithoutPriorityInput> = z.object({
-  where: z.lazy(() => TaskScalarWhereInputSchema),
-  data: z.union([ z.lazy(() => TaskUpdateManyMutationInputSchema),z.lazy(() => TaskUncheckedUpdateManyWithoutPriorityInputSchema) ]),
-}).strict();
-
 export const TaskCreateWithoutStatusInputSchema: z.ZodType<Prisma.TaskCreateWithoutStatusInput> = z.object({
   name: z.string(),
   description: z.string().optional().nullable(),
   created: z.coerce.date().optional(),
   done: z.coerce.date().optional().nullable(),
+  priority: z.lazy(() => PriorityLevelSchema),
   order: z.number().int().optional(),
   due: z.coerce.date().optional().nullable(),
   inWork: z.coerce.date().optional().nullable(),
-  priority: z.lazy(() => PriorityCreateNestedOneWithoutTaskInputSchema),
   parent: z.lazy(() => TaskCreateNestedOneWithoutChildrenInputSchema).optional(),
   project: z.lazy(() => ProjectCreateNestedOneWithoutTasksInputSchema),
   files: z.lazy(() => FileCreateNestedManyWithoutTaskInputSchema).optional(),
@@ -3499,7 +3216,7 @@ export const TaskUncheckedCreateWithoutStatusInputSchema: z.ZodType<Prisma.TaskU
   description: z.string().optional().nullable(),
   created: z.coerce.date().optional(),
   done: z.coerce.date().optional().nullable(),
-  priorityId: z.number().int(),
+  priority: z.lazy(() => PriorityLevelSchema),
   parentId: z.number().int().optional().nullable(),
   projectId: z.number().int(),
   order: z.number().int().optional(),
@@ -3639,7 +3356,7 @@ export const TaskCreateManyProjectInputSchema: z.ZodType<Prisma.TaskCreateManyPr
   description: z.string().optional().nullable(),
   created: z.coerce.date().optional(),
   done: z.coerce.date().optional().nullable(),
-  priorityId: z.number().int(),
+  priority: z.lazy(() => PriorityLevelSchema),
   statusId: z.number().int(),
   parentId: z.number().int().optional().nullable(),
   order: z.number().int().optional(),
@@ -3657,11 +3374,11 @@ export const TaskUpdateWithoutProjectInputSchema: z.ZodType<Prisma.TaskUpdateWit
   description: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   created: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
   done: z.union([ z.coerce.date(),z.lazy(() => NullableDateTimeFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  priority: z.union([ z.lazy(() => PriorityLevelSchema),z.lazy(() => EnumPriorityLevelFieldUpdateOperationsInputSchema) ]).optional(),
   order: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
   due: z.union([ z.coerce.date(),z.lazy(() => NullableDateTimeFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   inWork: z.union([ z.coerce.date(),z.lazy(() => NullableDateTimeFieldUpdateOperationsInputSchema) ]).optional().nullable(),
-  priority: z.lazy(() => PriorityUpdateOneRequiredWithoutTaskNestedInputSchema).optional(),
-  status: z.lazy(() => StatusUpdateOneRequiredWithoutTaskNestedInputSchema).optional(),
+  status: z.lazy(() => StatusUpdateOneRequiredWithoutTasksNestedInputSchema).optional(),
   parent: z.lazy(() => TaskUpdateOneWithoutChildrenNestedInputSchema).optional(),
   files: z.lazy(() => FileUpdateManyWithoutTaskNestedInputSchema).optional(),
   children: z.lazy(() => TaskUpdateManyWithoutParentNestedInputSchema).optional(),
@@ -3674,7 +3391,7 @@ export const TaskUncheckedUpdateWithoutProjectInputSchema: z.ZodType<Prisma.Task
   description: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   created: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
   done: z.union([ z.coerce.date(),z.lazy(() => NullableDateTimeFieldUpdateOperationsInputSchema) ]).optional().nullable(),
-  priorityId: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+  priority: z.union([ z.lazy(() => PriorityLevelSchema),z.lazy(() => EnumPriorityLevelFieldUpdateOperationsInputSchema) ]).optional(),
   statusId: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
   parentId: z.union([ z.number().int(),z.lazy(() => NullableIntFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   order: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
@@ -3691,7 +3408,7 @@ export const TaskUncheckedUpdateManyWithoutProjectInputSchema: z.ZodType<Prisma.
   description: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   created: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
   done: z.union([ z.coerce.date(),z.lazy(() => NullableDateTimeFieldUpdateOperationsInputSchema) ]).optional().nullable(),
-  priorityId: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+  priority: z.union([ z.lazy(() => PriorityLevelSchema),z.lazy(() => EnumPriorityLevelFieldUpdateOperationsInputSchema) ]).optional(),
   statusId: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
   parentId: z.union([ z.number().int(),z.lazy(() => NullableIntFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   order: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
@@ -3701,13 +3418,13 @@ export const TaskUncheckedUpdateManyWithoutProjectInputSchema: z.ZodType<Prisma.
 
 export const StatusUpdateWithoutProjectInputSchema: z.ZodType<Prisma.StatusUpdateWithoutProjectInput> = z.object({
   name: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
-  task: z.lazy(() => TaskUpdateManyWithoutStatusNestedInputSchema).optional()
+  tasks: z.lazy(() => TaskUpdateManyWithoutStatusNestedInputSchema).optional()
 }).strict();
 
 export const StatusUncheckedUpdateWithoutProjectInputSchema: z.ZodType<Prisma.StatusUncheckedUpdateWithoutProjectInput> = z.object({
   id: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
   name: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
-  task: z.lazy(() => TaskUncheckedUpdateManyWithoutStatusNestedInputSchema).optional()
+  tasks: z.lazy(() => TaskUncheckedUpdateManyWithoutStatusNestedInputSchema).optional()
 }).strict();
 
 export const StatusUncheckedUpdateManyWithoutProjectInputSchema: z.ZodType<Prisma.StatusUncheckedUpdateManyWithoutProjectInput> = z.object({
@@ -3727,7 +3444,7 @@ export const TaskCreateManyParentInputSchema: z.ZodType<Prisma.TaskCreateManyPar
   description: z.string().optional().nullable(),
   created: z.coerce.date().optional(),
   done: z.coerce.date().optional().nullable(),
-  priorityId: z.number().int(),
+  priority: z.lazy(() => PriorityLevelSchema),
   statusId: z.number().int(),
   projectId: z.number().int(),
   order: z.number().int().optional(),
@@ -3764,11 +3481,11 @@ export const TaskUpdateWithoutParentInputSchema: z.ZodType<Prisma.TaskUpdateWith
   description: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   created: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
   done: z.union([ z.coerce.date(),z.lazy(() => NullableDateTimeFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  priority: z.union([ z.lazy(() => PriorityLevelSchema),z.lazy(() => EnumPriorityLevelFieldUpdateOperationsInputSchema) ]).optional(),
   order: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
   due: z.union([ z.coerce.date(),z.lazy(() => NullableDateTimeFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   inWork: z.union([ z.coerce.date(),z.lazy(() => NullableDateTimeFieldUpdateOperationsInputSchema) ]).optional().nullable(),
-  priority: z.lazy(() => PriorityUpdateOneRequiredWithoutTaskNestedInputSchema).optional(),
-  status: z.lazy(() => StatusUpdateOneRequiredWithoutTaskNestedInputSchema).optional(),
+  status: z.lazy(() => StatusUpdateOneRequiredWithoutTasksNestedInputSchema).optional(),
   project: z.lazy(() => ProjectUpdateOneRequiredWithoutTasksNestedInputSchema).optional(),
   files: z.lazy(() => FileUpdateManyWithoutTaskNestedInputSchema).optional(),
   children: z.lazy(() => TaskUpdateManyWithoutParentNestedInputSchema).optional(),
@@ -3781,7 +3498,7 @@ export const TaskUncheckedUpdateWithoutParentInputSchema: z.ZodType<Prisma.TaskU
   description: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   created: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
   done: z.union([ z.coerce.date(),z.lazy(() => NullableDateTimeFieldUpdateOperationsInputSchema) ]).optional().nullable(),
-  priorityId: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+  priority: z.union([ z.lazy(() => PriorityLevelSchema),z.lazy(() => EnumPriorityLevelFieldUpdateOperationsInputSchema) ]).optional(),
   statusId: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
   projectId: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
   order: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
@@ -3798,7 +3515,7 @@ export const TaskUncheckedUpdateManyWithoutParentInputSchema: z.ZodType<Prisma.T
   description: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   created: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
   done: z.union([ z.coerce.date(),z.lazy(() => NullableDateTimeFieldUpdateOperationsInputSchema) ]).optional().nullable(),
-  priorityId: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+  priority: z.union([ z.lazy(() => PriorityLevelSchema),z.lazy(() => EnumPriorityLevelFieldUpdateOperationsInputSchema) ]).optional(),
   statusId: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
   projectId: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
   order: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
@@ -3857,74 +3574,13 @@ export const CommentUncheckedUpdateManyWithoutParentInputSchema: z.ZodType<Prism
   created: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
 }).strict();
 
-export const TaskCreateManyPriorityInputSchema: z.ZodType<Prisma.TaskCreateManyPriorityInput> = z.object({
-  id: z.number().int().optional(),
-  name: z.string(),
-  description: z.string().optional().nullable(),
-  created: z.coerce.date().optional(),
-  done: z.coerce.date().optional().nullable(),
-  statusId: z.number().int(),
-  parentId: z.number().int().optional().nullable(),
-  projectId: z.number().int(),
-  order: z.number().int().optional(),
-  due: z.coerce.date().optional().nullable(),
-  inWork: z.coerce.date().optional().nullable()
-}).strict();
-
-export const TaskUpdateWithoutPriorityInputSchema: z.ZodType<Prisma.TaskUpdateWithoutPriorityInput> = z.object({
-  name: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
-  description: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
-  created: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
-  done: z.union([ z.coerce.date(),z.lazy(() => NullableDateTimeFieldUpdateOperationsInputSchema) ]).optional().nullable(),
-  order: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
-  due: z.union([ z.coerce.date(),z.lazy(() => NullableDateTimeFieldUpdateOperationsInputSchema) ]).optional().nullable(),
-  inWork: z.union([ z.coerce.date(),z.lazy(() => NullableDateTimeFieldUpdateOperationsInputSchema) ]).optional().nullable(),
-  status: z.lazy(() => StatusUpdateOneRequiredWithoutTaskNestedInputSchema).optional(),
-  parent: z.lazy(() => TaskUpdateOneWithoutChildrenNestedInputSchema).optional(),
-  project: z.lazy(() => ProjectUpdateOneRequiredWithoutTasksNestedInputSchema).optional(),
-  files: z.lazy(() => FileUpdateManyWithoutTaskNestedInputSchema).optional(),
-  children: z.lazy(() => TaskUpdateManyWithoutParentNestedInputSchema).optional(),
-  comments: z.lazy(() => CommentUpdateManyWithoutTaskNestedInputSchema).optional()
-}).strict();
-
-export const TaskUncheckedUpdateWithoutPriorityInputSchema: z.ZodType<Prisma.TaskUncheckedUpdateWithoutPriorityInput> = z.object({
-  id: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
-  name: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
-  description: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
-  created: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
-  done: z.union([ z.coerce.date(),z.lazy(() => NullableDateTimeFieldUpdateOperationsInputSchema) ]).optional().nullable(),
-  statusId: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
-  parentId: z.union([ z.number().int(),z.lazy(() => NullableIntFieldUpdateOperationsInputSchema) ]).optional().nullable(),
-  projectId: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
-  order: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
-  due: z.union([ z.coerce.date(),z.lazy(() => NullableDateTimeFieldUpdateOperationsInputSchema) ]).optional().nullable(),
-  inWork: z.union([ z.coerce.date(),z.lazy(() => NullableDateTimeFieldUpdateOperationsInputSchema) ]).optional().nullable(),
-  files: z.lazy(() => FileUncheckedUpdateManyWithoutTaskNestedInputSchema).optional(),
-  children: z.lazy(() => TaskUncheckedUpdateManyWithoutParentNestedInputSchema).optional(),
-  comments: z.lazy(() => CommentUncheckedUpdateManyWithoutTaskNestedInputSchema).optional()
-}).strict();
-
-export const TaskUncheckedUpdateManyWithoutPriorityInputSchema: z.ZodType<Prisma.TaskUncheckedUpdateManyWithoutPriorityInput> = z.object({
-  id: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
-  name: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
-  description: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
-  created: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
-  done: z.union([ z.coerce.date(),z.lazy(() => NullableDateTimeFieldUpdateOperationsInputSchema) ]).optional().nullable(),
-  statusId: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
-  parentId: z.union([ z.number().int(),z.lazy(() => NullableIntFieldUpdateOperationsInputSchema) ]).optional().nullable(),
-  projectId: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
-  order: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
-  due: z.union([ z.coerce.date(),z.lazy(() => NullableDateTimeFieldUpdateOperationsInputSchema) ]).optional().nullable(),
-  inWork: z.union([ z.coerce.date(),z.lazy(() => NullableDateTimeFieldUpdateOperationsInputSchema) ]).optional().nullable(),
-}).strict();
-
 export const TaskCreateManyStatusInputSchema: z.ZodType<Prisma.TaskCreateManyStatusInput> = z.object({
   id: z.number().int().optional(),
   name: z.string(),
   description: z.string().optional().nullable(),
   created: z.coerce.date().optional(),
   done: z.coerce.date().optional().nullable(),
-  priorityId: z.number().int(),
+  priority: z.lazy(() => PriorityLevelSchema),
   parentId: z.number().int().optional().nullable(),
   projectId: z.number().int(),
   order: z.number().int().optional(),
@@ -3937,10 +3593,10 @@ export const TaskUpdateWithoutStatusInputSchema: z.ZodType<Prisma.TaskUpdateWith
   description: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   created: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
   done: z.union([ z.coerce.date(),z.lazy(() => NullableDateTimeFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  priority: z.union([ z.lazy(() => PriorityLevelSchema),z.lazy(() => EnumPriorityLevelFieldUpdateOperationsInputSchema) ]).optional(),
   order: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
   due: z.union([ z.coerce.date(),z.lazy(() => NullableDateTimeFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   inWork: z.union([ z.coerce.date(),z.lazy(() => NullableDateTimeFieldUpdateOperationsInputSchema) ]).optional().nullable(),
-  priority: z.lazy(() => PriorityUpdateOneRequiredWithoutTaskNestedInputSchema).optional(),
   parent: z.lazy(() => TaskUpdateOneWithoutChildrenNestedInputSchema).optional(),
   project: z.lazy(() => ProjectUpdateOneRequiredWithoutTasksNestedInputSchema).optional(),
   files: z.lazy(() => FileUpdateManyWithoutTaskNestedInputSchema).optional(),
@@ -3954,7 +3610,7 @@ export const TaskUncheckedUpdateWithoutStatusInputSchema: z.ZodType<Prisma.TaskU
   description: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   created: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
   done: z.union([ z.coerce.date(),z.lazy(() => NullableDateTimeFieldUpdateOperationsInputSchema) ]).optional().nullable(),
-  priorityId: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+  priority: z.union([ z.lazy(() => PriorityLevelSchema),z.lazy(() => EnumPriorityLevelFieldUpdateOperationsInputSchema) ]).optional(),
   parentId: z.union([ z.number().int(),z.lazy(() => NullableIntFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   projectId: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
   order: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
@@ -3971,7 +3627,7 @@ export const TaskUncheckedUpdateManyWithoutStatusInputSchema: z.ZodType<Prisma.T
   description: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   created: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
   done: z.union([ z.coerce.date(),z.lazy(() => NullableDateTimeFieldUpdateOperationsInputSchema) ]).optional().nullable(),
-  priorityId: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
+  priority: z.union([ z.lazy(() => PriorityLevelSchema),z.lazy(() => EnumPriorityLevelFieldUpdateOperationsInputSchema) ]).optional(),
   parentId: z.union([ z.number().int(),z.lazy(() => NullableIntFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   projectId: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
   order: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
@@ -4293,68 +3949,6 @@ export const FileFindUniqueOrThrowArgsSchema: z.ZodType<Prisma.FileFindUniqueOrT
   where: FileWhereUniqueInputSchema,
 }).strict() ;
 
-export const PriorityFindFirstArgsSchema: z.ZodType<Prisma.PriorityFindFirstArgs> = z.object({
-  select: PrioritySelectSchema.optional(),
-  include: PriorityIncludeSchema.optional(),
-  where: PriorityWhereInputSchema.optional(),
-  orderBy: z.union([ PriorityOrderByWithRelationInputSchema.array(),PriorityOrderByWithRelationInputSchema ]).optional(),
-  cursor: PriorityWhereUniqueInputSchema.optional(),
-  take: z.number().optional(),
-  skip: z.number().optional(),
-  distinct: z.union([ PriorityScalarFieldEnumSchema,PriorityScalarFieldEnumSchema.array() ]).optional(),
-}).strict() ;
-
-export const PriorityFindFirstOrThrowArgsSchema: z.ZodType<Prisma.PriorityFindFirstOrThrowArgs> = z.object({
-  select: PrioritySelectSchema.optional(),
-  include: PriorityIncludeSchema.optional(),
-  where: PriorityWhereInputSchema.optional(),
-  orderBy: z.union([ PriorityOrderByWithRelationInputSchema.array(),PriorityOrderByWithRelationInputSchema ]).optional(),
-  cursor: PriorityWhereUniqueInputSchema.optional(),
-  take: z.number().optional(),
-  skip: z.number().optional(),
-  distinct: z.union([ PriorityScalarFieldEnumSchema,PriorityScalarFieldEnumSchema.array() ]).optional(),
-}).strict() ;
-
-export const PriorityFindManyArgsSchema: z.ZodType<Prisma.PriorityFindManyArgs> = z.object({
-  select: PrioritySelectSchema.optional(),
-  include: PriorityIncludeSchema.optional(),
-  where: PriorityWhereInputSchema.optional(),
-  orderBy: z.union([ PriorityOrderByWithRelationInputSchema.array(),PriorityOrderByWithRelationInputSchema ]).optional(),
-  cursor: PriorityWhereUniqueInputSchema.optional(),
-  take: z.number().optional(),
-  skip: z.number().optional(),
-  distinct: z.union([ PriorityScalarFieldEnumSchema,PriorityScalarFieldEnumSchema.array() ]).optional(),
-}).strict() ;
-
-export const PriorityAggregateArgsSchema: z.ZodType<Prisma.PriorityAggregateArgs> = z.object({
-  where: PriorityWhereInputSchema.optional(),
-  orderBy: z.union([ PriorityOrderByWithRelationInputSchema.array(),PriorityOrderByWithRelationInputSchema ]).optional(),
-  cursor: PriorityWhereUniqueInputSchema.optional(),
-  take: z.number().optional(),
-  skip: z.number().optional(),
-}).strict() ;
-
-export const PriorityGroupByArgsSchema: z.ZodType<Prisma.PriorityGroupByArgs> = z.object({
-  where: PriorityWhereInputSchema.optional(),
-  orderBy: z.union([ PriorityOrderByWithAggregationInputSchema.array(),PriorityOrderByWithAggregationInputSchema ]).optional(),
-  by: PriorityScalarFieldEnumSchema.array(),
-  having: PriorityScalarWhereWithAggregatesInputSchema.optional(),
-  take: z.number().optional(),
-  skip: z.number().optional(),
-}).strict() ;
-
-export const PriorityFindUniqueArgsSchema: z.ZodType<Prisma.PriorityFindUniqueArgs> = z.object({
-  select: PrioritySelectSchema.optional(),
-  include: PriorityIncludeSchema.optional(),
-  where: PriorityWhereUniqueInputSchema,
-}).strict() ;
-
-export const PriorityFindUniqueOrThrowArgsSchema: z.ZodType<Prisma.PriorityFindUniqueOrThrowArgs> = z.object({
-  select: PrioritySelectSchema.optional(),
-  include: PriorityIncludeSchema.optional(),
-  where: PriorityWhereUniqueInputSchema,
-}).strict() ;
-
 export const StatusFindFirstArgsSchema: z.ZodType<Prisma.StatusFindFirstArgs> = z.object({
   select: StatusSelectSchema.optional(),
   include: StatusIncludeSchema.optional(),
@@ -4645,52 +4239,6 @@ export const FileUpdateManyArgsSchema: z.ZodType<Prisma.FileUpdateManyArgs> = z.
 
 export const FileDeleteManyArgsSchema: z.ZodType<Prisma.FileDeleteManyArgs> = z.object({
   where: FileWhereInputSchema.optional(),
-}).strict() ;
-
-export const PriorityCreateArgsSchema: z.ZodType<Prisma.PriorityCreateArgs> = z.object({
-  select: PrioritySelectSchema.optional(),
-  include: PriorityIncludeSchema.optional(),
-  data: z.union([ PriorityCreateInputSchema,PriorityUncheckedCreateInputSchema ]),
-}).strict() ;
-
-export const PriorityUpsertArgsSchema: z.ZodType<Prisma.PriorityUpsertArgs> = z.object({
-  select: PrioritySelectSchema.optional(),
-  include: PriorityIncludeSchema.optional(),
-  where: PriorityWhereUniqueInputSchema,
-  create: z.union([ PriorityCreateInputSchema,PriorityUncheckedCreateInputSchema ]),
-  update: z.union([ PriorityUpdateInputSchema,PriorityUncheckedUpdateInputSchema ]),
-}).strict() ;
-
-export const PriorityCreateManyArgsSchema: z.ZodType<Prisma.PriorityCreateManyArgs> = z.object({
-  data: z.union([ PriorityCreateManyInputSchema,PriorityCreateManyInputSchema.array() ]),
-  skipDuplicates: z.boolean().optional(),
-}).strict() ;
-
-export const PriorityCreateManyAndReturnArgsSchema: z.ZodType<Prisma.PriorityCreateManyAndReturnArgs> = z.object({
-  data: z.union([ PriorityCreateManyInputSchema,PriorityCreateManyInputSchema.array() ]),
-  skipDuplicates: z.boolean().optional(),
-}).strict() ;
-
-export const PriorityDeleteArgsSchema: z.ZodType<Prisma.PriorityDeleteArgs> = z.object({
-  select: PrioritySelectSchema.optional(),
-  include: PriorityIncludeSchema.optional(),
-  where: PriorityWhereUniqueInputSchema,
-}).strict() ;
-
-export const PriorityUpdateArgsSchema: z.ZodType<Prisma.PriorityUpdateArgs> = z.object({
-  select: PrioritySelectSchema.optional(),
-  include: PriorityIncludeSchema.optional(),
-  data: z.union([ PriorityUpdateInputSchema,PriorityUncheckedUpdateInputSchema ]),
-  where: PriorityWhereUniqueInputSchema,
-}).strict() ;
-
-export const PriorityUpdateManyArgsSchema: z.ZodType<Prisma.PriorityUpdateManyArgs> = z.object({
-  data: z.union([ PriorityUpdateManyMutationInputSchema,PriorityUncheckedUpdateManyInputSchema ]),
-  where: PriorityWhereInputSchema.optional(),
-}).strict() ;
-
-export const PriorityDeleteManyArgsSchema: z.ZodType<Prisma.PriorityDeleteManyArgs> = z.object({
-  where: PriorityWhereInputSchema.optional(),
 }).strict() ;
 
 export const StatusCreateArgsSchema: z.ZodType<Prisma.StatusCreateArgs> = z.object({

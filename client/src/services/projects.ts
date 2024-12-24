@@ -1,10 +1,10 @@
-import { ProjectType } from '@/types';
+import { PopulatedProjectType, ProjectType } from '@/types';
 import { api } from '@/services/api.ts';
-import { ProjectSchema } from '@/zod-schemas/custom.ts';
+import { ProjectPopulatedSchema } from '@/zod-schemas/custom.ts';
 
 export const projectsApi = api.injectEndpoints({
   endpoints: (builder) => ({
-    getProjects: builder.query<ProjectType[], void>({
+    getProjects: builder.query<PopulatedProjectType[], void>({
       query: () => `projects/`,
       providesTags: (result = []) => [
         ...result.map(({ id }) => ({ type: 'projects', id }) as const),
@@ -19,7 +19,7 @@ export const projectsApi = api.injectEndpoints({
           await cacheDataLoaded;
           const listener = (event: MessageEvent) => {
             const data = JSON.parse(event.data);
-            const parsedData = ProjectSchema.array().safeParse(data);
+            const parsedData = ProjectPopulatedSchema.array().safeParse(data);
 
             if (parsedData.success) {
               updateCachedData((draft) => {

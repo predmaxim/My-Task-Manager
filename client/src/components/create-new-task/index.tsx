@@ -1,18 +1,17 @@
 import { FocusEvent, KeyboardEvent, useState } from 'react';
 import TextareaAutosize from 'react-textarea-autosize';
-import { TASK_STATUSES, TEMP_USER } from '@/constants';
-import { PartialTaskType, TaskStatusType } from '@/types';
+import { PartialTaskType, ProjectType, TaskStatusType } from '@/types';
 import { ButtonWithIcon } from '@/components/button-with-iIcon';
 import styles from './styles.module.scss';
 import { useAppSelector } from '@/lib/store';
 import { useCreateTaskMutation } from '@/services/tasks';
 
 export type CreateNewTaskType = {
-  projectName: string;
+  project: ProjectType;
   taskStatus: TaskStatusType;
 };
 
-export function CreateNewTask({ projectName, taskStatus }: CreateNewTaskType) {
+export function CreateNewTask({ project, taskStatus }: CreateNewTaskType) {
   const { currentProject } = useAppSelector((state) => state.projects);
   const [createTask] = useCreateTaskMutation();
 
@@ -23,15 +22,16 @@ export function CreateNewTask({ projectName, taskStatus }: CreateNewTaskType) {
     if (currentProject) {
       const newTask: PartialTaskType = {
         name: newTaskName,
-        project: projectName,
-        user: TEMP_USER,
-        status: taskStatus,
-        done: taskStatus === TASK_STATUSES.done ? new Date() : undefined,
-        comments: [],
-        created: new Date(),
+        projectId: project.id,
+        statusId: taskStatus.id,
+        done: null,
         priority: 'low',
-        number: currentProject.tasks + 1,
-        index: 0,
+        order: 0,
+        description: '',
+        inWork: null,
+        created: new Date(),
+        due: null,
+        parentId: null,
       };
       createTask(newTask);
       setNewTaskName('');

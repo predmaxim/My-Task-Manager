@@ -1,11 +1,11 @@
-import { TaskStatusType } from '@/types';
+import { ProjectType, TaskStatusPartialType, TaskStatusType } from '@/types';
 import { api } from '@/services/api.ts';
 import { StatusSchema } from '@/zod-schemas/custom';
 
 export const taskStatusesApi = api.injectEndpoints({
   endpoints: (builder) => ({
-    getTaskStatuses: builder.query<TaskStatusType[], void>({
-      query: () => `task-statuses`,
+    getTaskStatuses: builder.query<TaskStatusType[], ProjectType['id']>({
+      query: (projectId) => `task-statuses/${projectId}`,
       providesTags: (result = []) => [
         ...result.map(({ id }) => ({ type: 'task-statuses', id }) as const),
         { type: 'task-statuses' as const, id: 'LIST' },
@@ -43,25 +43,25 @@ export const taskStatusesApi = api.injectEndpoints({
       query: (id) => `task-statuses/${id}`,
       providesTags: (_result, _error, id) => [{ type: 'task-statuses', id }],
     }),
-    createTaskStatus: builder.mutation<TaskStatusType, Pick<TaskStatusType, 'name'>>({
-      query: (body) => ({
+    createTaskStatus: builder.mutation<TaskStatusType, TaskStatusPartialType>({
+      query: (status) => ({
         url: `task-statuses`,
         method: 'POST',
-        body,
+        body: status,
       }),
       invalidatesTags: [{ type: 'task-statuses', id: 'LIST' }],
     }),
     updateTaskStatus: builder.mutation<TaskStatusType, TaskStatusType>({
-      query: (body) => ({
-        url: `task-statuses/${body.id}`,
+      query: (status) => ({
+        url: `task-statuses/${status.id}`,
         method: 'PATCH',
-        body,
+        body: status,
       }),
       invalidatesTags: (_result, _error, { id }) => [{ type: 'task-statuses', id }],
     }),
     deleteTaskStatus: builder.mutation<TaskStatusType['id'], TaskStatusType['id']>({
-      query: (id) => ({
-        url: `task-statuses/${id}`,
+      query: (statusId) => ({
+        url: `task-statuses/${statusId}`,
         method: 'DELETE',
       }),
       invalidatesTags: (_result, _error, id) => [

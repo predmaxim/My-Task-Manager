@@ -46,4 +46,10 @@ export const JwtPayloadSchema = z
   })
   .catchall(z.any());
 
-export const toInt = z.coerce.number().int;
+export const toInt = (value: any) => {
+  const parsed = z.number().int().safeParse(Number(value));
+  if (!parsed.success) {
+    throw new Error("Invalid integer");
+  }
+  return parsed.data;
+};

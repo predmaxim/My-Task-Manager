@@ -2,9 +2,11 @@
 @import "src/assets/mixins";
 
 .Board {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 30px 20px;
+  display: flex;
+  gap: 1rem;
+  overflow-x: auto;
+  height: 100%;
+  padding-bottom: 1rem;
 
   @media screen and (width <=$tablet) {
     grid-template-columns: 1fr;
@@ -14,18 +16,15 @@
     border-radius: $border-radius;
     background: var(--color-light-grey);
     position: relative;
-    height: fit-content;
+    width: 18rem;
 
     &__header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 10px 20px;
+      display: grid;
+      grid-template-areas: "title menuBtn"
+                           "CreateNewTask CreateNewTask";
+      padding: 0.5rem 1rem;
       border-radius: $border-radius $border-radius 0 0;
 
-      .ButtonWithIconWrap {
-        margin-right: -10px;
-      }
 
       @media screen and (width <=$mobile) {
         padding: 10px;
@@ -33,16 +32,24 @@
     }
 
     &__title {
+      grid-area: title;
       font-weight: 700;
       font-size: 1.2rem;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      max-width: calc(100% - 2rem);
     }
 
 
     &__menuBtn {
+      grid-area: menuBtn;
       background: none;
       padding: 0;
-      height: auto;
-      @include button("s");
+      width: fit-content;
+      height: fit-content;
+      margin-right: -0.8rem;
+      margin-left: auto;
 
       &:hover {
         background: none;
@@ -52,14 +59,15 @@
     }
 
     &__CreateNewTask {
-      padding-bottom: 10px;
+      grid-area: CreateNewTask;
+      padding: 1rem 0 0.5rem 0;
     }
 
     &__body {
       display: flex;
       flex-direction: column;
       gap: 10px;
-      padding: 0 10px 15px 10px;
+      padding: 0.5rem 1rem;
       max-height: calc(100vh - 320px);
       overflow-y: auto;
       overflow-x: hidden;

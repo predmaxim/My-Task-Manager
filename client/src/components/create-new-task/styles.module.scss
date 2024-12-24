@@ -2,20 +2,12 @@
 @import "src/assets/mixins";
 
 .CreateNewTask {
-  padding: 0 15px;
   position: relative;
 
   &__newTaskBtn {
 
-    &.ButtonWithIcon {
-      justify-content: flex-start;
-      @include button("s");
-    }
-
-    &:hover {
-      background: none;
-      color: var(--primary-color);
-    }
+    justify-content: flex-start;
+    @include button($size: "l", $color: "secondary");
   }
 
   &__newTaskText {
@@ -37,9 +29,6 @@
     &:focus-visible,
     &:focus-within {
       cursor: auto;
-    }
-
-    &.active {
     }
   }
 }

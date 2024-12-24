@@ -8,6 +8,7 @@
 
   &__btn {
     @include button($size: "xl", $color: "primary");
+    max-width: fit-content;
   }
 }
 
@@ -49,6 +50,7 @@
     padding: 10px;
     font-size: 1rem;
     color: var(--font-color);
+    max-width: fit-content;
 
     @media screen and (width <=$mobile) {
       align-self: auto;
@@ -80,8 +82,9 @@
   }
 
   &__btn {
-    @include button("s", $color: "transparent");
+    @include button($size: "s", $color: "transparent");
     padding: 0.5rem 0.6rem;
+    max-width: fit-content;
 
     &:hover {
       box-shadow: 0 0 0 2px var(--border-color);
