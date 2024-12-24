@@ -54,7 +54,7 @@ export const tasksApi = api.injectEndpoints({
     updateTask: builder.mutation<TaskType, TaskType>({
       query: (body) => ({
         url: `tasks/${body.id}`,
-        method: 'PUT',
+        method: 'PATCH',
         body,
       }),
       invalidatesTags: (_result, _error, { id }) => [{ type: 'tasks', id }],

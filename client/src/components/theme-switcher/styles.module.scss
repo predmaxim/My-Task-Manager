@@ -2,5 +2,5 @@
 @import "src/assets/mixins";
 
 .ThemeSwitcher {
-  @include button($variant: "icon", $color: "secondary", $size: 's');
+  @include button($variant: "icon", $color: "ghost", $size: "x");
 }

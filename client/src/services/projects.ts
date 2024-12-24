@@ -18,7 +18,7 @@ export const projectsApi = api.injectEndpoints({
         try {
           await cacheDataLoaded;
           const listener = (event: MessageEvent) => {
-            const data = JSON.parse(event.data);            
+            const data = JSON.parse(event.data);
             const parsedData = ProjectSchema.array().safeParse(data);
 
             if (parsedData.success) {
@@ -54,7 +54,7 @@ export const projectsApi = api.injectEndpoints({
     updateProject: builder.mutation<ProjectType, ProjectType>({
       query: (body) => ({
         url: `projects/${body.id}`,
-        method: 'PUT',
+        method: 'PATCH',
         body,
       }),
       invalidatesTags: (_result, _error, { id }) => [{ type: 'projects', id }],

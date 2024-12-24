@@ -14,6 +14,7 @@ export const PasswordSchema = z
   .refine((data) => data.length >= 2 && data.length <= 100, {
     message: "Passwords must contain min 2 and max 100 character(s) ",
   });
+
 export const UserWithoutPassSchema = UserSchema.omit({
   password: true,
   created: true,

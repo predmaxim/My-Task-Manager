@@ -6,8 +6,31 @@ import { errorHandler } from "@/utils/error-handler";
 export const getComments = async (req: Request, res: Response) => {
   try {
     // TODO: add pagination, sorting
-    const comments = await prisma.comment.findMany();
-    res.status(200).json({ comments, total: comments.length });
+    const taskId = CommentSchema.shape.taskId.parse(req.params.taskId);
+    const comments = await prisma.comment.findMany({
+      where: { taskId },
+      orderBy: { created: "asc" },
+    });
+    res.status(200).json(comments);
+  } catch (error) {
+    const errorMessage = errorHandler(error);
+    res.status(500).json({ message: errorMessage });
+  }
+};
+
+export const getComment = async (req: Request, res: Response) => {
+  try {
+    const id = CommentSchema.shape.id.parse(req.params.id);
+    const comment = await prisma.comment.findUnique({
+      where: { id },
+    });
+
+    if (!comment) {
+      res.status(404).json({ message: "Comment not found" });
+      return;
+    }
+
+    res.status(200).json(comment);
   } catch (error) {
     const errorMessage = errorHandler(error);
     res.status(500).json({ message: errorMessage });
@@ -16,9 +39,41 @@ export const getComments = async (req: Request, res: Response) => {
 
 export const createComment = async (req: Request, res: Response) => {
   try {
-    const comment = CommentSchema.parse(req.body);
-    const newComment = await prisma.comment.create({ data: comment });
+    const comment = CommentSchema.omit({ id: true, created: true }).parse(
+      req.body,
+    );
+    const newComment = await prisma.comment.create({
+      data: comment,
+    });
     res.status(201).json(newComment);
+  } catch (error) {
+    const errorMessage = errorHandler(error);
+    res.status(500).json({ message: errorMessage });
+  }
+};
+
+export const updateComment = async (req: Request, res: Response) => {
+  try {
+    const id = CommentSchema.shape.id.parse(req.params.id);
+    const comment = CommentSchema.omit({ id: true }).parse(req.body);
+    const updatedComment = await prisma.comment.update({
+      where: { id },
+      data: comment,
+    });
+    res.status(200).json(updatedComment);
+  } catch (error) {
+    const errorMessage = errorHandler(error);
+    res.status(500).json({ message: errorMessage });
+  }
+};
+
+export const deleteComment = async (req: Request, res: Response) => {
+  try {
+    const id = CommentSchema.shape.id.parse(req.params.id);
+    await prisma.comment.delete({
+      where: { id },
+    });
+    res.status(204).end();
   } catch (error) {
     const errorMessage = errorHandler(error);
     res.status(500).json({ message: errorMessage });

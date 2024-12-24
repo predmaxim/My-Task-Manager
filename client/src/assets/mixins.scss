@@ -65,9 +65,18 @@
     border-radius: calc($border-radius / 2);
   }
 
+
   @if $variant== "icon" {
     aspect-ratio: 1;
-    padding: 0.5rem;
+    @if $size== "xl" {
+      padding: 0.8rem;
+    } @else if $size== "x" {
+      padding: 0.6rem;
+    } @else if $size== "l" {
+      padding: 0.5rem;
+    } @else if $size== "s" {
+      padding: 0.2rem;
+    }
   } @else if $variant== "default" {
     aspect-ratio: auto;
   }
@@ -96,13 +105,23 @@
     }
   }
 
+  @if $color== "ghost" {
+    color: var(--font-color);
+    background: none;
+
+    &:hover {
+      color: var(--font-color);
+      background: var(--color-light-grey);
+    }
+  }
+
   @if $color== "transparent" {
     color: var(--font-color);
     background: none;
 
     &:hover {
       color: var(--font-color);
-      background: none;      
+      background: none;
     }
   }
 

@@ -13,6 +13,10 @@ export const getProjects: RequestHandler = async (
     const user = UserWithoutPassSchema.parse(req.user);
     const projects = await prisma.project.findMany({
       where: { userId: user.id },
+      include: {
+        tasks: true,
+        statuses: true,
+      },
     });
 
     res.status(200).json(projects);
@@ -32,6 +36,10 @@ export const getProject: RequestHandler = async (
 
     const project = await prisma.project.findFirst({
       where: { slug, userId: user.id },
+      include: {
+        tasks: true,
+        statuses: true,
+      },
     });
 
     if (!project) {
@@ -66,6 +74,10 @@ export const createProject: RequestHandler = async (
 
     const newProject = await prisma.project.create({
       data: { ...project, userId: user.id, slug: slugify(project.name) },
+      include: {
+        tasks: true,
+        statuses: true,
+      },
     });
 
     res.status(201).json(newProject);
@@ -105,10 +117,10 @@ export const updateProject: RequestHandler = async (
   res: Response,
 ) => {
   try {
-    const user = UserWithoutPassSchema.parse(req.user);
-    const project = ProjectSchema.parse(req.body);
-    const existProject = await prisma.project.findFirst({
-      where: { id: project.id, userId: user.id },
+    const id = ProjectSchema.shape.id.parse(req.params.id);
+    const project = ProjectSchema.omit({ id: true }).parse(req.body);
+    const existProject = await prisma.project.findUnique({
+      where: { id },
     });
 
     if (!existProject) {
@@ -117,8 +129,12 @@ export const updateProject: RequestHandler = async (
     }
 
     const updatedProject = await prisma.project.update({
-      where: { id: project.id, userId: user.id },
-      data: req.body,
+      where: { id },
+      data: project,
+      include: {
+        tasks: true,
+        statuses: true,
+      },
     });
 
     res.status(200).json(updatedProject);

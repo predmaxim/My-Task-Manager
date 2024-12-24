@@ -31,7 +31,4 @@ export const {
   setCurrentProject,
   setProjects,
 } = projectsSlice.actions;
-
-// export const selectProjects = (state: RootState) => state.project.projects as ProjectState;
-
 export default projectsSlice.reducer;

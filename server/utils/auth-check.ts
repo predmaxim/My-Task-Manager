@@ -7,33 +7,35 @@ import { z } from "zod";
 import { prisma } from "@/lib/prisma-client";
 import { isTokenExpired } from "@/utils/helpers";
 
+const skipFilter = ["/api/auth/login", "/api/auth/register"];
+
 export const authCheck = async (
   req: Request,
   res: Response,
   next: NextFunction,
 ) => {
-  if (req.path === "/api/auth/login" || req.path === "/api/auth/register") {
-    return next();
-  }
-
-  if (req.path === "/api/auth/refresh") {
-    const refresh_token: string | undefined = req.cookies[TOKEN_COOKIE_NAME];
-
-    if (!refresh_token) {
-      res.status(401).json({ message: "Forbidden! No refresh token found!" });
-      return;
-    }
-
-    if (isTokenExpired(refresh_token)) {
-      res.clearCookie(TOKEN_COOKIE_NAME);
-      res.status(401).json({ message: "Refresh token expired" });
-      return;
-    }
-
-    return next();
-  }
-
   try {
+    if (skipFilter.includes(req.path)) {
+      return next();
+    }
+
+    if (req.path === "/api/auth/refresh") {
+      const refresh_token: string | undefined = req.cookies[TOKEN_COOKIE_NAME];
+
+      if (!refresh_token) {
+        res.status(401).json({ message: "Forbidden! No refresh token found!" });
+        return;
+      }
+
+      if (isTokenExpired(refresh_token)) {
+        res.clearCookie(TOKEN_COOKIE_NAME);
+        res.status(401).json({ message: "Refresh token expired" });
+        return;
+      }
+
+      return next();
+    }
+
     const access_token = req.headers.authorization?.split(" ")[1];
 
     if (!access_token) {
@@ -47,6 +49,7 @@ export const authCheck = async (
 
     const user = await prisma.user.findUnique({
       where: { id: decoded_access_token.id },
+      include: { projects: true },
     });
 
     if (!user) {

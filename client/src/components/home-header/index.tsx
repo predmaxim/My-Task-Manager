@@ -7,14 +7,15 @@ import { useAppSelector } from '@/lib/store.ts';
 import { ThemeSwitcher } from '../theme-switcher';
 import { CurrentProjectButton } from '../current-project-button';
 import { ProfileButton } from '../profile-button';
-import { Menu } from '@/components/menu';
 
 export function HomeHeader() {
   const theme = useAppSelector((state) => state.theme.theme);
   return (
     <header className={styles.HomeHeader}>
       <div className={`${styles.container} container`}>
-        <div className={styles.leftSide}></div>
+        <div className={styles.leftSide}>
+          <ThemeSwitcher />
+        </div>
         <Link to={ROUTES.home}>
           <img
             src={theme === 'light' ? logoVertical : logoVerticalWhite}
@@ -25,15 +26,8 @@ export function HomeHeader() {
           />
         </Link>
         <div className={styles.rightSide}>
-          <ThemeSwitcher />
           <CurrentProjectButton />
           <ProfileButton />
-          <Menu className={styles.menu} />
-          {/*<ButtonWithIcon*/}
-          {/*  className={styles.CurrentProjectBtn}*/}
-          {/*  icon="PiUserFill"*/}
-          {/*  onClick={onClickCurrentProjectBtn}*/}
-          {/*/>*/}
         </div>
       </div>
     </header>

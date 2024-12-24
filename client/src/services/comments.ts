@@ -54,7 +54,7 @@ export const commentsApi = api.injectEndpoints({
     updateComment: builder.mutation<CommentType, CommentType>({
       query: (body) => ({
         url: `comments/${body.id}`,
-        method: 'PUT',
+        method: 'PATCH',
         body,
       }),
       invalidatesTags: (_result, _error, { id }) => [{ type: 'comments', id }],
