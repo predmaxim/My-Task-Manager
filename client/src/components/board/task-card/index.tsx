@@ -6,10 +6,10 @@ import { Task } from '@/components/task';
 
 type TaskCardProps = {
   task: TaskType;
-  columnId: TaskStatusType['id'];
+  statusId: TaskStatusType['id'];
 }
 
-export function TaskCard({ task, columnId }: TaskCardProps) {
+export function TaskCard({ task, statusId }: TaskCardProps) {
   const {
     attributes,
     listeners,
@@ -22,7 +22,7 @@ export function TaskCard({ task, columnId }: TaskCardProps) {
     data: {
       type: 'task',
       task,
-      columnId,
+      statusId,
     },
   });
 

@@ -17,8 +17,6 @@ export {
   UserSchema,
 };
 
-export const TaskStatusPartialSchema = StatusSchema.partial({ id: true });
-
 export const TaskPopulatedSchema = TaskSchema.extend({
   status: StatusSchema,
   parent: z.lazy(() => TaskSchema),
@@ -33,6 +31,11 @@ export const ProjectPopulatedSchema = ProjectSchema.extend({
   tasks: TaskSchema.array(),
 });
 
+export const TaskStatusPartialSchema = StatusSchema.partial({ id: true });
+export const TaskStatusPopulatedSchema = TaskStatusPartialSchema.extend({
+  tasks: TaskSchema.array().optional(),
+});
+export const TaskStatusPopulatedPartialSchema = TaskStatusPopulatedSchema.partial({ id: true });
 
 // TODO: change min password length to 6 characters in PasswordSchema
 export const PasswordSchema = z.string().refine(data => data.length >= 2 && data.length <= 100, { message: 'Passwords must contain min 2 and max 100 character(s) ' });

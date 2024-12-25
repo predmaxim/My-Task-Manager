@@ -1,4 +1,4 @@
-import { ProjectType, TaskStatusPartialType, TaskStatusPopulatedSchema, TaskStatusType } from '@/types';
+import { ProjectType, TaskStatusPartialType, TaskStatusPopulatedPartialType, TaskStatusType } from '@/types';
 import { api } from '@/services/api.ts';
 
 export const taskStatusesApi = api.injectEndpoints({
@@ -8,39 +8,11 @@ export const taskStatusesApi = api.injectEndpoints({
       providesTags: (result) =>
         result
           ? [
-              ...result.map(({ id }) => ({ type: 'task-statuses', id } as const)),
-              ...result.flatMap(status => status.tasks.map(task => ({ type: 'tasks', id: task.id } as const))),
-              { type: 'task-statuses', id: 'LIST' },
-            ]
+            ...result.map(({ id }) => ({ type: 'task-statuses', id } as const)),
+            ...result.flatMap(status => status.tasks.map(task => ({ type: 'tasks', id: task.id } as const))),
+            { type: 'task-statuses', id: 'LIST' },
+          ]
           : [{ type: 'task-statuses', id: 'LIST' }],
-      async onCacheEntryAdded(
-        _arg,
-        { updateCachedData, cacheDataLoaded, cacheEntryRemoved },
-      ) {
-        const ws = new WebSocket(`ws://localhost:5173`);
-        try {
-          await cacheDataLoaded;
-          const listener = (event: MessageEvent) => {
-            const data = JSON.parse(event.data);
-            const parsedData = TaskStatusPopulatedSchema.array().safeParse(data);
-
-            if (parsedData.success) {
-              updateCachedData((draft) => {
-                draft.push(...parsedData.data);
-              });
-            }
-          };
-
-          ws.addEventListener('message', listener);
-        } catch {
-          // no-op in case `cacheEntryRemoved` resolves before `cacheDataLoaded`,
-          // in which case `cacheDataLoaded` will throw
-        }
-        // cacheEntryRemoved will resolve when the cache subscription is no longer active
-        await cacheEntryRemoved;
-        // perform cleanup steps once the `cacheEntryRemoved` promise resolves
-        ws.close();
-      },
     }),
     getTaskStatus: builder.query<TaskStatusType, TaskStatusType['id']>({
       query: (id) => `task-statuses/${id}`,
@@ -54,13 +26,13 @@ export const taskStatusesApi = api.injectEndpoints({
       }),
       invalidatesTags: [{ type: 'task-statuses', id: 'LIST' }],
     }),
-    updateTaskStatus: builder.mutation<TaskStatusType, TaskStatusType>({
+    updateTaskStatus: builder.mutation<TaskStatusType, TaskStatusPopulatedPartialType>({
       query: (status) => ({
         url: `task-statuses/${status.id}`,
         method: 'PATCH',
         body: status,
       }),
-      invalidatesTags: (_result, _error, { id }) => [{ type: 'task-statuses', id }],
+      invalidatesTags: (_result, _error, { id }) => [{ type: 'task-statuses', id }, { type: 'tasks', id: 'LIST' }],
     }),
     updateTaskStatuses: builder.mutation<void, TaskStatusType[]>({
       query: (statuses) => ({
@@ -68,7 +40,7 @@ export const taskStatusesApi = api.injectEndpoints({
         method: 'PUT',
         body: statuses,
       }),
-      invalidatesTags: [{ type: 'task-statuses', id: 'LIST' }],
+      invalidatesTags: [{ type: 'task-statuses', id: 'LIST' }, { type: 'tasks', id: 'LIST' }],
     }),
     deleteTaskStatus: builder.mutation<TaskStatusType['id'], TaskStatusType['id']>({
       query: (statusId) => ({

@@ -66,7 +66,7 @@ export function TaskStatus({ status }: TaskStatusProps) {
             <TaskCard
               key={task.id}
               task={task}
-              columnId={status.id}
+              statusId={status.id}
             />
           ))}
         </SortableContext>

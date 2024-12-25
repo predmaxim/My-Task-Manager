@@ -1,9 +1,9 @@
 import type { PayloadAction } from '@reduxjs/toolkit';
 import { createSlice } from '@reduxjs/toolkit';
-import { PopulatedTaskType } from '@/types';
+import { TaskType } from '@/types';
 
 interface TaskState {
-  tasks: PopulatedTaskType[] | null;
+  tasks: TaskType[] | null;
   isLoading: boolean;
 }
 
@@ -16,7 +16,7 @@ export const tasksSlice = createSlice({
   name: 'tasks',
   initialState,
   reducers: {
-    setTasks: (state, action: PayloadAction<PopulatedTaskType[]>) => {
+    setTasks: (state, action: PayloadAction<TaskType[]>) => {
       state.tasks = action.payload;
     },
   },

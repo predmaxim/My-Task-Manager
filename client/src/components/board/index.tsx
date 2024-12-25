@@ -10,6 +10,7 @@ import { Loading } from '@/components/layout/loading';
 import { useGetTaskStatusesQuery, useUpdateTaskStatusesMutation } from '@/services/task-statuses-service.ts';
 import { useAppDispatch, useAppSelector } from '@/lib/store.ts';
 import { setTaskStatuses } from '@/lib/features/task-statuses-slice';
+import { setTasks } from '@/lib/features/tasks-slice';
 import styles from './styles.module.scss';
 
 type BoardProps = {
@@ -25,7 +26,6 @@ const groupTasksByStatus = (statuses: TaskStatusType[], searchQuery: string): Ta
   const grouped = statuses.map((status) => ({
     ...status,
     tasks: status.tasks.filter(task =>
-      // task.statusId === status.id &&
       (task.name.match(query) || task.id.toString().match(query)))
       .sort((a, b) => a.order - b.order),
   })).sort((a, b) => a.order - b.order);
@@ -69,7 +69,7 @@ export function Board({ projectId }: BoardProps) {
       over.data.current?.type === 'status'
     ) {
       const task = active.data.current.task;
-      const newStatusId = over.data.current.statusId;
+      const newStatusId = over.data.current.status.id;
       if (task.statusId !== newStatusId) {
         updateTask({
           ...task,
@@ -107,15 +107,15 @@ export function Board({ projectId }: BoardProps) {
     }
 
     if (active.data.current?.type === 'task') {
-      const oldColumnIndex = statuses.findIndex(status => status.id === active.data.current?.columnId);
-      const newColumnIndex = statuses.findIndex(status => status.id === over.data.current?.columnId);
+      const oldStatusIndex = statuses.findIndex(status => status.id === active.data.current?.statusId);
+      const newStatusIndex = statuses.findIndex(status => status.id === over.data.current?.statusId);
 
-      if (oldColumnIndex === -1 || newColumnIndex === -1) {
+      if (oldStatusIndex === -1 || newStatusIndex === -1) {
         return;
       }
 
-      const oldTaskIndex = statuses[oldColumnIndex].tasks.findIndex(task => task.id === active.id);
-      const newTaskIndex = statuses[newColumnIndex].tasks.findIndex(task => task.id === over.id);
+      const oldTaskIndex = statuses[oldStatusIndex].tasks.findIndex(task => task.id === active.id);
+      const newTaskIndex = over.id ? statuses[newStatusIndex].tasks.findIndex(task => task.id === over.id) : statuses[newStatusIndex].tasks.length;
 
       if (oldTaskIndex === -1) {
         return;
@@ -126,31 +126,40 @@ export function Board({ projectId }: BoardProps) {
         tasks: status.tasks.slice(),
       }));
 
-      const [movedTask] = newStatuses[oldColumnIndex].tasks.splice(oldTaskIndex, 1);
+      const [movedTask] = newStatuses[oldStatusIndex].tasks.splice(oldTaskIndex, 1);
 
-      if (oldColumnIndex === newColumnIndex) {
-        newStatuses[newColumnIndex].tasks.splice(newTaskIndex, 0, movedTask);
-      } else {
-        newStatuses[newColumnIndex].tasks.splice(newTaskIndex, 0, {
-          ...movedTask,
-          statusId: newStatuses[newColumnIndex].id,
-        });
-      }
+      newStatuses[newStatusIndex].tasks.splice(newTaskIndex, 0, {
+        ...movedTask,
+        statusId: newStatuses[newStatusIndex].id,
+      });
 
-      newStatuses[oldColumnIndex].tasks = newStatuses[oldColumnIndex].tasks.map((task, index) => ({
+      newStatuses[oldStatusIndex].tasks = newStatuses[oldStatusIndex].tasks.map((task, index) => ({
         ...task,
         order: index,
       }));
 
-      newStatuses[newColumnIndex].tasks = newStatuses[newColumnIndex].tasks.map((task, index) => ({
+      newStatuses[newStatusIndex].tasks = newStatuses[newStatusIndex].tasks.map((task, index) => ({
         ...task,
         order: index,
       }));
 
       dispatch(setTaskStatuses(newStatuses));
-      await updateTaskStatuses(newStatuses);
+      await updateTaskStatuses(newStatuses.map(status => ({
+        ...status,
+        tasks: status.tasks.map(task => ({
+          ...task,
+          statusId: status.id,
+        })),
+      })));
+      await updateTask({
+        ...movedTask,
+        statusId: newStatuses[newStatusIndex].id,
+        order: newTaskIndex,
+      });
+
+      dispatch(setTasks(newStatuses.flatMap(status => status.tasks)));
     }
-  }, [dispatch, statuses, updateTaskStatuses]);
+  }, [dispatch, statuses, updateTask, updateTaskStatuses]);
 
   if (isTaskStatusesLoading) {
     return <Loading />;
@@ -160,6 +169,8 @@ export function Board({ projectId }: BoardProps) {
     return <AddNewStatus projectId={projectId} />;
   }
 
+  const allTaskIds = statuses.flatMap(status => status.tasks.map(task => task.id));
+
   return (
     <DndContext
       sensors={sensors}
@@ -167,7 +178,7 @@ export function Board({ projectId }: BoardProps) {
       onDragOver={handleDragOver}
       modifiers={[restrictToParentElement]}
     >
-      <SortableContext items={statuses.map(status => status.id)} strategy={rectSortingStrategy}>
+      <SortableContext items={allTaskIds} strategy={rectSortingStrategy}>
         <div className={styles.Board}>
           {statuses.map(status => (
             <TaskStatus key={status.id} status={status} />
