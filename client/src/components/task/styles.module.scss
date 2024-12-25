@@ -7,14 +7,15 @@
   border-radius: $border-radius;
   cursor: pointer;
   position: relative;
-  min-height: 24px;
+  min-height: 1.5rem;
   flex: none;
 
   &__header {
     display: flex;
     gap: 0 0.5rem;
-    align-items: flex-start;
     line-height: 1.5;
+    justify-content: space-between;
+    align-items: center;
   }
 
   &__footer {
@@ -74,11 +75,12 @@
   .TaskNameWrap {
     flex: 1;
 
-    .ButtonWithIconWrap {
-      display: inline-block;
-      position: absolute;
-      margin-top: 1px;
-    }
+  }
+
+  .editBtn {
+    display: inline-block;
+    position: absolute;
+    margin-top: 1px;
   }
 
 
@@ -92,47 +94,31 @@
     padding: 3px 0 0 6px;
     overflow-wrap: anywhere;
     transition: $transition;
-    line-height: 1.5;
+    line-height: 1.2;
     overflow: hidden;
     white-space: nowrap;
     text-overflow: ellipsis;
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
-  }
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
 
-  &:hover {
-    .button {
+    &:hover .Task__editBtn {
       opacity: 1;
     }
   }
 
-  &__menuBtn.button,
-  &__editBtn.button {
-    @include button("s");
-
-    .ButtonWithIcon__icon {
-      font-size: 1rem;
-    }
-  }
-
-  &__menuBtn.button {
-    padding: 2px;
-
-    .ButtonWithIcon__icon {
-      font-size: 1.2rem;
-    }
-  }
-
-  &__editBtn.button {
+  &__editBtn {
+    font-size: 1.2rem;
     opacity: 0;
     gap: 0;
-    padding: 0 5px;
+    padding: 0 0.5rem;
+  }
 
-    &:hover {
-      color: var(--primary-color);
-    }
 
+  &__menuBtn,
+  &__editBtn {
+    @include button($size: "s", $variant: "icon", $color: "transparent");
+    width: fit-content;
   }
 
   &__data {
