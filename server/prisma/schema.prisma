@@ -89,4 +89,5 @@ model Status {
   tasks     Task[]  @relation("TaskToStatus")
   projectId Int
   project   Project @relation(fields: [projectId], references: [id])
+  order     Int     @default(0)
 }

@@ -1,21 +1,21 @@
-import { ButtonWithIcon } from '@/components/button-with-iIcon';
-import { Modal } from '@/components/modal';
-import { TaskContent } from '@/components/task-content';
+import { ButtonWithIcon } from '@/components/ui/button-with-iIcon';
+import { Modal } from '@/components/ui/modal';
+import { TaskContent } from '@/components/task/task-content';
 import { ChangeEvent, KeyboardEvent, MouseEvent, useState } from 'react';
 import { createPortal } from 'react-dom';
 import TextareaAutosize from 'react-textarea-autosize';
-import { formatDate } from '@/utils/helpers';
-import { MenuActionType, PopulatedTaskType } from '@/types';
-import { PopupMenu } from '@/components/popup-menu';
+import { formatDate } from '@/utils/helpers.ts';
+import { MenuActionType, TaskType } from '@/types';
+import { PopupMenu } from '@/components/ui/popup-menu';
 import styles from './styles.module.scss';
-import { useDeleteTaskMutation, useUpdateTaskMutation } from '@/services/tasks';
+import { useDeleteTaskMutation, useUpdateTaskMutation } from '@/services/tasks-service.ts';
 
 export type TaskProps = {
-  task: PopulatedTaskType
+  task: TaskType
 };
 
 export function Task({ task: initialTask }: TaskProps) {
-  const [task, setTask] = useState<PopulatedTaskType>(initialTask);
+  const [task, setTask] = useState<TaskType>(initialTask);
   const [showModal, setShowModal] = useState(false);
   const [isEdit, setIsEdit] = useState(false);
   const [isMenuActive, setIsMenuActive] = useState(false);
@@ -23,8 +23,8 @@ export function Task({ task: initialTask }: TaskProps) {
   const [updateTask] = useUpdateTaskMutation();
   const [deleteTask] = useDeleteTaskMutation();
 
-  const updateTaskHandler = (taskFieldsToUpdate: Partial<PopulatedTaskType>) => {
-    const updatedTask: PopulatedTaskType = {
+  const updateTaskHandler = (taskFieldsToUpdate: Partial<TaskType>) => {
+    const updatedTask: TaskType = {
       ...task,
       ...taskFieldsToUpdate,
     };
@@ -62,7 +62,10 @@ export function Task({ task: initialTask }: TaskProps) {
   };
 
   const onBlurTaskName = () => {
-    updateTaskHandler({ name: task.name.trim() ? task.name.trim() : initialTask.name });
+    const name = task.name.trim() || initialTask.name;
+    if (initialTask.name !== name) {
+      updateTaskHandler({ name });
+    }
     setIsEdit(false);
   };
 
@@ -78,7 +81,7 @@ export function Task({ task: initialTask }: TaskProps) {
     }
   };
 
-  const onSubmitForm = (updatedTask: Partial<PopulatedTaskType>) => {
+  const onSubmitForm = (updatedTask: Partial<TaskType>) => {
     updateTaskHandler({ ...task, ...updatedTask });
     setShowModal(false);
   };
@@ -98,7 +101,7 @@ export function Task({ task: initialTask }: TaskProps) {
 
   const actions: MenuActionType[] = [
     {
-      name: 'edit',
+      name: 'edit', 
       action: editTask,
       icon: 'RiPencilLine',
     },
@@ -162,7 +165,7 @@ export function Task({ task: initialTask }: TaskProps) {
           />
         </div>
         {(!!task.due || !!task.done) &&
-          <div className={styles.Task_footer}>
+          <div className={styles.Task__footer}>
             {task.due &&
               <div className={styles.Task__due}>
                 <div className={styles.due}>

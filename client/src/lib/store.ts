@@ -6,6 +6,7 @@ import authReducer from '@/lib/features/auth-slice.ts';
 import commentsReducer from '@/lib/features/comments-slice';
 import searchReducer from '@/lib/features/search-slice';
 import themeReducer from '@/lib/features/theme-slice';
+import taskStatuses from '@/lib/features/task-statuses-slice';
 import { FLUSH, PAUSE, PERSIST, persistReducer, persistStore, PURGE, REGISTER, REHYDRATE } from 'redux-persist';
 import storage from 'redux-persist/lib/storage';
 import { api } from '@/services/api';
@@ -33,6 +34,7 @@ const store = configureStore({
     tasks: tasksReducer,
     comments: commentsReducer,
     search: searchReducer,
+    statuses: taskStatuses,
     [api.reducerPath]: api.reducer,
   },
   devTools: process.env.NODE_ENV !== 'production',

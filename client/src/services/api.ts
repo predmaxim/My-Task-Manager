@@ -22,7 +22,7 @@ const baseQueryWithReauth: BaseQueryFn<string | FetchArgs, unknown, FetchBaseQue
   if (result.error?.status === 401) {
     const refreshResult = await baseQuery('/auth/refresh', api, extraOptions);
 
-    const authData = AuthSchema.safeParse(refreshResult);
+    const authData = AuthSchema.safeParse(refreshResult.data);
 
     if (authData.success) {
       api.dispatch(setAuthData(authData.data));

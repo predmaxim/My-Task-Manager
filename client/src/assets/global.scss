@@ -211,3 +211,11 @@ textarea {
     color: var(--font-color);
   }
 }
+
+.handle {
+  cursor: grab;
+}
+
+.handle:active {
+  cursor: grabbing;
+}

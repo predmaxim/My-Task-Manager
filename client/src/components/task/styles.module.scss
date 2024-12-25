@@ -3,7 +3,7 @@
 
 .Task {
   background: var(--color-light-grey-darker);
-  padding: 10px 5px 10px 10px;
+  padding: 0.5rem 0.2rem 0.5rem 0.5rem;
   border-radius: $border-radius;
   cursor: pointer;
   position: relative;
@@ -12,7 +12,7 @@
 
   &__header {
     display: flex;
-    gap: 0 0.5rem;
+    gap: 0 0.2rem;
     line-height: 1.5;
     justify-content: space-between;
     align-items: center;
@@ -20,12 +20,12 @@
 
   &__footer {
     display: flex;
-    gap: 0 10px;
+    gap: 0 1rem;
     flex-wrap: wrap;
-    font-size: 0.8rem;
+    font-size: 0.9rem;
     color: var(--font-color-dimmed);
-    margin: 5px 0 0 32px;
-    line-height: 1.5;
+    margin: 0.5rem 0.5rem 0 0;
+    justify-content: space-between;
   }
 
   .mce-content-body {
@@ -92,12 +92,8 @@
 
   &__name {
     padding: 3px 0 0 6px;
-    overflow-wrap: anywhere;
-    transition: $transition;
+    transition: 150ms;
     line-height: 1.2;
-    overflow: hidden;
-    white-space: nowrap;
-    text-overflow: ellipsis;
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -121,8 +117,7 @@
     width: fit-content;
   }
 
-  &__data {
-  }
+  &__data {}
 
   &__due {
 
@@ -135,8 +130,7 @@
         font-weight: 700;
       }
 
-      &__date {
-      }
+      &__date {}
     }
   }
 
@@ -149,8 +143,7 @@
         font-weight: 700;
       }
 
-      &__date {
-      }
+      &__date {}
     }
   }
 }

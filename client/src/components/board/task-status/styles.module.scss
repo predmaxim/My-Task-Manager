@@ -1,0 +1,78 @@
+@import "src/assets/mixins";
+@import "src/assets/vars";
+
+$width: 20rem;
+
+.column {
+  border-radius: $border-radius;
+  background: var(--color-light-grey);
+  position: relative;
+  min-width: $width;
+  width: $width;
+  padding: 0.5rem 0.5rem 0.5rem 1rem;
+
+  &.dragging {
+    z-index: 1000;
+  }
+
+  &__header {
+    display: grid;
+    grid-template-areas: "title menuBtn";
+    padding: 0.5rem 0.5rem 0.5rem 0;
+    margin-bottom: 0.5rem;
+    border-radius: $border-radius $border-radius 0 0;
+
+
+    @media screen and (width <=$mobile) {
+      padding: 10px;
+    }
+  }
+
+  &__title {
+    grid-area: title;
+    font-weight: 700;
+    font-size: 1.2rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    max-width: calc(100% - 2rem);
+    margin-bottom: 0;
+  }
+
+
+  &__menuBtn {
+    grid-area: menuBtn;
+    background: none;
+    padding: 0;
+    width: fit-content;
+    height: fit-content;
+    margin-right: -0.5rem;
+    margin-left: auto;
+
+    &:hover {
+      background: none;
+      padding: 0;
+      color: var(--primary-color);
+    }
+  }
+
+  &__body {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    max-height: calc(100vh - 24rem);
+    overflow-y: auto;
+    overflow-x: hidden;
+    margin-top: 1.5rem;
+    padding-right: 0.5rem;
+    @include scrollbar;
+
+    @media screen and (width <=$tablet) {
+      max-height: fit-content;
+    }
+
+    @media screen and (width <=$mobile) {
+      padding: 0.5rem;
+    }
+  }
+}

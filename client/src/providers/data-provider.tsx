@@ -1,8 +1,8 @@
 import { ReactNode, useEffect } from 'react';
 import { useAppDispatch, useAppSelector } from '@/lib/store';
-import { useGetProjectsQuery } from '@/services/projects.ts';
+import { useGetProjectsQuery } from '@/services/projects-service.ts';
 import { setProjects } from '@/lib/features/projects-slice.ts';
-import { Loading } from '@/components/loading';
+import { Loading } from '@/components/layout/loading';
 
 export const DataProvider = ({ children }: { children: ReactNode }) => {
   const dispatch = useAppDispatch();

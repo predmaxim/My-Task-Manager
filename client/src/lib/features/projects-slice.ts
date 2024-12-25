@@ -1,10 +1,10 @@
 import type { PayloadAction } from '@reduxjs/toolkit';
 import { createSlice } from '@reduxjs/toolkit';
-import { PopulatedProjectType } from '@/types';
+import { ProjectType } from '@/types';
 
 interface ProjectState {
-  projects: PopulatedProjectType[] | null;
-  currentProject: PopulatedProjectType | null;
+  projects: ProjectType[] | null;
+  currentProject: ProjectType | null;
   isLoading: boolean;
 }
 
@@ -18,10 +18,10 @@ export const projectsSlice = createSlice({
   name: 'projects',
   initialState,
   reducers: {
-    setCurrentProject: (state, action: PayloadAction<PopulatedProjectType['id']>) => {
+    setCurrentProject: (state, action: PayloadAction<ProjectType['id']>) => {
       state.currentProject = state.projects?.find((project) => project.id === action.payload) || null;
     },
-    setProjects: (state, action: PayloadAction<PopulatedProjectType[]>) => {
+    setProjects: (state, action: PayloadAction<ProjectType[]>) => {
       state.projects = action.payload;
     },
   },

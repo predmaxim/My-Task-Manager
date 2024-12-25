@@ -1,9 +1,9 @@
 import { ChangeEvent } from 'react';
-import { ButtonWithIcon } from '@/components/button-with-iIcon';
+import { ButtonWithIcon } from '@/components/ui/button-with-iIcon';
 import { useAppDispatch, useAppSelector } from '@/lib/store';
 import styles from './styles.module.scss';
 import { setSearch } from '@/lib/features/search-slice';
-import Input from '@/components/input';
+import Input from '@/components/ui/input';
 
 export type SearchProps = {
   className?: string;

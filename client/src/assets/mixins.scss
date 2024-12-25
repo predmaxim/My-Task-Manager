@@ -2,118 +2,141 @@
 
 // Media queries
 @mixin desktop {
-  @media only screen and (width <= $desktop) {
+  @media only screen and (width <=$desktop) {
     @content;
   }
 }
 
 @mixin tablet {
-  @media only screen and (width <= $tablet) {
+  @media only screen and (width <=$tablet) {
     @content;
   }
 }
 
 @mixin mobile {
-  @media only screen and (width <= $mobile) {
+  @media only screen and (width <=$mobile) {
     @content;
   }
 }
 
 // animation
 @mixin fade($type) {
-  @if $type== "hide" {
+  @if $type=="hide" {
     visibility: hidden;
     opacity: 0;
     transition: visibility 1s, opacity 1s;
-  } @else if $type== "show" {
+  }
+
+  @else if $type=="show" {
     visibility: visible;
     opacity: 1;
     transition: visibility 1s, opacity 1s;
   }
 }
 
-@mixin button(
-  $size: "xl",
+@mixin button($size: "xl",
   $color: "primary",
   $variant: "default"
+
 ) {
   //font-size: $base-font;
   background: var(--button-primary-bg);
   font-size: .9rem;
 
-  &:hover {
+  &:hover:not(:disabled) {
     background: var(--button-primary-bg-hover);
   }
 
-  @if $size== "xl" {
+  &:disabled,
+  &[disabled] {
+    cursor: not-allowed;
+    opacity: 0.5;
+  }
+
+  @if $size=="xl" {
     padding: 0.8rem 2rem;
     font-size: medium;
     border-radius: $border-radius;
-  } @else if $size== "x" {
+  }
+
+  @else if $size=="x" {
     padding: 0.6rem 1.7rem;
     font-size: medium;
     border-radius: $border-radius;
-  } @else if $size== "l" {
+  }
+
+  @else if $size=="l" {
     padding: 0.5rem 1.5rem;
     font-size: small;
     border-radius: calc($border-radius / 1.5);
-  } @else if $size== "s" {
+  }
+
+  @else if $size=="s" {
     padding: 0.2rem 1rem;
     font-size: small;
     border-radius: calc($border-radius / 2);
   }
 
 
-  @if $variant== "icon" {
+  @if $variant=="icon" {
     aspect-ratio: 1;
-    @if $size== "xl" {
+
+    @if $size=="xl" {
       padding: 0.8rem;
-    } @else if $size== "x" {
+    }
+
+    @else if $size=="x" {
       padding: 0.6rem;
-    } @else if $size== "l" {
+    }
+
+    @else if $size=="l" {
       padding: 0.5rem;
-    } @else if $size== "s" {
+    }
+
+    @else if $size=="s" {
       padding: 0.2rem;
     }
-  } @else if $variant== "default" {
+  }
+
+  @else if $variant=="default" {
     aspect-ratio: auto;
   }
 
-  @if $color== "primary" {
+  @if $color=="primary" {
     background: var(--button-primary-bg);
     color: var(--button-secondary-color);
 
-    &:hover {
+    &:hover:not(:disabled) {
       background: var(--button-primary-bg-hover);
       color: var(--button-secondary-color);
     }
   }
 
-  @if $color== "secondary" {
+  @if $color=="secondary" {
     background: var(--button-secondary-bg);
     color: var(--button-secondary-color);
 
-    &:hover {
+    &:hover:not(:disabled) {
       background: var(--button-secondary-bg-hover);
       color: var(--button-secondary-color);
     }
   }
 
-  @if $color== "ghost" {
+  @if $color=="ghost" {
     color: var(--font-color);
     background: none;
 
-    &:hover {
+    &:hover:not(:disabled) {
       color: var(--font-color);
       background: var(--color-light-grey);
     }
   }
 
-  @if $color== "transparent" {
+  @if $color=="transparent" {
     color: var(--font-color);
     background: none;
 
-    &:hover {
+    &:hover:not(:disabled) {
       color: var(--font-color);
       background: none;
     }
@@ -155,15 +178,19 @@
   &.placeholder {
     @content;
   }
+
   &:-moz-placeholder {
     @content;
   }
+
   &::-moz-placeholder {
     @content;
   }
+
   &:-ms-input-placeholder {
     @content;
   }
+
   &::-webkit-input-placeholder {
     @content;
   }
@@ -171,21 +198,27 @@
 
 // scrollbar
 @mixin scrollbar {
-  // for Chrome и Safari
+
+  // for Chrome, Safari, and Edge
   &::-webkit-scrollbar {
-    width: 5px;
-    height: 5px;
-    border-radius: 30px;
+    width: 8px;
+    height: 8px;
   }
+
   &::-webkit-scrollbar-thumb {
     background: var(--scroll-foreground-color);
-    border-radius: 30px;
+    border-radius: 10px;
   }
 
   &::-webkit-scrollbar-track {
     background: var(--scroll-background-color);
-    border-radius: 30px;
+    border-radius: 10px;
   }
+
   // for Firefox
+  scrollbar-width: thin;
   scrollbar-color: var(--scroll-foreground-color) var(--scroll-background-color);
+
+  // for Internet Explorer and older versions of Edge
+  -ms-overflow-style: -ms-autohiding-scrollbar;
 }
