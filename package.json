@@ -8,7 +8,8 @@
   "scripts": {
     "start": "concurrently \"yarn server\" \"yarn client\"",
     "server": "cd server && yarn start",
-    "client": "cd client && yarn dev"
+    "client": "cd client && yarn dev",
+    "migrate": "cd server && yarn migrate"
   },
   "devDependencies": {
     "concurrently": "^9.1.0"
