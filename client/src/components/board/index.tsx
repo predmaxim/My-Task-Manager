@@ -53,8 +53,7 @@ export function Board({ currentProject }: BoardType) {
     skip: !currentProject.statuses.length,
   });
   const query = useAppSelector((state) => state.search.query);
-  const [board, setBoard] = useState<ColumnType[]>([]);
-
+  
   const sensors = useSensors(
     useSensor(MouseSensor),
     useSensor(TouchSensor),
@@ -63,23 +62,20 @@ export function Board({ currentProject }: BoardType) {
   const genColumn = useCallback((status: TaskStatusType): ColumnType => {
     const newQuery = new RegExp(query.toLowerCase());
     const tasksByStatus = tasks
-      .filter(task => task.status.id === status.id && (task.name.toLowerCase().match(newQuery)))
-      .sort((a, b) => a.order - b.order);
-
+    .filter(task => task.status.id === status.id && (task.name.toLowerCase().match(newQuery)))
+    .sort((a, b) => a.order - b.order);
+    
     return {
       id: status.id,
       title: status.name,
       tasks: tasksByStatus,
     };
   }, [query, tasks]);
-
-  useEffect(() => {
-    setBoard(currentProject.statuses?.map((status) => genColumn(status)) || []);
-  }, [genColumn, currentProject.statuses]);
-
-  useEffect(() => {
-    console.log(tasks);
-  }, [tasks]);
+  
+  const [board, setBoard] = useState<ColumnType[]>(currentProject.statuses?.map((status) => genColumn(status)) || []);
+  // useEffect(() => {
+  //   setBoard(currentProject.statuses?.map((status) => genColumn(status)) || []);
+  // }, [currentProject]);
 
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event;
