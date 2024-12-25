@@ -109,10 +109,9 @@ export const updateTaskStatuses: RequestHandler = async (
 
         if (tasks) {
           for (const task of tasks) {
-            await prisma.task.upsert({
+            await prisma.task.update({
               where: { id: task.id },
-              update: task,
-              create: {
+              data: {
                 ...task,
                 statusId: id,
               },
