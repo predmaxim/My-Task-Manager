@@ -16,6 +16,7 @@ export const TASK_PRIORITY = {
   low: 'low',
   normal: 'normal',
   high: 'high',
+  critical: 'critical',
 } as const;
 
 export const PROJECT_STATUSES = {

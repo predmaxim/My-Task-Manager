@@ -37,7 +37,6 @@ export function Task({ task: initialTask }: TaskProps) {
   const onDone = () => {
     updateTaskHandler({
       done: task.done ? null : new Date(),
-      status: undefined,
     });
   };
 

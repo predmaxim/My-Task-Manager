@@ -2,12 +2,13 @@ import { z } from 'zod';
 import { PROJECT_STATUSES } from '@/constants';
 import {
   AuthSchema,
+  ColumnSchema,
   LoginSchema,
   ProjectPopulatedSchema,
   RegisterSchema,
   StatusSchema,
   TaskPopulatedSchema,
-  TaskStatusPopulatedSchema,
+  TaskStatusPartialSchema,
   ThemeSchema,
   UserWithoutPassSchema,
 } from '@/zod-schemas/custom.ts';
@@ -41,7 +42,7 @@ export type LoginType = z.infer<typeof LoginSchema>;
 export type RegisterType = z.infer<typeof RegisterSchema>;
 
 export type TaskStatusType = z.infer<typeof StatusSchema>;
-export type TaskStatusPartialType = z.infer<typeof TaskStatusPopulatedSchema>;
+export type TaskStatusPartialType = z.infer<typeof TaskStatusPartialSchema>;
 
 export type TaskType = Task;
 export type PopulatedTaskType = z.infer<typeof TaskPopulatedSchema>;
@@ -50,3 +51,4 @@ export type UserType = User;
 export type UserWithoutPassType = z.infer<typeof UserWithoutPassSchema>;
 
 export type ThemeType = z.infer<typeof ThemeSchema>;
+export type ColumnType = z.infer<typeof ColumnSchema>;
