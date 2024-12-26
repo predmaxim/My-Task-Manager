@@ -1,12 +1,12 @@
 import { ButtonWithIcon } from '@/components/ui/button-with-iIcon';
 import { Modal } from '@/components/ui/modal';
+import { ActionMenuItem, ActionsMenu } from '@/components/ui/actions-menu';
 import { TaskContent } from '@/components/task/task-content';
 import { ChangeEvent, KeyboardEvent, MouseEvent, useState } from 'react';
 import { createPortal } from 'react-dom';
 import TextareaAutosize from 'react-textarea-autosize';
 import { formatDate } from '@/utils/helpers.ts';
-import { MenuActionType, TaskType } from '@/types';
-import { PopupMenu } from '@/components/ui/popup-menu';
+import { TaskType } from '@/types';
 import styles from './styles.module.scss';
 import { useDeleteTaskMutation, useUpdateTaskMutation } from '@/services/tasks-service.ts';
 
@@ -18,7 +18,6 @@ export function Task({ task: initialTask }: TaskProps) {
   const [task, setTask] = useState<TaskType>(initialTask);
   const [showModal, setShowModal] = useState(false);
   const [isEdit, setIsEdit] = useState(false);
-  const [isMenuActive, setIsMenuActive] = useState(false);
 
   const [updateTask] = useUpdateTaskMutation();
   const [deleteTask] = useDeleteTaskMutation();
@@ -86,33 +85,27 @@ export function Task({ task: initialTask }: TaskProps) {
     setShowModal(false);
   };
 
-  const onClickMenu = (e: MouseEvent<HTMLButtonElement>) => {
-    e.stopPropagation();
-    setIsMenuActive(true);
-  };
-
-  const editTask = () => {
+  const onClickEditTask = () => {
     setIsEdit(true);
   };
 
-  const removeTask = async () => {
+  const onClickRemoveTask = async () => {
     await deleteTask(task.id);
   };
 
-  const actions: MenuActionType[] = [
+  const menuActions: ActionMenuItem<TaskType['id']>[] = [
     {
-      name: 'edit', 
-      action: editTask,
-      icon: 'RiPencilLine',
+      key: 'edit',
+      label: 'Редактировать название',
+      onSelect: onClickEditTask,
     },
     {
-      name: 'remove',
-      action: removeTask,
-      icon: 'RiDeleteBin6Line',
+      key: 'remove',
+      label: 'Удалить',
+      variant: 'danger',
+      onSelect: onClickRemoveTask,
     },
   ];
-
-  const activeClassMenu = isMenuActive ? 'active' : '';
 
   return (
     <>
@@ -120,12 +113,6 @@ export function Task({ task: initialTask }: TaskProps) {
         className={`${styles.Task}  ${task.done ? 'done' : ''}`}
         onClick={onClickTask}
       >
-        {<PopupMenu
-          className={`${styles.Task__popup} ${activeClassMenu}`}
-          actions={actions}
-          closeMenu={() => setIsMenuActive(false)}
-          isActive={isMenuActive}
-        />}
         <div className={styles.Task__header}>
           <input
             className={styles.Task__checkbox}
@@ -158,10 +145,10 @@ export function Task({ task: initialTask }: TaskProps) {
                 />}
             </div>
           </div>
-          <ButtonWithIcon
-            className={styles.Task__menuBtn}
-            onClick={onClickMenu}
-            icon="RiMore2Line"
+          <ActionsMenu
+            id={task.id}
+            buttonClassName={styles.Task__menuBtn}
+            actions={menuActions}
           />
         </div>
         {(!!task.due || !!task.done) &&

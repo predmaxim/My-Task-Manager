@@ -1,11 +1,13 @@
 import { SortableContext, useSortable, verticalListSortingStrategy } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
+import { ChangeEvent, KeyboardEvent, useEffect, useRef, useState } from 'react';
 import { TaskCard } from '@/components/board/task-card';
 import { CreateNewTask } from '@/components/task/create-new-task';
 import { useAppSelector } from '@/lib/store.ts';
 import styles from './styles.module.scss';
-import { ButtonWithIcon } from '@/components/ui/button-with-iIcon';
 import { TaskStatusType } from '@/types';
+import { useDeleteTaskStatusMutation, useUpdateTaskStatusMutation } from '@/services/task-statuses-service.ts';
+import { ActionMenuItem, ActionsMenu } from '@/components/ui/actions-menu';
 
 type TaskStatusProps = {
   status: TaskStatusType;
@@ -16,6 +18,12 @@ const toTaskDndId = (taskId: TaskStatusType['tasks'][number]['id']) => `task-${S
 
 export function TaskStatus({ status }: TaskStatusProps) {
   const currentProject = useAppSelector((state) => state.projects.currentProject);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isEditingTitle, setIsEditingTitle] = useState(false);
+  const [title, setTitle] = useState(status.name);
+  const [updateTaskStatus] = useUpdateTaskStatusMutation();
+  const [deleteTaskStatus] = useDeleteTaskStatusMutation();
+  const isTitleSavingRef = useRef(false);
 
   const {
     attributes,
@@ -39,9 +47,86 @@ export function TaskStatus({ status }: TaskStatusProps) {
     zIndex: isDragging ? 1000 : 'auto',
   };
 
-  const onClickMenu = () => {
-    console.log('menu');
+  useEffect(() => {
+    setTitle(status.name);
+  }, [status.id, status.name]);
+
+  const saveTitle = async () => {
+    if (isTitleSavingRef.current) {
+      return;
+    }
+
+    const nextTitle = title.trim();
+    if (!nextTitle) {
+      setTitle(status.name);
+      setIsEditingTitle(false);
+      return;
+    }
+
+    if (nextTitle === status.name) {
+      setIsEditingTitle(false);
+      return;
+    }
+
+    isTitleSavingRef.current = true;
+
+    try {
+      await updateTaskStatus({
+        ...status,
+        name: nextTitle,
+      }).unwrap();
+      setIsEditingTitle(false);
+    } catch (error) {
+      console.error('Failed to update status name:', error);
+      setTitle(status.name);
+      setIsEditingTitle(false);
+    } finally {
+      isTitleSavingRef.current = false;
+    }
   };
+
+  const onClickEditTitle = () => {
+    setIsEditingTitle(true);
+  };
+
+  const onClickDeleteStatus = async () => {
+    if (!window.confirm('Удалить этот столбик?')) {
+      return;
+    }
+
+    await deleteTaskStatus(status.id);
+  };
+
+  const onChangeTitle = (e: ChangeEvent<HTMLInputElement>) => {
+    setTitle(e.currentTarget.value);
+  };
+
+  const onKeyDownTitle = async (e: KeyboardEvent<HTMLInputElement>) => {
+    if (e.code === 'Enter' || e.code === 'NumpadEnter') {
+      await saveTitle();
+    }
+
+    if (e.code === 'Escape') {
+      setTitle(status.name);
+      setIsEditingTitle(false);
+    }
+  };
+
+  const dragListeners = isEditingTitle || isMenuOpen ? undefined : listeners;
+
+  const menuActions: ActionMenuItem<TaskStatusType['id']>[] = [
+    {
+      key: 'edit',
+      label: 'Редактировать название',
+      onSelect: onClickEditTitle,
+    },
+    {
+      key: 'remove',
+      label: 'Удалить',
+      variant: 'danger',
+      onSelect: onClickDeleteStatus,
+    },
+  ];
 
   if (!currentProject) {
     return null;
@@ -54,12 +139,24 @@ export function TaskStatus({ status }: TaskStatusProps) {
       className={`${styles.column} ${isDragging ? styles.dragging : ''}`}
       {...attributes}
     >
-      <div className={`${styles.column__header} handle`} ref={setActivatorNodeRef} {...listeners}>
-        <h2 className={styles.column__title}>{status.name}</h2>
-        <ButtonWithIcon
-          className={styles.column__menuBtn}
-          onClick={onClickMenu}
-          icon="RiMore2Line"
+      <div className={`${styles.column__header} handle`} ref={setActivatorNodeRef} {...dragListeners}>
+        {!isEditingTitle && <h2 className={styles.column__title}>{status.name}</h2>}
+        {isEditingTitle && (
+          <input
+            className={styles.column__titleInput}
+            value={title}
+            onChange={onChangeTitle}
+            onBlur={saveTitle}
+            onKeyDown={onKeyDownTitle}
+            onClick={(e) => e.stopPropagation()}
+            autoFocus
+          />
+        )}
+        <ActionsMenu
+          id={status.id}
+          buttonClassName={styles.column__menuBtn}
+          actions={menuActions}
+          onOpenChange={setIsMenuOpen}
         />
       </div>
       <CreateNewTask statusId={status.id} project={currentProject} />
