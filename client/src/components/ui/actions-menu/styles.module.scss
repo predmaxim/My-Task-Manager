@@ -40,4 +40,9 @@
       background: color-mix(in srgb, var(--color-red) 12%, transparent);
     }
   }
+
+  &__content {
+    border-top: 1px solid var(--border-color);
+    padding: 0.6rem 0.8rem;
+  }
 }

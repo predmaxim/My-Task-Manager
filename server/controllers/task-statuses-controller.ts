@@ -4,6 +4,20 @@ import { errorHandler } from '@/utils/error-handler';
 import { StatusSchema, TaskSchema } from '@/zod-schemas/generated';
 import { toInt } from '@/zod-schemas/custom';
 
+const StatusPayloadSchema = StatusSchema.omit({ id: true, color: true }).extend({
+  color: StatusSchema.shape.color.optional().default(null),
+});
+
+const StatusWithTasksSchema = StatusPayloadSchema.extend({
+  id: StatusSchema.shape.id,
+  tasks: TaskSchema.array().optional(),
+});
+
+const StatusPatchSchema = StatusSchema.pick({
+  name: true,
+  color: true,
+}).partial();
+
 export const getTaskStatuses: RequestHandler = async (
   req: Request,
   res: Response
@@ -52,7 +66,7 @@ export const createTaskStatus: RequestHandler = async (
   res: Response
 ) => {
   try {
-    const status = StatusSchema.omit({ id: true }).parse(req.body);
+    const status = StatusPayloadSchema.parse(req.body);
     const taskStatus = await prisma.status.create({
       data: status,
     });
@@ -70,10 +84,16 @@ export const updateTaskStatus: RequestHandler = async (
 ) => {
   try {
     const id = StatusSchema.shape.id.parse(toInt(req.params.id));
-    const name = StatusSchema.shape.name.parse(req.body.name);
+    const statusPatch = StatusPatchSchema.parse(req.body);
+
+    if (Object.keys(statusPatch).length === 0) {
+      res.status(400).json({ message: 'Nothing to update' });
+      return;
+    }
+
     await prisma.status.update({
       where: { id },
-      data: { name },
+      data: statusPatch,
     });
 
     res.status(200).json({ message: "Task status updated" });
@@ -88,11 +108,7 @@ export const updateTaskStatuses: RequestHandler = async (
   res: Response
 ) => {
   try {
-    const statuses = StatusSchema.extend({
-      tasks: TaskSchema.array().optional(),
-    })
-      .array()
-      .parse(req.body);
+    const statuses = StatusWithTasksSchema.array().parse(req.body);
 
     await prisma.$transaction(async (prisma) => {
       for (const status of statuses) {

@@ -1,6 +1,6 @@
 import { SortableContext, useSortable, verticalListSortingStrategy } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
-import { ChangeEvent, KeyboardEvent, useEffect, useRef, useState } from 'react';
+import { CSSProperties, ChangeEvent, KeyboardEvent, useEffect, useRef, useState } from 'react';
 import { TaskCard } from '@/components/board/task-card';
 import { CreateNewTask } from '@/components/task/create-new-task';
 import { useAppSelector } from '@/lib/store.ts';
@@ -8,6 +8,7 @@ import styles from './styles.module.scss';
 import { TaskStatusType } from '@/types';
 import { useDeleteTaskStatusMutation, useUpdateTaskStatusMutation } from '@/services/task-statuses-service.ts';
 import { ActionMenuItem, ActionsMenu } from '@/components/ui/actions-menu';
+import { STATUS_COLOR_KEYS, StatusColorKeyType } from '@/constants';
 
 type TaskStatusProps = {
   status: TaskStatusType;
@@ -40,12 +41,6 @@ export function TaskStatus({ status }: TaskStatusProps) {
       status,
     },
   });
-
-  const style = {
-    transform: CSS.Transform.toString(transform),
-    transition,
-    zIndex: isDragging ? 1000 : 'auto',
-  };
 
   useEffect(() => {
     setTitle(status.name);
@@ -97,6 +92,17 @@ export function TaskStatus({ status }: TaskStatusProps) {
     await deleteTaskStatus(status.id);
   };
 
+  const onSelectColor = async (color: StatusColorKeyType | null) => {
+    try {
+      await updateTaskStatus({
+        ...status,
+        color,
+      }).unwrap();
+    } catch (error) {
+      console.error('Failed to update status color:', error);
+    }
+  };
+
   const onChangeTitle = (e: ChangeEvent<HTMLInputElement>) => {
     setTitle(e.currentTarget.value);
   };
@@ -113,6 +119,8 @@ export function TaskStatus({ status }: TaskStatusProps) {
   };
 
   const dragListeners = isEditingTitle || isMenuOpen ? undefined : listeners;
+  const currentStatusColor = typeof status.color === 'string' ? status.color : null;
+  const hasColumnColor = Boolean(currentStatusColor);
 
   const menuActions: ActionMenuItem<TaskStatusType['id']>[] = [
     {
@@ -132,11 +140,19 @@ export function TaskStatus({ status }: TaskStatusProps) {
     return null;
   }
 
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    zIndex: isDragging ? 1000 : 'auto',
+    '--column-color': currentStatusColor ? `var(--status-column-${currentStatusColor})` : 'transparent',
+    '--column-color-strong': currentStatusColor ? `var(--status-column-${currentStatusColor}-strong)` : 'transparent',
+  } as CSSProperties;
+
   return (
     <div
       ref={setNodeRef}
       style={style}
-      className={`${styles.column} ${isDragging ? styles.dragging : ''}`}
+      className={`${styles.column} ${isDragging ? styles.dragging : ''} ${hasColumnColor ? styles.column_colored : ''}`}
       {...attributes}
     >
       <div className={`${styles.column__header} handle`} ref={setActivatorNodeRef} {...dragListeners}>
@@ -156,6 +172,38 @@ export function TaskStatus({ status }: TaskStatusProps) {
           id={status.id}
           buttonClassName={styles.column__menuBtn}
           actions={menuActions}
+          renderContent={({ closeMenu }) => (
+            <div className={styles.column__colorPicker}>
+              <button
+                type="button"
+                className={`${styles.column__colorReset} ${!hasColumnColor ? styles.column__colorReset_active : ''}`}
+                onClick={async () => {
+                  await onSelectColor(null);
+                  closeMenu();
+                }}
+              >
+                Без цвета
+              </button>
+              <div className={styles.column__colorGrid}>
+                {STATUS_COLOR_KEYS.map((colorKey) => (
+                  <button
+                    key={colorKey}
+                    type="button"
+                    className={`${styles.column__colorSwatch} ${currentStatusColor === colorKey ? styles.column__colorSwatch_active : ''}`}
+                    aria-label={`Цвет ${colorKey}`}
+                    title={colorKey}
+                    style={{
+                      '--swatch-color': `var(--status-column-${colorKey})`,
+                    } as CSSProperties}
+                    onClick={async () => {
+                      await onSelectColor(colorKey);
+                      closeMenu();
+                    }}
+                  />
+                ))}
+              </div>
+            </div>
+          )}
           onOpenChange={setIsMenuOpen}
         />
       </div>

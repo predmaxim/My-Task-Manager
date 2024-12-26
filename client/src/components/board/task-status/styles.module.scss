@@ -6,10 +6,15 @@ $width: 20rem;
 .column {
   border-radius: $border-radius;
   background: var(--color-light-grey);
+  border-top: 4px solid transparent;
   position: relative;
   min-width: $width;
   width: $width;
   padding: 0.5rem 0.5rem 0.5rem 1rem;
+
+  &_colored {
+    border-top-color: var(--column-color-strong);
+  }
 
   &.dragging {
     z-index: 1000;
@@ -25,6 +30,54 @@ $width: 20rem;
 
     @media screen and (width <=$mobile) {
       padding: 10px;
+    }
+  }
+
+  &__colorPicker {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  &__colorReset {
+    text-align: left;
+    font-size: 0.85rem;
+    color: var(--font-color-dimmed-darker);
+    padding: 0.1rem 0;
+
+    &:hover {
+      color: var(--font-color);
+      background: transparent;
+    }
+
+    &_active {
+      color: var(--font-color);
+      font-weight: 600;
+    }
+  }
+
+  &__colorGrid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem;
+  }
+
+  &__colorSwatch {
+    width: 10px;
+    height: 10px;
+    border-radius: 4px;
+    border: 1px solid color-mix(in srgb, var(--swatch-color) 70%, var(--border-color));
+    background: var(--swatch-color);
+    padding: 0;
+
+    &:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 0 0 1px color-mix(in srgb, var(--swatch-color) 80%, white);
+    }
+
+    &_active {
+      outline: 1px solid var(--font-color);
+      outline-offset: 1px;
     }
   }
 

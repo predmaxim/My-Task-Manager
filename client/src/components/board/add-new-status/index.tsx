@@ -23,6 +23,7 @@ export function AddNewStatus({ projectId }: AddNewStatusProps) {
         name: statusName.trim(),
         projectId,
         order: taskStatuses?.length || 0,
+        color: null,
       }).unwrap();
 
       setStatusName('');

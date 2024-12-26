@@ -59,6 +59,43 @@
     --2-column-header-color: #fdffb2;
     --3-column-header-color: #b8ffc3;
 
+    --status-column-coral: #f48a7f;
+    --status-column-coral-soft: color-mix(in srgb, var(--status-column-coral) 24%, transparent);
+    --status-column-coral-strong: color-mix(in srgb, var(--status-column-coral) 88%, #000);
+
+    --status-column-amber: #f0ad5f;
+    --status-column-amber-soft: color-mix(in srgb, var(--status-column-amber) 24%, transparent);
+    --status-column-amber-strong: color-mix(in srgb, var(--status-column-amber) 88%, #000);
+
+    --status-column-lime: #9bc267;
+    --status-column-lime-soft: color-mix(in srgb, var(--status-column-lime) 24%, transparent);
+    --status-column-lime-strong: color-mix(in srgb, var(--status-column-lime) 88%, #000);
+
+    --status-column-mint: #5fbea1;
+    --status-column-mint-soft: color-mix(in srgb, var(--status-column-mint) 24%, transparent);
+    --status-column-mint-strong: color-mix(in srgb, var(--status-column-mint) 88%, #000);
+
+    --status-column-sky: #62b9dc;
+    --status-column-sky-soft: color-mix(in srgb, var(--status-column-sky) 24%, transparent);
+    --status-column-sky-strong: color-mix(in srgb, var(--status-column-sky) 88%, #000);
+
+    --status-column-blue: #758de1;
+    --status-column-blue-soft: color-mix(in srgb, var(--status-column-blue) 24%, transparent);
+    --status-column-blue-strong: color-mix(in srgb, var(--status-column-blue) 88%, #000);
+
+    --status-column-violet: #9e87de;
+    --status-column-violet-soft: color-mix(in srgb, var(--status-column-violet) 24%, transparent);
+    --status-column-violet-strong: color-mix(in srgb, var(--status-column-violet) 88%, #000);
+
+    --status-column-rose: #d87ca8;
+    --status-column-rose-soft: color-mix(in srgb, var(--status-column-rose) 24%, transparent);
+    --status-column-rose-strong: color-mix(in srgb, var(--status-column-rose) 88%, #000);
+
+    --task-priority-low: transparent;
+    --task-priority-normal: #5ea8dc;
+    --task-priority-high: #e2a352;
+    --task-priority-critical: #d56767;
+
     --scroll-foreground-color: #b2b2b2;
     --scroll-background-color: #e5e5e5;
 
@@ -137,6 +174,43 @@
     --1-column-header-color: #ffbebe;
     --2-column-header-color: #fdffb2;
     --3-column-header-color: #b8ffc3;
+
+    --status-column-coral: #e1776f;
+    --status-column-coral-soft: color-mix(in srgb, var(--status-column-coral) 32%, transparent);
+    --status-column-coral-strong: color-mix(in srgb, var(--status-column-coral) 90%, #fff);
+
+    --status-column-amber: #d1944d;
+    --status-column-amber-soft: color-mix(in srgb, var(--status-column-amber) 32%, transparent);
+    --status-column-amber-strong: color-mix(in srgb, var(--status-column-amber) 90%, #fff);
+
+    --status-column-lime: #8fae5f;
+    --status-column-lime-soft: color-mix(in srgb, var(--status-column-lime) 32%, transparent);
+    --status-column-lime-strong: color-mix(in srgb, var(--status-column-lime) 90%, #fff);
+
+    --status-column-mint: #56a98f;
+    --status-column-mint-soft: color-mix(in srgb, var(--status-column-mint) 32%, transparent);
+    --status-column-mint-strong: color-mix(in srgb, var(--status-column-mint) 90%, #fff);
+
+    --status-column-sky: #5ba7c7;
+    --status-column-sky-soft: color-mix(in srgb, var(--status-column-sky) 32%, transparent);
+    --status-column-sky-strong: color-mix(in srgb, var(--status-column-sky) 90%, #fff);
+
+    --status-column-blue: #6e81ca;
+    --status-column-blue-soft: color-mix(in srgb, var(--status-column-blue) 32%, transparent);
+    --status-column-blue-strong: color-mix(in srgb, var(--status-column-blue) 90%, #fff);
+
+    --status-column-violet: #8a73c8;
+    --status-column-violet-soft: color-mix(in srgb, var(--status-column-violet) 32%, transparent);
+    --status-column-violet-strong: color-mix(in srgb, var(--status-column-violet) 90%, #fff);
+
+    --status-column-rose: #c16f97;
+    --status-column-rose-soft: color-mix(in srgb, var(--status-column-rose) 32%, transparent);
+    --status-column-rose-strong: color-mix(in srgb, var(--status-column-rose) 90%, #fff);
+
+    --task-priority-low: transparent;
+    --task-priority-normal: #4d8cb8;
+    --task-priority-high: #c38647;
+    --task-priority-critical: #be5959;
 
     --scroll-foreground-color: #191919;
     --scroll-background-color: #454545;

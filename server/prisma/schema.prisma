@@ -86,6 +86,7 @@ enum PriorityLevel {
 model Status {
   id        Int     @id @default(autoincrement())
   name      String
+  color     String?
   tasks     Task[]  @relation("TaskToStatus")
   projectId Int
   project   Project @relation(fields: [projectId], references: [id])

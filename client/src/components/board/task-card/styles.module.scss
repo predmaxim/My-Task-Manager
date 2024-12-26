@@ -4,6 +4,7 @@
 .TaskCard {
   background: var(--bg-color);
   border-radius: $border-radius;
+  border-top: 3px solid var(--task-priority-color, transparent);
   box-shadow: var(--box-shadow);
   transition: transform 180ms cubic-bezier(0.2, 0, 0, 1), opacity 120ms ease;
   will-change: transform;

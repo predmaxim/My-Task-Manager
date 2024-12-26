@@ -1,5 +1,6 @@
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
+import { CSSProperties } from 'react';
 import { TaskStatusType, TaskType } from '@/types';
 import styles from './styles.module.scss';
 import { Task } from '@/components/task';
@@ -39,7 +40,8 @@ export function TaskCard({ task, statusId }: TaskCardProps) {
       transform ? { ...transform, scaleX: 1, scaleY: 1 } : null,
     ),
     transition,
-  };
+    '--task-priority-color': `var(--task-priority-${task.priority})`,
+  } as CSSProperties;
 
   return (
     <div

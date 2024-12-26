@@ -1,4 +1,4 @@
-import { MouseEvent, useEffect, useMemo, useRef, useState } from 'react';
+import { MouseEvent, ReactNode, useCallback, useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { ButtonWithIcon } from '@/components/ui/button-with-iIcon';
 import styles from './styles.module.scss';
@@ -15,8 +15,10 @@ export type ActionMenuItem<TId extends EntityId> = {
 type ActionsMenuProps<TId extends EntityId> = {
   id: TId;
   actions: ActionMenuItem<TId>[];
+  renderContent?: (args: { closeMenu: () => void; id: TId }) => ReactNode;
   buttonClassName?: string;
   menuClassName?: string;
+  menuContentClassName?: string;
   menuItemClassName?: string;
   dangerMenuItemClassName?: string;
   icon?: 'RiMore2Line';
@@ -27,8 +29,10 @@ type ActionsMenuProps<TId extends EntityId> = {
 export function ActionsMenu<TId extends EntityId>({
   id,
   actions,
+  renderContent,
   buttonClassName,
   menuClassName,
+  menuContentClassName,
   menuItemClassName,
   dangerMenuItemClassName,
   icon = 'RiMore2Line',
@@ -40,7 +44,9 @@ export function ActionsMenu<TId extends EntityId>({
   const triggerRef = useRef<HTMLDivElement | null>(null);
   const menuRef = useRef<HTMLDivElement | null>(null);
 
-  const estimatedMenuHeight = useMemo(() => Math.max(44, actions.length * 44), [actions.length]);
+  const closeMenu = useCallback(() => {
+    setIsOpen(false);
+  }, []);
 
   useEffect(() => {
     onOpenChange?.(isOpen);
@@ -61,10 +67,6 @@ export function ActionsMenu<TId extends EntityId>({
       }
     };
 
-    const closeMenu = () => {
-      setIsOpen(false);
-    };
-
     document.addEventListener('mousedown', onClickOutside);
     window.addEventListener('scroll', closeMenu, true);
     window.addEventListener('resize', closeMenu);
@@ -74,9 +76,9 @@ export function ActionsMenu<TId extends EntityId>({
       window.removeEventListener('scroll', closeMenu, true);
       window.removeEventListener('resize', closeMenu);
     };
-  }, [isOpen]);
+  }, [closeMenu, isOpen]);
 
-  const updatePosition = (buttonRect: DOMRect) => {
+  const updatePosition = (buttonRect: DOMRect, menuHeight: number) => {
     const menuWidth = 208;
 
     const left = Math.max(
@@ -84,17 +86,17 @@ export function ActionsMenu<TId extends EntityId>({
       Math.min(buttonRect.right - menuWidth, window.innerWidth - menuWidth - viewportPadding),
     );
 
-    const openUp = buttonRect.bottom + estimatedMenuHeight > window.innerHeight - viewportPadding;
+    const openUp = buttonRect.bottom + menuHeight > window.innerHeight - viewportPadding;
     const top = openUp
-      ? Math.max(viewportPadding, buttonRect.top - estimatedMenuHeight - 4)
-      : Math.min(window.innerHeight - estimatedMenuHeight - viewportPadding, buttonRect.bottom + 4);
+      ? Math.max(viewportPadding, buttonRect.top - menuHeight - 4)
+      : Math.min(window.innerHeight - menuHeight - viewportPadding, buttonRect.bottom + 4);
 
     setPosition({ top, left });
   };
 
   const onClickTrigger = (e: MouseEvent<HTMLButtonElement>) => {
     e.stopPropagation();
-    updatePosition(e.currentTarget.getBoundingClientRect());
+    updatePosition(e.currentTarget.getBoundingClientRect(), 220);
     setIsOpen(prevState => !prevState);
   };
 
@@ -103,9 +105,24 @@ export function ActionsMenu<TId extends EntityId>({
   };
 
   const onClickAction = async (action: ActionMenuItem<TId>) => {
-    setIsOpen(false);
+    closeMenu();
     await action.onSelect(id);
   };
+
+  useEffect(() => {
+    if (!isOpen || !triggerRef.current || !menuRef.current) {
+      return;
+    }
+
+    const triggerButton = triggerRef.current.querySelector('button');
+    if (!triggerButton) {
+      return;
+    }
+
+    const buttonRect = triggerButton.getBoundingClientRect();
+    const menuHeight = menuRef.current.offsetHeight;
+    updatePosition(buttonRect, menuHeight);
+  }, [isOpen, actions.length, renderContent]);
 
   return (
     <>
@@ -135,6 +152,11 @@ export function ActionsMenu<TId extends EntityId>({
               {action.label}
             </button>
           ))}
+          {renderContent && (
+            <div className={`${styles.ActionsMenu__content} ${menuContentClassName || ''}`}>
+              {renderContent({ closeMenu, id })}
+            </div>
+          )}
         </div>,
         document.body,
       )}

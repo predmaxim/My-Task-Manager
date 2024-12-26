@@ -28,3 +28,16 @@ export const ROLES = {
   admin: 'admin',
   user: 'user',
 } as const;
+
+export const STATUS_COLOR_KEYS = [
+  'coral',
+  'amber',
+  'lime',
+  'mint',
+  'sky',
+  'blue',
+  'violet',
+  'rose',
+] as const;
+
+export type StatusColorKeyType = (typeof STATUS_COLOR_KEYS)[number];

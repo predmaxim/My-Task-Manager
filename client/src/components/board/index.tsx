@@ -289,7 +289,8 @@ export function Board({ projectId }: BoardProps) {
     lastOverSignatureRef.current = null;
 
     const initialTop = event.active.rect.current.initial?.top;
-    const activatorClientY = getClientYFromActivatorEvent(event.activatorEvent);
+    const dragStartEvent = event as DragStartEvent & { activatorEvent?: Event };
+    const activatorClientY = getClientYFromActivatorEvent(dragStartEvent.activatorEvent ?? null);
     pointerOffsetYRef.current =
       typeof initialTop === 'number' && typeof activatorClientY === 'number'
         ? activatorClientY - initialTop
