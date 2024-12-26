@@ -5,7 +5,9 @@
 SPA TODO-приложение на React и Redux с поддержкой drag&drop для задач и статусов.
 
 ![img_2.png](img_2.png)
+
 ![img_1.png](img_1.png)
+
 ![img_3.png](img_3.png)
 
 ### Основные возможности
