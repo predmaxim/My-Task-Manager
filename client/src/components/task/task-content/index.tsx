@@ -1,11 +1,19 @@
-import { FormEventHandler } from 'react';
+import { CSSProperties, FormEventHandler, useMemo, useState } from 'react';
 import TextareaAutosize from 'react-textarea-autosize';
-import { TASK_PRIORITY } from '@/constants';
-import { formatDate, upperCaseFirstLetter } from '@/utils/helpers.ts';
-import { TaskType } from '@/types';
+import { STATUS_COLOR_KEYS, StatusColorKeyType, TASK_PRIORITY } from '@/constants';
+import { formatDate, formatDateTimeLocal, getContrastTextColor, upperCaseFirstLetter } from '@/utils/helpers.ts';
+import { CommentType, TaskType } from '@/types';
 import styles from './styles.module.scss';
 import { useAppSelector } from '@/lib/store';
 import { TaskSchema } from '@/zod-schemas/custom';
+import {
+  useCreateCommentMutation,
+  useDeleteCommentMutation,
+  useGetCommentsQuery,
+  useUpdateCommentMutation,
+} from '@/services/comments-service.ts';
+import { ActionMenuItem, ActionsMenu } from '@/components/ui/actions-menu';
+import { ColorPicker } from '@/components/ui/color-picker';
 
 type TaskFormFields = {
   name: HTMLTextAreaElement;
@@ -25,6 +33,14 @@ export type TaskContentType = {
 export function TaskContent({ task, onSubmit }: TaskContentType) {  
   const taskStatuses = useAppSelector((state) => state.statuses.taskStatuses) || [];
   const currentStatus = taskStatuses.find((status) => status.id === task.statusId);
+  const [commentDraft, setCommentDraft] = useState('');
+  const [editingCommentId, setEditingCommentId] = useState<CommentType['id'] | null>(null);
+  const [editingCommentContent, setEditingCommentContent] = useState('');
+
+  const { data: comments = [] } = useGetCommentsQuery(task.id);
+  const [createComment, { isLoading: isCommentCreating }] = useCreateCommentMutation();
+  const [updateComment, { isLoading: isCommentUpdating }] = useUpdateCommentMutation();
+  const [deleteComment] = useDeleteCommentMutation();
 
   // const genDone = () => {
   //   if (task.done) {
@@ -47,6 +63,89 @@ export function TaskContent({ task, onSubmit }: TaskContentType) {
 
     onSubmit(parsedTask);
   };
+
+  const onCreateComment = async () => {
+    const content = commentDraft.trim();
+    if (!content) {
+      return;
+    }
+
+    await createComment({
+      content,
+      parentId: null,
+      taskId: task.id,
+      color: null,
+    }).unwrap();
+
+    setCommentDraft('');
+  };
+
+  const onStartCommentEdit = (comment: CommentType) => {
+    setEditingCommentId(comment.id);
+    setEditingCommentContent(comment.content);
+  };
+
+  const onCancelCommentEdit = () => {
+    setEditingCommentId(null);
+    setEditingCommentContent('');
+  };
+
+  const onSaveCommentEdit = async (comment: CommentType) => {
+    const nextContent = editingCommentContent.trim();
+    if (!nextContent) {
+      return;
+    }
+
+    await updateComment({
+      id: comment.id,
+      content: nextContent,
+      taskId: task.id,
+    }).unwrap();
+
+    onCancelCommentEdit();
+  };
+
+  const onDeleteComment = async (commentId: CommentType['id']) => {
+    if (!window.confirm('Удалить комментарий?')) {
+      return;
+    }
+
+    await deleteComment({ id: commentId, taskId: task.id }).unwrap();
+
+    if (editingCommentId === commentId) {
+      onCancelCommentEdit();
+    }
+  };
+
+  const onColorComment = async (commentId: CommentType['id'], color: StatusColorKeyType | null) => {
+    await updateComment({
+      id: commentId,
+      color,
+      taskId: task.id,
+    }).unwrap();
+  };
+
+  const getCommentItemStyle = useMemo(() => {
+    return (comment: CommentType): CSSProperties => {
+      if (!comment.color) {
+        return {};
+      }
+
+      const cssVarName = `--status-column-${comment.color}`;
+      const resolvedColor = getComputedStyle(document.documentElement).getPropertyValue(cssVarName).trim();
+      const textColor = getContrastTextColor(resolvedColor || '#ffffff');
+
+      return {
+        '--comment-bg': `var(${cssVarName})`,
+        '--comment-text': textColor,
+      } as CSSProperties;
+    };
+  }, []);
+
+  const sortedComments = useMemo(
+    () => [...comments].sort((a, b) => new Date(b.created).getTime() - new Date(a.created).getTime()),
+    [comments],
+  );
 
   if (!currentStatus) {
     return null;
@@ -153,15 +252,113 @@ export function TaskContent({ task, onSubmit }: TaskContentType) {
       <div className={styles.TaskContent__comments}>
         <span className={`${styles.label} ${styles['label-comments']}`}>Comment:</span>
         <TextareaAutosize
-          name="comment"
+          value={commentDraft}
+          onChange={(e) => setCommentDraft(e.currentTarget.value)}
           className={styles.commentInput}
-          // placeholder="Comment Hear"
+          placeholder="Оставить комментарий"
+          minRows={3}
+          maxRows={3}
         />
       </div>
       <div className={styles.TaskContent__commentBtn}>
-        <button type="button" className={`button button-big ${styles.commentBtn}`}>
+        <button
+          type="button"
+          className={`button button-big ${styles.commentBtn}`}
+          onClick={onCreateComment}
+          disabled={!commentDraft.trim() || isCommentCreating}
+        >
           Comment
         </button>
+      </div>
+      <div className={styles.TaskContent__commentsList}>
+        {!comments.length && (
+          <div className={styles.emptyComments}>Комментариев пока нет</div>
+        )}
+        {!!sortedComments.length && sortedComments.map((comment) => {
+          const isEditing = editingCommentId === comment.id;
+          const isEdited = new Date(comment.updated).getTime() > new Date(comment.created).getTime() + 1000;
+
+          const commentActions: ActionMenuItem<CommentType['id']>[] = [
+            {
+              key: 'edit',
+              label: 'Редактировать',
+              onSelect: () => onStartCommentEdit(comment),
+            },
+            {
+              key: 'remove',
+              label: 'Удалить',
+              variant: 'danger',
+              onSelect: async () => {
+                await onDeleteComment(comment.id);
+              },
+            },
+          ];
+
+          return (
+            <div
+              key={comment.id}
+              className={`${styles.commentItem} ${comment.color ? styles.commentItem_colored : ''}`}
+              style={getCommentItemStyle(comment)}
+            >
+              <div className={styles.commentItem__header}>
+                <span className={styles.commentItem__date}>{formatDateTimeLocal(comment.created)}</span>
+                <ActionsMenu
+                  id={comment.id}
+                  buttonClassName={styles.commentItem__menuBtn}
+                  actions={commentActions}
+                  renderContent={({ closeMenu }) => (
+                    <ColorPicker<StatusColorKeyType>
+                      colorKeys={STATUS_COLOR_KEYS}
+                      currentColor={comment.color as StatusColorKeyType | null}
+                      onSelectColor={async (color) => {
+                        await onColorComment(comment.id, color);
+                        closeMenu();
+                      }}
+                    />
+                  )}
+                />
+              </div>
+
+              {!isEditing && (
+                <p className={styles.commentItem__content}>{comment.content}</p>
+              )}
+
+              {isEditing && (
+                <div className={styles.commentItem__editWrap}>
+                  <TextareaAutosize
+                    className={styles.commentItem__editInput}
+                    value={editingCommentContent}
+                    onChange={(e) => setEditingCommentContent(e.currentTarget.value)}
+                    autoFocus
+                  />
+                  <div className={styles.commentItem__editActions}>
+                    <button
+                      type="button"
+                      className={`button button-s ${styles.commentItem__saveBtn}`}
+                      disabled={!editingCommentContent.trim() || isCommentUpdating}
+                      onClick={async () => {
+                        await onSaveCommentEdit(comment);
+                      }}
+                    >
+                      Сохранить
+                    </button>
+                    <button
+                      type="button"
+                      className={`button button-s ${styles.commentItem__cancelBtn}`}
+                      onClick={onCancelCommentEdit}
+                    >
+                      Отмена
+                    </button>
+                  </div>
+                </div>
+              )}
+
+              {isEdited && (
+                <p className={styles.commentItem__edited}>редактирован {formatDateTimeLocal(comment.updated)}</p>
+              )}
+            </div>
+          );
+        })}
       </div>
       {/*<div className={styles.TaskContent__subTasks}>*/}
       {/*  <span className={`${styles.label} ${styles['label-subTasks']}`}>SubTasks:</span>*/}

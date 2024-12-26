@@ -2,7 +2,8 @@
 @import "../../../assets/mixins";
 
 $modal-padding: 15px;
-$modal-body-max-height: 80vh;
+$modal-body-max-height: 95vh;
+$modal-actions-height: 15px;
 
 @media screen and (width <=$tablet) {
   $modal-padding: 20px;
@@ -37,11 +38,12 @@ $modal-body-max-height: 80vh;
 
 .body {
   position: fixed;
-  top: 10vh;
+  top: 2.5vh;
   left: 50%;
   z-index: 2001;
   padding: $modal-padding;
   width: calc(100% - $modal-padding * 4);
+  max-height: $modal-body-max-height;
   max-width: 600px;
   background: var(--modal-bg);
   border-radius: $border-radius;
@@ -59,10 +61,7 @@ $modal-body-max-height: 80vh;
 }
 
 .content {
-  padding: 5px $modal-padding $modal-padding $modal-padding;
-  overflow-y: auto;
-  max-height: calc($modal-body-max-height - $modal-padding * 4 - 100px);
-  @include scrollbar;
+  padding: 5px $modal-padding calc($modal-padding + $modal-actions-height) $modal-padding;
 
   .ProjectList {
     &__container {
@@ -76,10 +75,15 @@ $modal-body-max-height: 80vh;
 }
 
 .actions {
+  position: sticky;
+  bottom: 0;
+  z-index: 1;
   display: flex;
   justify-content: center;
   gap: 20px;
   padding: 15px 0;
+  background: var(--modal-bg);
+  border-top: 1px solid var(--border-color);
 }
 
 .okBtn {

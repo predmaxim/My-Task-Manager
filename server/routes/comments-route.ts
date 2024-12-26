@@ -14,8 +14,8 @@ const router = Router();
 router.get("/api/comments/:taskId", getComments);
 
 // Get Comment
-// http://localhost:5000/api/comments/:id
-router.get("/api/comments/:id", getComment);
+// http://localhost:5000/api/comments/comment/:id
+router.get("/api/comments/comment/:id", getComment);
 
 // Create Comment
 // http://localhost:5000/api/comments/

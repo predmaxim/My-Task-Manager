@@ -60,12 +60,14 @@ model Task {
 model Comment {
   id       Int       @id @default(autoincrement())
   content  String
+  color    String?
   parent   Comment?  @relation("CommentToComment", fields: [parentId], references: [id])
   parentId Int?
   children Comment[] @relation("CommentToComment")
   task     Task      @relation("CommentToTask", fields: [taskId], references: [id])
   taskId   Int
   created  DateTime  @default(now())
+  updated  DateTime  @default(now()) @updatedAt
 }
 
 model File {

@@ -5,10 +5,12 @@
   display: grid;
   gap: 18px 20px;
   grid-template-areas: "name        name        name        status      priority    due"
-                       "description description description description description files"
-                       "info        info        info        info        info        files"
-                       "hr          hr          hr          hr          hr          hr"
-                       "comments    comments    comments    commentBtn  subTasks    subTasks";
+    "description description description description description files"
+    "info        info        info        info        info        files"
+    "hr          hr          hr          hr          hr          hr"
+    "comments    comments    comments    comments    comments    comments"
+    "commentBtn  commentBtn  commentBtn  commentBtn  commentBtn  commentBtn"
+    "commentsList commentsList commentsList commentsList commentsList commentsList";
 
   &__name {
     grid-area: name;
@@ -108,7 +110,7 @@
   &__commentBtn {
     grid-area: commentBtn;
     @include button("xl");
-    align-self: flex-end;
+    justify-self: start;
     height: min-content;
     width: min-content;
 
@@ -123,13 +125,29 @@
     }
   }
 
-  &__name, &__status, &__priority, &__due, &__description, &__files, &__comments, &__subTasks {
+  &__commentsList {
+    grid-area: commentsList;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  &__name,
+  &__status,
+  &__priority,
+  &__due,
+  &__description,
+  &__files,
+  &__comments,
+  &__subTasks {
     display: flex;
     flex-direction: column;
     gap: 5px;
   }
 
-  .created, .inWork, .done {
+  .created,
+  .inWork,
+  .done {
     color: var(--font-color-dimmed);
 
     &__title {
@@ -140,5 +158,98 @@
 
   .label {
     font-size: .88rem;
+  }
+
+  .emptyComments {
+    color: var(--font-color-dimmed);
+    font-size: 0.95rem;
+    padding: 10px 0;
+  }
+
+  .commentItem {
+    border-radius: $border-radius;
+    background: var(--color-light-grey);
+    border: 1px solid var(--border-color);
+    padding: 10px 12px;
+    color: var(--font-color);
+
+    &_colored {
+      background: var(--comment-bg);
+      border-color: color-mix(in srgb, var(--comment-bg) 80%, var(--border-color));
+      color: var(--comment-text);
+    }
+
+    &__header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+    }
+
+    &__date {
+      font-size: 0.82rem;
+      opacity: 0.82;
+    }
+
+    &__menuBtn {
+      @include button($size: "s", $variant: "icon", $color: "transparent");
+      width: fit-content;
+      height: fit-content;
+      padding: 0;
+      color: inherit;
+      opacity: 0.8;
+
+      &:hover {
+        color: inherit;
+        opacity: 1;
+      }
+    }
+
+    &__content {
+      margin: 6px 0 0;
+      white-space: pre-wrap;
+      word-break: break-word;
+      line-height: 1.4;
+    }
+
+    &__edited {
+      margin: 8px 0 0;
+      font-size: 0.8rem;
+      opacity: 0.68;
+    }
+
+    &__editWrap {
+      margin-top: 6px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    &__editInput {
+      @include input;
+      resize: none;
+      color: inherit;
+      border-color: color-mix(in srgb, currentColor 35%, var(--border-color));
+      background: color-mix(in srgb, currentColor 4%, transparent);
+    }
+
+    &__editActions {
+      display: flex;
+      gap: 8px;
+    }
+
+    &__saveBtn,
+    &__cancelBtn {
+      min-width: 90px;
+    }
+
+    &__cancelBtn {
+      background: color-mix(in srgb, currentColor 12%, transparent);
+      border: 1px solid color-mix(in srgb, currentColor 26%, var(--border-color));
+
+      &:hover {
+        background: color-mix(in srgb, currentColor 20%, transparent);
+      }
+    }
   }
 }

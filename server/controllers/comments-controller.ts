@@ -3,13 +3,21 @@ import { prisma } from "@/lib/prisma-client";
 import { CommentSchema } from "@/zod-schemas/generated";
 import { errorHandler } from "@/utils/error-handler";
 import { toInt } from "@/zod-schemas/custom";
+import { z } from "zod";
+
+const CommentUpdateSchema = z.object({
+  content: CommentSchema.shape.content.optional(),
+  parentId: CommentSchema.shape.parentId.optional(),
+  taskId: CommentSchema.shape.taskId.optional(),
+  color: z.string().nullable().optional(),
+});
 
 export const getComments = async (req: Request, res: Response) => {
   try {
     const taskId = CommentSchema.shape.taskId.parse(toInt(req.params.taskId));
     const comments = await prisma.comment.findMany({
       where: { taskId },
-      orderBy: { created: "asc" },
+      orderBy: { created: "desc" },
     });
     res.status(200).json(comments);
   } catch (error) {
@@ -39,9 +47,11 @@ export const getComment = async (req: Request, res: Response) => {
 
 export const createComment = async (req: Request, res: Response) => {
   try {
-    const comment = CommentSchema.omit({ id: true, created: true }).parse(
-      req.body,
-    );
+    const comment = CommentSchema.omit({
+      id: true,
+      created: true,
+      updated: true,
+    }).parse(req.body);
     const newComment = await prisma.comment.create({
       data: comment,
     });
@@ -55,7 +65,7 @@ export const createComment = async (req: Request, res: Response) => {
 export const updateComment = async (req: Request, res: Response) => {
   try {
     const id = CommentSchema.shape.id.parse(toInt(req.params.id));
-    const comment = CommentSchema.omit({ id: true }).parse(req.body);
+    const comment = CommentUpdateSchema.parse(req.body);
     const updatedComment = await prisma.comment.update({
       where: { id },
       data: comment,

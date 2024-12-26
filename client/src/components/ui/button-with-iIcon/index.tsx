@@ -21,7 +21,12 @@ export function ButtonWithIcon(
   const ButtonIcon = Icons[icon as keyof typeof Icons];
 
   return (
-    <button className={`${styles.ButtonWithIcon} ${className}`} onClick={onClick} {...otherProps}>
+    <button
+      {...otherProps}
+      className={`${styles.ButtonWithIcon} ${className}`}
+      onClick={onClick}
+      type={otherProps.type ?? 'button'}
+    >
       {icon && !icon.toLowerCase().includes('loading') &&
         <ButtonIcon className={styles.ButtonWithIcon__icon} />}
       {text && <span className={styles.ButtonWithIcon__text}>{text}</span>}

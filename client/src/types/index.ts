@@ -25,7 +25,8 @@ export type PopulatedProjectType = z.infer<typeof ProjectPopulatedSchema>;
 export type TaskInProject = number;
 export type PartialTaskType = Partial<Pick<Task, 'id'>> & Omit<Task, 'id'>;
 export type ProjectStatusType = keyof typeof PROJECT_STATUSES;
-export type PartialCommentType = Partial<Pick<Comment, 'id'>> & Omit<Comment, 'id'>;
+export type PartialCommentType = Pick<Comment, 'content' | 'taskId'>
+  & Partial<Pick<Comment, 'id' | 'parentId' | 'color'>>;
 export type CommentType = Comment;
 
 export type MenuActionType = {

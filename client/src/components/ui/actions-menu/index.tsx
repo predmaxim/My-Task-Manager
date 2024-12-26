@@ -132,6 +132,7 @@ export function ActionsMenu<TId extends EntityId>({
           onClick={onClickTrigger}
           onMouseDown={onMouseDownTrigger}
           icon={icon}
+          type="button"
         />
       </div>
 
