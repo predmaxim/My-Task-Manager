@@ -9,6 +9,8 @@ type TaskCardProps = {
   statusId: TaskStatusType['id'];
 }
 
+const toTaskDndId = (taskId: TaskType['id']) => `task-${String(taskId)}`;
+
 export function TaskCard({ task, statusId }: TaskCardProps) {
   const {
     attributes,
@@ -18,18 +20,24 @@ export function TaskCard({ task, statusId }: TaskCardProps) {
     transition,
     isDragging,
   } = useSortable({
-    id: task.id,
+    id: toTaskDndId(task.id),
     data: {
       type: 'task',
       task,
       statusId,
     },
+    animateLayoutChanges: () => false,
+    transition: {
+      duration: 180,
+      easing: 'cubic-bezier(0.2, 0, 0, 1)',
+    },
   });
 
   const style = {
-    // FIX: wrong spaces when drugging TaskCard
-    transform: CSS.Transform.toString(transform),
-    // transform: CSS.Transform.toString(transform && { ...transform, scaleY: 1 }),
+    // Keep card size stable while dragging (dnd-kit may add scale values).
+    transform: CSS.Transform.toString(
+      transform ? { ...transform, scaleX: 1, scaleY: 1 } : null,
+    ),
     transition,
   };
 
@@ -41,6 +49,18 @@ export function TaskCard({ task, statusId }: TaskCardProps) {
       {...attributes}
       {...listeners}
     >
+      <Task task={task} />
+    </div>
+  );
+}
+
+type TaskCardPreviewProps = {
+  task: TaskType;
+}
+
+export function TaskCardPreview({ task }: TaskCardPreviewProps) {
+  return (
+    <div className={styles.TaskCard}>
       <Task task={task} />
     </div>
   );

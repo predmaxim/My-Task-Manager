@@ -5,6 +5,19 @@ import { errorHandler } from "@/utils/error-handler";
 import { toInt, UserWithoutPassSchema } from "@/zod-schemas/custom";
 import slugify from "slugify-ts";
 
+const getUniqueProjectSlug = async (name: string) => {
+  const baseSlug = slugify(name);
+  let slug = baseSlug;
+  let index = 1;
+
+  while (await prisma.project.findUnique({ where: { slug } })) {
+    slug = `${baseSlug}-${index}`;
+    index += 1;
+  }
+
+  return slug;
+};
+
 export const getProjects: RequestHandler = async (
   req: Request,
   res: Response,
@@ -63,17 +76,10 @@ export const createProject: RequestHandler = async (
     const project = ProjectSchema.pick({ name: true, icon: true })
       .partial({ icon: true })
       .parse(req.body);
-    const isAlreadyExists = await prisma.project.findFirst({
-      where: { slug: slugify(project.name), userId: user.id },
-    });
-
-    if (isAlreadyExists) {
-      res.status(400).json({ message: "This project name is busy" });
-      return;
-    }
+    const slug = await getUniqueProjectSlug(project.name);
 
     const newProject = await prisma.project.create({
-      data: { ...project, userId: user.id, slug: slugify(project.name) },
+      data: { ...project, userId: user.id, slug },
       include: {
         tasks: true,
         statuses: true,

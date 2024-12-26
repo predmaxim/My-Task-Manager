@@ -1,4 +1,4 @@
-import { SortableContext, useSortable } from '@dnd-kit/sortable';
+import { SortableContext, useSortable, verticalListSortingStrategy } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { TaskCard } from '@/components/board/task-card';
 import { CreateNewTask } from '@/components/task/create-new-task';
@@ -10,6 +10,9 @@ import { TaskStatusType } from '@/types';
 type TaskStatusProps = {
   status: TaskStatusType;
 }
+
+const toStatusDndId = (statusId: TaskStatusType['id']) => `status-${String(statusId)}`;
+const toTaskDndId = (taskId: TaskStatusType['tasks'][number]['id']) => `task-${String(taskId)}`;
 
 export function TaskStatus({ status }: TaskStatusProps) {
   const currentProject = useAppSelector((state) => state.projects.currentProject);
@@ -23,7 +26,7 @@ export function TaskStatus({ status }: TaskStatusProps) {
     setActivatorNodeRef,
     isDragging,
   } = useSortable({
-    id: status.id,
+    id: toStatusDndId(status.id),
     data: {
       type: 'status',
       status,
@@ -61,7 +64,7 @@ export function TaskStatus({ status }: TaskStatusProps) {
       </div>
       <CreateNewTask statusId={status.id} project={currentProject} />
       <div className={styles.column__body}>
-        <SortableContext items={status.tasks.map(task => task.id)}>
+        <SortableContext items={status.tasks.map(task => toTaskDndId(task.id))} strategy={verticalListSortingStrategy}>
           {status.tasks.map(task => (
             <TaskCard
               key={task.id}
