@@ -13,15 +13,18 @@ $modal-body-max-height: 80vh;
 }
 
 .Modal {
+  position: fixed;
+  inset: 0;
+  z-index: 2000;
 }
 
-.header {
-}
+.header {}
 
 .overlay {
   position: fixed;
   inset: 0;
   background-color: var(--overlay-bg);
+  z-index: 2000;
   transition: $transition;
   animation: smoothAppearanceOverlayHide $transition forwards;
   display: none;
@@ -36,6 +39,7 @@ $modal-body-max-height: 80vh;
   position: fixed;
   top: 10vh;
   left: 50%;
+  z-index: 2001;
   padding: $modal-padding;
   width: calc(100% - $modal-padding * 4);
   max-width: 600px;
@@ -102,14 +106,12 @@ $modal-body-max-height: 80vh;
   0% {
     transform: translate(-50%, -100%);
     opacity: 0;
-    z-index: -10;
     visibility: hidden;
   }
 
   100% {
     transform: translate(-50%, 0);
     opacity: 1;
-    z-index: 11;
     visibility: visible;
   }
 }
@@ -118,14 +120,12 @@ $modal-body-max-height: 80vh;
   100% {
     transform: translate(-50%, 0);
     opacity: 1;
-    z-index: 10;
     visibility: visible;
   }
 
   0% {
     transform: translate(-50%, -100%);
     opacity: 0;
-    z-index: -10;
     visibility: hidden;
   }
 }
@@ -133,13 +133,11 @@ $modal-body-max-height: 80vh;
 @keyframes smoothAppearanceOverlayShow {
   0% {
     opacity: 0;
-    z-index: -10;
     visibility: hidden;
   }
 
   100% {
     opacity: 1;
-    z-index: 11;
     visibility: visible;
   }
 }
@@ -147,13 +145,11 @@ $modal-body-max-height: 80vh;
 @keyframes smoothAppearanceOverlayHide {
   100% {
     opacity: 1;
-    z-index: 10;
     visibility: visible;
   }
 
   0% {
     opacity: 0;
-    z-index: -10;
     visibility: hidden;
   }
 }

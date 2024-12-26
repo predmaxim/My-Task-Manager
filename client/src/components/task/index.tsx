@@ -3,7 +3,6 @@ import { Modal } from '@/components/ui/modal';
 import { ActionMenuItem, ActionsMenu } from '@/components/ui/actions-menu';
 import { TaskContent } from '@/components/task/task-content';
 import { ChangeEvent, KeyboardEvent, MouseEvent, useState } from 'react';
-import { createPortal } from 'react-dom';
 import TextareaAutosize from 'react-textarea-autosize';
 import { formatDate } from '@/utils/helpers.ts';
 import { TaskType } from '@/types';
@@ -174,22 +173,19 @@ export function Task({ task: initialTask }: TaskProps) {
           </div>}
       </div>
       {showModal &&
-        createPortal(
-          <Modal
-            className={styles.TaskContentModal}
-            isActive={true}
-            onClose={() => setShowModal(false)}
-            header={`#${task.id} - ${task.name}`}
-            width="930px"
-            formId="TaskContentForm"
-          >
-            <TaskContent
-              task={task}
-              onSubmit={onSubmitForm}
-            />
-          </Modal>,
-          document.body,
-        )}
+        <Modal
+          className={styles.TaskContentModal}
+          isActive={true}
+          onClose={() => setShowModal(false)}
+          header={`#${task.id} - ${task.name}`}
+          width="930px"
+          formId="TaskContentForm"
+        >
+          <TaskContent
+            task={task}
+            onSubmit={onSubmitForm}
+          />
+        </Modal>}
     </>
   );
 }

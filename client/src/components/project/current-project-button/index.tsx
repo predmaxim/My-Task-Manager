@@ -1,6 +1,5 @@
 import { ButtonWithIcon } from '@/components/ui/button-with-iIcon';
 import { useState } from 'react';
-import { createPortal } from 'react-dom';
 import { RootState, useAppSelector } from '@/lib/store';
 import { Modal } from '@/components/ui/modal';
 import styles from './styles.module.scss';
@@ -27,7 +26,7 @@ export function CurrentProjectButton() {
         text={currentProject?.name}
         onClick={onClickCurrentProjectBtn}
       />
-      {showIconModal && createPortal(
+      {showIconModal &&
         <Modal
           className={styles.CreateNewProject}
           isActive={true}
@@ -36,9 +35,7 @@ export function CurrentProjectButton() {
           showActionBtns={false}
         >
           <ProjectList modalAction={onClickOnProjectBtn} />
-        </Modal>,
-        document.body,
-      )}
+        </Modal>}
     </div>
   );
 }
