@@ -12,9 +12,9 @@ import {
   useSensor,
   useSensors,
 } from '@dnd-kit/core';
-import { arrayMove, rectSortingStrategy, SortableContext } from '@dnd-kit/sortable';
+import { arrayMove, horizontalListSortingStrategy, SortableContext } from '@dnd-kit/sortable';
 import { useUpdateTaskMutation } from '@/services/tasks-service.ts';
-import { TaskStatus } from '@/components/board/task-status';
+import { TaskStatus, TaskStatusPreview } from '@/components/board/task-status';
 import { TaskCardPreview } from '@/components/board/task-card';
 import { AddNewStatus } from '@/components/board/add-new-status';
 import { ProjectType, TaskStatusType } from '@/types';
@@ -217,6 +217,7 @@ const groupTasksByStatus = (statuses: TaskStatusType[], searchQuery: string): Ta
 export function Board({ projectId }: BoardProps) {
   const dispatch = useAppDispatch();
   const [activeTask, setActiveTask] = useState<TaskStatusType['tasks'][number] | null>(null);
+  const [activeStatus, setActiveStatus] = useState<TaskStatusType | null>(null);
   const [updateTask] = useUpdateTaskMutation();
   const [updateTaskStatuses] = useUpdateTaskStatusesMutation();
   const lastOverSignatureRef = useRef<string | null>(null);
@@ -305,10 +306,18 @@ export function Board({ projectId }: BoardProps) {
 
     if (event.active.data.current?.type === 'task') {
       setActiveTask(event.active.data.current.task);
+      setActiveStatus(null);
+      return;
+    }
+
+    if (event.active.data.current?.type === 'status') {
+      setActiveStatus(event.active.data.current.status);
+      setActiveTask(null);
       return;
     }
 
     setActiveTask(null);
+    setActiveStatus(null);
   }, []);
 
   const handleDragCancel = useCallback(() => {
@@ -316,6 +325,7 @@ export function Board({ projectId }: BoardProps) {
     lastOverSignatureRef.current = null;
     pointerOffsetYRef.current = null;
     setActiveTask(null);
+    setActiveStatus(null);
   }, []);
 
   const handleDragOver = useCallback((event: DragOverEvent) => {
@@ -404,6 +414,7 @@ export function Board({ projectId }: BoardProps) {
       : fromStatusDndId(active.id);
 
     setActiveTask(null);
+    setActiveStatus(null);
     lastOverSignatureRef.current = null;
     const pointerOffsetY = pointerOffsetYRef.current;
     pointerOffsetYRef.current = null;
@@ -617,7 +628,7 @@ export function Board({ projectId }: BoardProps) {
       onDragEnd={handleDragEnd}
       collisionDetection={collisionDetection}
     >
-      <SortableContext items={allStatusIds} strategy={rectSortingStrategy}>
+      <SortableContext items={allStatusIds} strategy={horizontalListSortingStrategy}>
         <div className={styles.Board}>
           {statuses.map(status => (
             <TaskStatus key={status.id} status={status} />
@@ -627,6 +638,7 @@ export function Board({ projectId }: BoardProps) {
       </SortableContext>
       <DragOverlay>
         {activeTask ? <TaskCardPreview task={activeTask} /> : null}
+        {!activeTask && activeStatus ? <TaskStatusPreview status={activeStatus} /> : null}
       </DragOverlay>
     </DndContext>
   );

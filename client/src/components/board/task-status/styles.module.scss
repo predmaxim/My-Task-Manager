@@ -18,6 +18,13 @@ $width: 20rem;
 
   &.dragging {
     z-index: 1000;
+    opacity: 0;
+  }
+
+  &_preview {
+    opacity: 0.95;
+    pointer-events: none;
+    box-shadow: 0 12px 32px color-mix(in srgb, var(--block-shadow-color) 45%, transparent);
   }
 
   &__header {
@@ -142,5 +149,13 @@ $width: 20rem;
     @media screen and (width <=$mobile) {
       padding: 0.5rem;
     }
+  }
+
+  &__previewTask {
+    border-radius: $border-radius;
+    background: var(--color-light-grey);
+    border-top: 3px solid var(--color-light-grey-darker);
+    box-shadow: var(--box-shadow);
+    overflow: hidden;
   }
 }

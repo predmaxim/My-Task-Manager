@@ -1,12 +1,14 @@
-import { prisma } from '@/lib/prisma-client';
-import { Request, RequestHandler, Response } from 'express';
-import { errorHandler } from '@/utils/error-handler';
-import { StatusSchema, TaskSchema } from '@/zod-schemas/generated';
-import { toInt } from '@/zod-schemas/custom';
+import { prisma } from "@/lib/prisma-client";
+import { Request, RequestHandler, Response } from "express";
+import { errorHandler } from "@/utils/error-handler";
+import { StatusSchema, TaskSchema } from "@/zod-schemas/generated";
+import { toInt } from "@/zod-schemas/custom";
 
-const StatusPayloadSchema = StatusSchema.omit({ id: true, color: true }).extend({
-  color: StatusSchema.shape.color.optional().default(null),
-});
+const StatusPayloadSchema = StatusSchema.omit({ id: true, color: true }).extend(
+  {
+    color: StatusSchema.shape.color.optional().default(null),
+  },
+);
 
 const StatusWithTasksSchema = StatusPayloadSchema.extend({
   id: StatusSchema.shape.id,
@@ -20,11 +22,11 @@ const StatusPatchSchema = StatusSchema.pick({
 
 export const getTaskStatuses: RequestHandler = async (
   req: Request,
-  res: Response
+  res: Response,
 ) => {
   try {
     const projectId = StatusSchema.shape.projectId.parse(
-      toInt(req.params.projectId)
+      toInt(req.params.projectId),
     );
 
     const taskStatuses = await prisma.status.findMany({
@@ -40,7 +42,7 @@ export const getTaskStatuses: RequestHandler = async (
 
 export const getTaskStatus: RequestHandler = async (
   req: Request,
-  res: Response
+  res: Response,
 ) => {
   try {
     const id = StatusSchema.shape.id.parse(toInt(req.params.id));
@@ -63,7 +65,7 @@ export const getTaskStatus: RequestHandler = async (
 
 export const createTaskStatus: RequestHandler = async (
   req: Request,
-  res: Response
+  res: Response,
 ) => {
   try {
     const status = StatusPayloadSchema.parse(req.body);
@@ -80,14 +82,14 @@ export const createTaskStatus: RequestHandler = async (
 
 export const updateTaskStatus: RequestHandler = async (
   req: Request,
-  res: Response
+  res: Response,
 ) => {
   try {
     const id = StatusSchema.shape.id.parse(toInt(req.params.id));
     const statusPatch = StatusPatchSchema.parse(req.body);
 
     if (Object.keys(statusPatch).length === 0) {
-      res.status(400).json({ message: 'Nothing to update' });
+      res.status(400).json({ message: "Nothing to update" });
       return;
     }
 
@@ -105,7 +107,7 @@ export const updateTaskStatus: RequestHandler = async (
 
 export const updateTaskStatuses: RequestHandler = async (
   req: Request,
-  res: Response
+  res: Response,
 ) => {
   try {
     const statuses = StatusWithTasksSchema.array().parse(req.body);
@@ -142,7 +144,7 @@ export const updateTaskStatuses: RequestHandler = async (
 
 export const deleteTaskStatus: RequestHandler = async (
   req: Request,
-  res: Response
+  res: Response,
 ) => {
   try {
     const id = StatusSchema.shape.id.parse(toInt(req.params.id));

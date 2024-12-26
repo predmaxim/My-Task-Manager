@@ -3,6 +3,7 @@ import { CSS } from '@dnd-kit/utilities';
 import { CSSProperties, ChangeEvent, KeyboardEvent, useEffect, useRef, useState } from 'react';
 import { TaskCard } from '@/components/board/task-card';
 import { CreateNewTask } from '@/components/task/create-new-task';
+import { Task } from '@/components/task';
 import { useAppSelector } from '@/lib/store.ts';
 import styles from './styles.module.scss';
 import { TaskStatusType } from '@/types';
@@ -141,7 +142,9 @@ export function TaskStatus({ status }: TaskStatusProps) {
   }
 
   const style = {
-    transform: CSS.Transform.toString(transform),
+    transform: CSS.Transform.toString(
+      transform ? { ...transform, scaleX: 1, scaleY: 1 } : null,
+    ),
     transition,
     zIndex: isDragging ? 1000 : 'auto',
     '--column-color': currentStatusColor ? `var(--status-column-${currentStatusColor})` : 'transparent',
@@ -218,6 +221,37 @@ export function TaskStatus({ status }: TaskStatusProps) {
             />
           ))}
         </SortableContext>
+      </div>
+    </div>
+  );
+}
+
+type TaskStatusPreviewProps = {
+  status: TaskStatusType;
+}
+
+export function TaskStatusPreview({ status }: TaskStatusPreviewProps) {
+  const currentStatusColor = typeof status.color === 'string' ? status.color : null;
+
+  const style = {
+    '--column-color': currentStatusColor ? `var(--status-column-${currentStatusColor})` : 'transparent',
+    '--column-color-strong': currentStatusColor ? `var(--status-column-${currentStatusColor}-strong)` : 'transparent',
+  } as CSSProperties;
+
+  return (
+    <div
+      style={style}
+      className={`${styles.column} ${styles.column_preview} ${currentStatusColor ? styles.column_colored : ''}`}
+    >
+      <div className={styles.column__header}>
+        <h2 className={styles.column__title}>{status.name}</h2>
+      </div>
+      <div className={styles.column__body}>
+        {status.tasks.map(task => (
+          <div key={task.id} className={styles.column__previewTask}>
+            <Task task={task} />
+          </div>
+        ))}
       </div>
     </div>
   );

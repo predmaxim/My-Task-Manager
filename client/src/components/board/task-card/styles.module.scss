@@ -2,7 +2,7 @@
 @import "src/assets/mixins";
 
 .TaskCard {
-  background: var(--bg-color);
+  background: var(--color-light-grey);
   border-radius: $border-radius;
   border-top: 3px solid var(--task-priority-color, transparent);
   box-shadow: var(--box-shadow);
