@@ -1,8 +1,8 @@
 # My Task Manager
 
-## Описание проекта
+## Project Description
 
-SPA TODO-приложение на React и Redux с поддержкой drag&drop для задач и статусов.
+SPA TODO application built with React and Redux, supporting drag&drop for tasks and statuses.
 
 ![img_2.png](img_2.png)
 
@@ -10,39 +10,39 @@ SPA TODO-приложение на React и Redux с поддержкой drag&d
 
 ![img_3.png](img_3.png)
 
-### Основные возможности
+### Main Features
 
-- Выбор проекта на отдельной странице
-- Страница задач с неограниченным количеством статусов (колонок)
-- Перетаскивание задач между любыми статусами (drag&drop)
-- Перетаскивание самих статусов (изменение порядка колонок)
-- Поиск задач по номеру и заголовку (поиск работает по всем статусам)
-- Редактирование задач
-- Адаптация под мобильные устройства
+- Project selection on a separate page
+- Task page with unlimited number of statuses (columns)
+- Drag&drop tasks between any statuses
+- Drag&drop statuses themselves (change columns order)
+- Search tasks by number and title (search works across all statuses)
+- Edit tasks
+- Mobile adaptation
 
-### Задача содержит
+### Task includes
 
-- Номер задачи
-- Заголовок
-- Описание
-- Дата создания
-- Время в работе
-- Дата окончания
-- Приоритет
-- Текущий статус
-- Вложенные файлы (в разработке)
-- Подзадачи (в разработке)
-- Каскадные комментарии (в разработке)
+- Task number
+- Title
+- Description
+- Creation date
+- Time in progress
+- End date
+- Priority
+- Current status
+- Attachments (in development)
+- Subtasks (in development)
+- Threaded comments (in development)
 
-### Технические детали
+### Technical details
 
-- Сервер и клиент в отдельных папках (`server`, `client`)
-- Сервер использует базу данных через Docker (`/server/docker-compose.yml`)
-- Drag&drop реализован с помощью библиотеки `@dnd-kit`
-- Состояние хранится в Redux
+- Server and client in separate folders (`server`, `client`)
+- Server uses a database via Docker (`/server/docker-compose.yml`)
+- Drag&drop implemented with `@dnd-kit` library
+- State managed with Redux
 
-## Запуск проекта
+## Project Startup
 
-1. Установите Docker Engine или Docker Desktop для запуска базы данных.
-2. В корне проекта выполните: `yarn start`
-4. Откройте приложение в браузере.
+1. Install Docker Engine or Docker Desktop to run the database.
+2. In the project root, run: `yarn start`
+3. Open the application in your browser.
