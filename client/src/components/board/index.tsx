@@ -23,14 +23,12 @@ const groupTasksByStatus = (statuses: TaskStatusType[], searchQuery: string): Ta
   }
 
   const query = new RegExp(searchQuery.toLowerCase().trim());
-  const grouped = statuses.map((status) => ({
+  return statuses.map((status) => ({
     ...status,
     tasks: status.tasks.filter(task =>
       (task.name.match(query) || task.id.toString().match(query)))
       .sort((a, b) => a.order - b.order),
   })).sort((a, b) => a.order - b.order);
-
-  return grouped;
 };
 
 export function Board({ projectId }: BoardProps) {

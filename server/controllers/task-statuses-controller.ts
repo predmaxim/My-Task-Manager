@@ -1,12 +1,8 @@
-import { prisma } from "@/lib/prisma-client";
-import { Request, RequestHandler, Response, CookieOptions } from "express";
-import { errorHandler } from "@/utils/error-handler";
-import {
-  ProjectSchema,
-  StatusSchema,
-  TaskSchema,
-} from "@/zod-schemas/generated";
-import { toInt } from "@/zod-schemas/custom";
+import { prisma } from '@/lib/prisma-client';
+import { Request, RequestHandler, Response } from 'express';
+import { errorHandler } from '@/utils/error-handler';
+import { StatusSchema, TaskSchema } from '@/zod-schemas/generated';
+import { toInt } from '@/zod-schemas/custom';
 
 export const getTaskStatuses: RequestHandler = async (
   req: Request,
