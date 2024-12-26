@@ -1,6 +1,6 @@
 import { FormEventHandler } from 'react';
 import TextareaAutosize from 'react-textarea-autosize';
-import { TASK_PRIORITY, TASK_STATUSES } from '@/constants';
+import { TASK_PRIORITY } from '@/constants';
 import { formatDate, upperCaseFirstLetter } from '@/utils/helpers.ts';
 import { TaskType } from '@/types';
 import styles from './styles.module.scss';
@@ -23,8 +23,8 @@ export type TaskContentType = {
 };
 
 export function TaskContent({ task, onSubmit }: TaskContentType) {  
-  const taskStatuses = useAppSelector((state) => state.statuses.taskStatuses);
-  const currentStatus = taskStatuses?.find((status) => status.id === task.statusId);
+  const taskStatuses = useAppSelector((state) => state.statuses.taskStatuses) || [];
+  const currentStatus = taskStatuses.find((status) => status.id === task.statusId);
 
   // const genDone = () => {
   //   if (task.done) {
@@ -37,8 +37,15 @@ export function TaskContent({ task, onSubmit }: TaskContentType) {
   const onSubmitHandler: FormEventHandler<HTMLFormElement & TaskFormFields> = (e) => {
     e.preventDefault();
     const form = e.currentTarget;
-    const task = TaskSchema.partial().parse(Object.fromEntries(new FormData(form)))
-    onSubmit(task);
+    const formData = Object.fromEntries(new FormData(form));
+
+    const parsedTask = TaskSchema.partial().parse({
+      ...formData,
+      statusId: Number(formData.statusId),
+      due: formData.due ? formData.due : null,
+    });
+
+    onSubmit(parsedTask);
   };
 
   if (!currentStatus) {
@@ -59,16 +66,16 @@ export function TaskContent({ task, onSubmit }: TaskContentType) {
       <div className={styles.TaskContent__status}>
         <span className={`${styles.label} ${styles['label-status']}`}>Status:</span>
         <select
-          name="status"
+          name="statusId"
           className={styles.statusSelect}
-          defaultValue={currentStatus.name}
+          defaultValue={String(currentStatus.id)}
         >
-          {Object.values(TASK_STATUSES).map((status) => (
+          {taskStatuses.map((status) => (
             <option
-              value={status}
-              key={status}
+              value={status.id}
+              key={status.id}
             >
-              {upperCaseFirstLetter(status)}
+              {upperCaseFirstLetter(status.name)}
             </option>
           ))}
         </select>
