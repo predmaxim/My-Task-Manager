@@ -31,7 +31,12 @@ export const getTaskStatuses: RequestHandler = async (
 
     const taskStatuses = await prisma.status.findMany({
       where: { projectId },
-      include: { tasks: true },
+      include: {
+        tasks: {
+          where: { parentId: null },
+          orderBy: { order: "asc" },
+        },
+      },
     });
     res.status(200).json(taskStatuses);
   } catch (error) {
@@ -48,7 +53,12 @@ export const getTaskStatus: RequestHandler = async (
     const id = StatusSchema.shape.id.parse(toInt(req.params.id));
     const taskStatus = await prisma.status.findUnique({
       where: { id },
-      include: { tasks: true },
+      include: {
+        tasks: {
+          where: { parentId: null },
+          orderBy: { order: "asc" },
+        },
+      },
     });
 
     if (!taskStatus) {
