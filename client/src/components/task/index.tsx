@@ -2,7 +2,7 @@ import { ButtonWithIcon } from '@/components/ui/button-with-iIcon';
 import { Modal } from '@/components/ui/modal';
 import { ActionMenuItem, ActionsMenu } from '@/components/ui/actions-menu';
 import { TaskContent } from '@/components/task/task-content';
-import { ChangeEvent, KeyboardEvent, MouseEvent, useState } from 'react';
+import { ChangeEvent, KeyboardEvent, MouseEvent, useEffect, useState } from 'react';
 import TextareaAutosize from 'react-textarea-autosize';
 import { formatDate } from '@/utils/helpers.ts';
 import { TaskType } from '@/types';
@@ -17,6 +17,10 @@ export function Task({ task: initialTask }: TaskProps) {
   const [task, setTask] = useState<TaskType>(initialTask);
   const [showModal, setShowModal] = useState(false);
   const [isEdit, setIsEdit] = useState(false);
+
+  useEffect(() => {
+    setTask(initialTask);
+  }, [initialTask]);
 
   const [updateTask] = useUpdateTaskMutation();
   const [deleteTask] = useDeleteTaskMutation();
