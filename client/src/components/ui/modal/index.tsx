@@ -36,7 +36,7 @@ export function Modal(
 
   return (
     createPortal(
-      <div className={`${styles.Modal} ${className || ''}`}>
+      <div className={`${styles.Modal} ${className || ''}`} data-ui-layer="modal">
         <div className={`${styles.overlay} ${activeClass}`} onClick={onClose} />
         <div className={`${styles.body}  ${activeClass}`} style={{ maxWidth: width }}>
           <RiCloseLine onClick={onClose} className={styles.closeBtn} />

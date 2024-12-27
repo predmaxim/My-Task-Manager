@@ -214,6 +214,14 @@ const groupTasksByStatus = (statuses: TaskStatusType[], searchQuery: string): Ta
   })).sort((a, b) => a.order - b.order);
 };
 
+const hasBlockingUiLayer = () => {
+  if (typeof document === 'undefined') {
+    return false;
+  }
+
+  return Boolean(document.querySelector('[data-ui-layer="modal"], [data-ui-layer="menu"]'));
+};
+
 export function Board({ projectId }: BoardProps) {
   const dispatch = useAppDispatch();
   const [activeTask, setActiveTask] = useState<TaskStatusType['tasks'][number] | null>(null);
@@ -287,6 +295,11 @@ export function Board({ projectId }: BoardProps) {
   }, []);
 
   const handleDragStart = useCallback((event: DragStartEvent) => {
+    if (hasBlockingUiLayer()) {
+      debugDnd('drag:start:blocked-by-ui-layer');
+      return;
+    }
+
     lastOverSignatureRef.current = null;
 
     const initialTop = event.active.rect.current.initial?.top;
@@ -330,6 +343,11 @@ export function Board({ projectId }: BoardProps) {
 
   const handleDragOver = useCallback((event: DragOverEvent) => {
     const { active, over } = event;
+
+    if (hasBlockingUiLayer()) {
+      debugDnd('drag:over:blocked-by-ui-layer');
+      return;
+    }
 
     const activeTaskId = active.data.current?.type === 'task'
       ? active.data.current.task.id
@@ -404,6 +422,15 @@ export function Board({ projectId }: BoardProps) {
 
   const handleDragEnd = useCallback(async (event: DragEndEvent) => {
     const { active, over } = event;
+
+    if (hasBlockingUiLayer()) {
+      debugDnd('drag:end:blocked-by-ui-layer');
+      setActiveTask(null);
+      setActiveStatus(null);
+      lastOverSignatureRef.current = null;
+      pointerOffsetYRef.current = null;
+      return;
+    }
 
     const activeTaskId = active.data.current?.type === 'task'
       ? active.data.current.task.id

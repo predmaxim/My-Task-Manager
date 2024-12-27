@@ -142,6 +142,7 @@ export function ActionsMenu<TId extends EntityId>({
           className={`${styles.ActionsMenu__menu} ${menuClassName || ''}`}
           style={{ top: position.top, left: position.left }}
           onClick={(e) => e.stopPropagation()}
+          data-ui-layer="menu"
         >
           {actions.map((action) => (
             <button
