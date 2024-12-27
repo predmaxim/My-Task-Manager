@@ -45,4 +45,4 @@ SPA TODO application built with React and Redux, supporting drag&drop for tasks 
 
 1. Install Docker Engine or Docker Desktop to run the database.
 2. In the project root, run: `yarn start`
-3. Open the application in your browser.
+3. Open the application in your browser on `localhost:5173`.
