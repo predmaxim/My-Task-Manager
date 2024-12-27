@@ -119,7 +119,7 @@ export function TaskContent({ task, onSubmit }: TaskContentType) {
   };
 
   const onDeleteComment = async (commentId: CommentType['id']) => {
-    if (!window.confirm('Удалить комментарий?')) {
+    if (!window.confirm('Delete comment?')) {
       return;
     }
 
@@ -226,7 +226,7 @@ export function TaskContent({ task, onSubmit }: TaskContentType) {
   };
 
   const onDeleteSubTask = async (subTaskId: TaskType['id']) => {
-    if (!window.confirm('Удалить подзадачу?')) {
+    if (!window.confirm('Delete subtask?')) {
       return;
     }
 
@@ -380,7 +380,7 @@ export function TaskContent({ task, onSubmit }: TaskContentType) {
                 await onCreateSubTask();
               }
             }}
-            placeholder="Новая подзадача"
+            placeholder="New subtask"
           />
           <button
             type="button"
@@ -395,7 +395,7 @@ export function TaskContent({ task, onSubmit }: TaskContentType) {
 
       <div className={styles.TaskContent__subTasksList}>
         {!subTasks.length && (
-          <div className={styles.emptySubTasks}>Подзадач пока нет</div>
+          <div className={styles.emptySubTasks}>No subtasks yet</div>
         )}
         {!!subTasks.length && subTasks.map((subTask) => {
           const isEditing = editingSubTaskId === subTask.id;
@@ -403,12 +403,12 @@ export function TaskContent({ task, onSubmit }: TaskContentType) {
           const subTaskActions: ActionMenuItem<TaskType['id']>[] = [
             {
               key: 'edit',
-              label: 'Редактировать',
+              label: 'Edit',
               onSelect: () => onStartSubTaskEdit(subTask),
             },
             {
               key: 'remove',
-              label: 'Удалить',
+              label: 'Delete',
               variant: 'danger',
               onSelect: async () => {
                 await onDeleteSubTask(subTask.id);
@@ -454,7 +454,7 @@ export function TaskContent({ task, onSubmit }: TaskContentType) {
                     <ColorPicker<TaskType['priority']>
                       colorKeys={Object.values(TASK_PRIORITY)}
                       currentColor={subTask.priority}
-                      noColorLabel="Без цвета"
+                      noColorLabel="No color"
                       colorVarPrefix="--task-priority"
                       onSelectColor={async (priority) => {
                         await onColorSubTask(subTask, priority || 'low');
@@ -475,14 +475,14 @@ export function TaskContent({ task, onSubmit }: TaskContentType) {
                       await onSaveSubTaskEdit(subTask);
                     }}
                   >
-                    Сохранить
+                    Save
                   </button>
                   <button
                     type="button"
                     className={`button button-s ${styles.subTaskItem__cancelBtn}`}
                     onClick={onCancelSubTaskEdit}
                   >
-                    Отмена
+                    Cancel
                   </button>
                 </div>
               )}
@@ -503,7 +503,7 @@ export function TaskContent({ task, onSubmit }: TaskContentType) {
           value={commentDraft}
           onChange={(e) => setCommentDraft(e.currentTarget.value)}
           className={styles.commentInput}
-          placeholder="Оставить комментарий"
+          placeholder="Leave a comment"
           minRows={3}
           maxRows={3}
         />
@@ -521,7 +521,7 @@ export function TaskContent({ task, onSubmit }: TaskContentType) {
 
       <div className={styles.TaskContent__commentsList}>
         {!comments.length && (
-          <div className={styles.emptyComments}>Комментариев пока нет</div>
+          <div className={styles.emptyComments}>No comments yet</div>
         )}
         {!!sortedComments.length && sortedComments.map((comment) => {
           const isEditing = editingCommentId === comment.id;
@@ -530,12 +530,12 @@ export function TaskContent({ task, onSubmit }: TaskContentType) {
           const commentActions: ActionMenuItem<CommentType['id']>[] = [
             {
               key: 'edit',
-              label: 'Редактировать',
+              label: 'Edit',
               onSelect: () => onStartCommentEdit(comment),
             },
             {
               key: 'remove',
-              label: 'Удалить',
+              label: 'Delete',
               variant: 'danger',
               onSelect: async () => {
                 await onDeleteComment(comment.id);
@@ -589,21 +589,21 @@ export function TaskContent({ task, onSubmit }: TaskContentType) {
                         await onSaveCommentEdit(comment);
                       }}
                     >
-                      Сохранить
+                      Save
                     </button>
                     <button
                       type="button"
                       className={`button button-s ${styles.commentItem__cancelBtn}`}
                       onClick={onCancelCommentEdit}
                     >
-                      Отмена
+                      Cancel
                     </button>
                   </div>
                 </div>
               )}
 
               {isEdited && (
-                <p className={styles.commentItem__edited}>редактирован {formatDateTimeLocal(comment.updated)}</p>
+                <p className={styles.commentItem__edited}>edited {formatDateTimeLocal(comment.updated)}</p>
               )}
             </div>
           );

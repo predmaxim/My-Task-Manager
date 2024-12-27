@@ -7,7 +7,7 @@
 -- AlterTable
 ALTER TABLE "Status" ADD COLUMN "index" INTEGER NOT NULL;
 
--- Создание функции
+-- Create function
 CREATE OR REPLACE FUNCTION set_default_index()
 RETURNS TRIGGER AS $$
 BEGIN
@@ -16,7 +16,7 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
--- Создание триггера
+-- Create trigger
 CREATE TRIGGER set_default_index_trigger
 BEFORE INSERT ON "Status"
 FOR EACH ROW

@@ -54,7 +54,7 @@ export const register: RequestHandler = async (req: Request, res: Response) => {
     res.cookie(TOKEN_COOKIE_NAME, refresh_token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
-      maxAge: parseInt(JWT_REFRESH_TOKEN_EXPIRES) * 24 * 60 * 60 * 1000, // в миллисекундах d * h * m * s * ms
+      maxAge: parseInt(JWT_REFRESH_TOKEN_EXPIRES) * 24 * 60 * 60 * 1000, // in milliseconds d * h * m * s * ms
       domain:
         process.env.NODE_ENV === "production"
           ? DOMAIN_NAME_PROD
@@ -104,7 +104,7 @@ export const login: RequestHandler = async (req: Request, res: Response) => {
     res.cookie(TOKEN_COOKIE_NAME, refresh_token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
-      maxAge: parseInt(JWT_REFRESH_TOKEN_EXPIRES) * 24 * 60 * 60 * 1000, // в миллисекундах d * h * m * s * ms
+      maxAge: parseInt(JWT_REFRESH_TOKEN_EXPIRES) * 24 * 60 * 60 * 1000, // in milliseconds d * h * m * s * ms
       domain:
         process.env.NODE_ENV === "production"
           ? DOMAIN_NAME_PROD

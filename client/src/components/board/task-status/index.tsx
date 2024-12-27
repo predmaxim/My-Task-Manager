@@ -87,7 +87,7 @@ export function TaskStatus({ status }: TaskStatusProps) {
   };
 
   const onClickDeleteStatus = async () => {
-    if (!window.confirm('Удалить этот столбик?')) {
+    if (!window.confirm('Delete this column?')) {
       return;
     }
 
@@ -129,12 +129,12 @@ export function TaskStatus({ status }: TaskStatusProps) {
   const menuActions: ActionMenuItem<TaskStatusType['id']>[] = [
     {
       key: 'edit',
-      label: 'Редактировать название',
+      label: 'Edit title',
       onSelect: onClickEditTitle,
     },
     {
       key: 'remove',
-      label: 'Удалить',
+      label: 'Delete',
       variant: 'danger',
       onSelect: onClickDeleteStatus,
     },

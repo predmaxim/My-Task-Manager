@@ -95,12 +95,12 @@ export function Task({ task: initialTask }: TaskProps) {
   const menuActions: ActionMenuItem<TaskType['id']>[] = [
     {
       key: 'edit',
-      label: 'Редактировать название',
+      label: 'Edit title',
       onSelect: onClickEditTask,
     },
     {
       key: 'remove',
-      label: 'Удалить',
+      label: 'Delete',
       variant: 'danger',
       onSelect: onClickRemoveTask,
     },

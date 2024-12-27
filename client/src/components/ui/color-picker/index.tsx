@@ -15,7 +15,7 @@ export function ColorPicker<TColor extends string>({
   colorKeys,
   currentColor,
   onSelectColor,
-  noColorLabel = 'Без цвета',
+  noColorLabel = 'No color',
   noColorClassName,
   className,
   colorVarPrefix = '--status-column',
@@ -39,7 +39,7 @@ export function ColorPicker<TColor extends string>({
             key={colorKey}
             type="button"
             className={`${styles.ColorPicker__swatch} ${currentColor === colorKey ? styles.ColorPicker__swatch_active : ''}`}
-            aria-label={`Цвет ${colorKey}`}
+            aria-label={`Color ${colorKey}`}
             title={colorKey}
             style={{
               '--swatch-color': `var(${colorVarPrefix}-${colorKey})`,
