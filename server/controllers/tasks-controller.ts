@@ -1,26 +1,26 @@
 // import jwt from 'jsonwebtoken';
-import { Request, RequestHandler, Response } from "express";
-import { prisma } from "@/lib/prisma-client";
-import { TaskSchema } from "@/zod-schemas/generated";
-import { errorHandler } from "@/utils/error-handler";
-import { toInt } from "@/zod-schemas/custom";
+import { Request, RequestHandler, Response } from 'express';
+import { prisma } from '@/lib/prisma-client';
+import { TaskSchema } from '@/zod-schemas/generated';
+import { errorHandler } from '@/utils/error-handler';
+import { toInt } from '@/zod-schemas/custom';
 
 export const getTasks: RequestHandler = async (req: Request, res: Response) => {
-  const projectId = TaskSchema.shape.projectId.parse(
-    toInt(req.params.projectId)
-  );
-  const tasks = await prisma.task.findMany({
-    where: { projectId },
-    orderBy: { order: "asc" },
-    include: {
-      status: true,
-      parent: true,
-      children: true,
-      comments: true,
-    },
-  });
-  res.status(200).json(tasks);
   try {
+    const projectId = TaskSchema.shape.projectId.parse(
+      toInt(req.params.projectId),
+    );
+    const tasks = await prisma.task.findMany({
+      where: { projectId },
+      orderBy: { order: 'asc' },
+      include: {
+        status: true,
+        parent: true,
+        children: true,
+        comments: true,
+      },
+    });
+    res.status(200).json(tasks);
   } catch (error) {
     const errorMessage = errorHandler(error);
     res.status(500).json({ message: errorMessage });
@@ -41,7 +41,7 @@ export const getTask: RequestHandler = async (req: Request, res: Response) => {
     });
 
     if (!task) {
-      res.status(404).json({ message: "Task not found" });
+      res.status(404).json({ message: 'Task not found' });
       return;
     }
 
@@ -54,7 +54,7 @@ export const getTask: RequestHandler = async (req: Request, res: Response) => {
 
 export const createTask: RequestHandler = async (
   req: Request,
-  res: Response
+  res: Response,
 ) => {
   try {
     const task = TaskSchema.omit({ id: true, color: true }).extend({
@@ -88,7 +88,7 @@ export const createTask: RequestHandler = async (
 
 export const deleteTask: RequestHandler = async (
   req: Request,
-  res: Response
+  res: Response,
 ) => {
   try {
     const id = TaskSchema.shape.id.parse(toInt(req.params.id));
@@ -97,7 +97,7 @@ export const deleteTask: RequestHandler = async (
     });
 
     if (!removedTask) {
-      res.status(404).json({ message: "Task not found" });
+      res.status(404).json({ message: 'Task not found' });
       return;
     }
 
@@ -110,7 +110,7 @@ export const deleteTask: RequestHandler = async (
 
 export const updateTask: RequestHandler = async (
   req: Request,
-  res: Response
+  res: Response,
 ) => {
   const id = TaskSchema.shape.id.parse(toInt(req.params.id));
   try {
@@ -127,7 +127,7 @@ export const updateTask: RequestHandler = async (
     });
 
     if (!updatedTask) {
-      res.status(404).json({ message: "Task not found" });
+      res.status(404).json({ message: 'Task not found' });
       return;
     }
 
@@ -140,11 +140,11 @@ export const updateTask: RequestHandler = async (
 
 export const updateTasks: RequestHandler = async (
   req: Request,
-  res: Response
+  res: Response,
 ) => {
   try {
     const projectId = TaskSchema.shape.projectId.parse(
-      toInt(req.params.projectId)
+      toInt(req.params.projectId),
     );
     const tasks = TaskSchema.array().parse(req.body);
     const newTasks = await prisma.task.updateMany({

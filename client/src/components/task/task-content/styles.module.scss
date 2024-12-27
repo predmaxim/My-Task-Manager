@@ -122,16 +122,11 @@
 
   &__commentBtn {
     grid-area: commentBtn;
+    @include button("xl");
     justify-self: start;
     height: min-content;
     width: min-content;
-  }
 
-  .commentBtn {
-    @include button($size: "xl", $color: "primary");
-    width: min-content;
-    min-width: 90px;
-    white-space: nowrap;
   }
 
   &__subTasks {
@@ -198,7 +193,7 @@
     &__value {
       height: 100%;
       border-radius: inherit;
-      background: #2fbf71;
+      background: linear-gradient(90deg, var(--task-priority-normal), var(--task-priority-high));
       transition: width $transition;
     }
   }
@@ -216,9 +211,7 @@
     }
 
     &__addBtn {
-      @include button($size: "xl", $color: "primary");
       white-space: nowrap;
-      width: min-content;
       min-width: 90px;
     }
   }
@@ -417,7 +410,7 @@
     }
   }
 
-  @media screen and (width <= $mobile) {
+  @media screen and (width <=$mobile) {
     .subTaskCreator {
       grid-template-columns: 1fr;
 

@@ -36,7 +36,7 @@ export type TaskContentType = {
   onSubmit: (task: Partial<TaskType>) => void;
 };
 
-export function TaskContent({ task, onSubmit }: TaskContentType) {
+export function TaskContent({ task, onSubmit }: TaskContentType) {  
   const taskStatuses = useAppSelector((state) => state.statuses.taskStatuses) || [];
   const currentStatus = taskStatuses.find((status) => status.id === task.statusId);
   const [subTaskDraft, setSubTaskDraft] = useState('');
@@ -58,8 +58,8 @@ export function TaskContent({ task, onSubmit }: TaskContentType) {
   // const genDone = () => {
   //   if (task.done) {
   //     return new Date();
-  //   }
-
+  //   } 
+    
   //   return null;
   // };
 
@@ -119,7 +119,7 @@ export function TaskContent({ task, onSubmit }: TaskContentType) {
   };
 
   const onDeleteComment = async (commentId: CommentType['id']) => {
-    if (!window.confirm('Delete comment?')) {
+    if (!window.confirm('Удалить комментарий?')) {
       return;
     }
 
@@ -190,7 +190,6 @@ export function TaskContent({ task, onSubmit }: TaskContentType) {
       priority: 'low',
       order: 0,
       description: '',
-      color: null,
       inWork: null,
       created: new Date(),
       due: null,
@@ -226,7 +225,7 @@ export function TaskContent({ task, onSubmit }: TaskContentType) {
   };
 
   const onDeleteSubTask = async (subTaskId: TaskType['id']) => {
-    if (!window.confirm('Delete subtask?')) {
+    if (!window.confirm('Удалить подзадачу?')) {
       return;
     }
 
@@ -380,7 +379,7 @@ export function TaskContent({ task, onSubmit }: TaskContentType) {
                 await onCreateSubTask();
               }
             }}
-            placeholder="New subtask"
+            placeholder="Новая подзадача"
           />
           <button
             type="button"
@@ -395,7 +394,7 @@ export function TaskContent({ task, onSubmit }: TaskContentType) {
 
       <div className={styles.TaskContent__subTasksList}>
         {!subTasks.length && (
-          <div className={styles.emptySubTasks}>No subtasks yet</div>
+          <div className={styles.emptySubTasks}>Подзадач пока нет</div>
         )}
         {!!subTasks.length && subTasks.map((subTask) => {
           const isEditing = editingSubTaskId === subTask.id;
@@ -403,12 +402,12 @@ export function TaskContent({ task, onSubmit }: TaskContentType) {
           const subTaskActions: ActionMenuItem<TaskType['id']>[] = [
             {
               key: 'edit',
-              label: 'Edit',
+              label: 'Редактировать',
               onSelect: () => onStartSubTaskEdit(subTask),
             },
             {
               key: 'remove',
-              label: 'Delete',
+              label: 'Удалить',
               variant: 'danger',
               onSelect: async () => {
                 await onDeleteSubTask(subTask.id);
@@ -454,7 +453,7 @@ export function TaskContent({ task, onSubmit }: TaskContentType) {
                     <ColorPicker<TaskType['priority']>
                       colorKeys={Object.values(TASK_PRIORITY)}
                       currentColor={subTask.priority}
-                      noColorLabel="No color"
+                      noColorLabel="Без цвета"
                       colorVarPrefix="--task-priority"
                       onSelectColor={async (priority) => {
                         await onColorSubTask(subTask, priority || 'low');
@@ -475,14 +474,14 @@ export function TaskContent({ task, onSubmit }: TaskContentType) {
                       await onSaveSubTaskEdit(subTask);
                     }}
                   >
-                    Save
+                    Сохранить
                   </button>
                   <button
                     type="button"
                     className={`button button-s ${styles.subTaskItem__cancelBtn}`}
                     onClick={onCancelSubTaskEdit}
                   >
-                    Cancel
+                    Отмена
                   </button>
                 </div>
               )}
@@ -503,7 +502,7 @@ export function TaskContent({ task, onSubmit }: TaskContentType) {
           value={commentDraft}
           onChange={(e) => setCommentDraft(e.currentTarget.value)}
           className={styles.commentInput}
-          placeholder="Leave a comment"
+          placeholder="Оставить комментарий"
           minRows={3}
           maxRows={3}
         />
@@ -521,7 +520,7 @@ export function TaskContent({ task, onSubmit }: TaskContentType) {
 
       <div className={styles.TaskContent__commentsList}>
         {!comments.length && (
-          <div className={styles.emptyComments}>No comments yet</div>
+          <div className={styles.emptyComments}>Комментариев пока нет</div>
         )}
         {!!sortedComments.length && sortedComments.map((comment) => {
           const isEditing = editingCommentId === comment.id;
@@ -530,12 +529,12 @@ export function TaskContent({ task, onSubmit }: TaskContentType) {
           const commentActions: ActionMenuItem<CommentType['id']>[] = [
             {
               key: 'edit',
-              label: 'Edit',
+              label: 'Редактировать',
               onSelect: () => onStartCommentEdit(comment),
             },
             {
               key: 'remove',
-              label: 'Delete',
+              label: 'Удалить',
               variant: 'danger',
               onSelect: async () => {
                 await onDeleteComment(comment.id);
@@ -589,21 +588,21 @@ export function TaskContent({ task, onSubmit }: TaskContentType) {
                         await onSaveCommentEdit(comment);
                       }}
                     >
-                      Save
+                      Сохранить
                     </button>
                     <button
                       type="button"
                       className={`button button-s ${styles.commentItem__cancelBtn}`}
                       onClick={onCancelCommentEdit}
                     >
-                      Cancel
+                      Отмена
                     </button>
                   </div>
                 </div>
               )}
 
               {isEdited && (
-                <p className={styles.commentItem__edited}>edited {formatDateTimeLocal(comment.updated)}</p>
+                <p className={styles.commentItem__edited}>редактирован {formatDateTimeLocal(comment.updated)}</p>
               )}
             </div>
           );
