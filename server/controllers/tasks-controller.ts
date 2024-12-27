@@ -57,7 +57,9 @@ export const createTask: RequestHandler = async (
   res: Response
 ) => {
   try {
-    const task = TaskSchema.omit({ id: true }).parse(req.body);
+    const task = TaskSchema.omit({ id: true, color: true }).extend({
+      color: TaskSchema.shape.color.optional().default(null),
+    }).parse(req.body);
 
     await prisma.task.updateMany({
       where: { statusId: task.statusId },

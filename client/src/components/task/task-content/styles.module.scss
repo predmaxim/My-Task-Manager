@@ -8,6 +8,10 @@
     "description description description description description files"
     "info        info        info        info        info        files"
     "hr          hr          hr          hr          hr          hr"
+    "subTaskProgress subTaskProgress subTaskProgress subTaskProgress subTaskProgress subTaskProgress"
+    "subTasks     subTasks     subTasks     subTasks     subTasks     subTasks"
+    "subTasksList subTasksList subTasksList subTasksList subTasksList subTasksList"
+    "subTasksHr   subTasksHr   subTasksHr   subTasksHr   subTasksHr   subTasksHr"
     "comments    comments    comments    comments    comments    comments"
     "commentBtn  commentBtn  commentBtn  commentBtn  commentBtn  commentBtn"
     "commentsList commentsList commentsList commentsList commentsList commentsList";
@@ -107,22 +111,42 @@
     }
   }
 
+  &__subTasksHr {
+    grid-area: subTasksHr;
+    height: 1px;
+    border: 0;
+    border-top: 1px solid var(--border-color);
+    margin: 8px 0;
+    padding: 0;
+  }
+
   &__commentBtn {
     grid-area: commentBtn;
-    @include button("xl");
     justify-self: start;
     height: min-content;
     width: min-content;
+  }
 
+  .commentBtn {
+    @include button($size: "xl", $color: "primary");
+    width: min-content;
+    min-width: 90px;
+    white-space: nowrap;
   }
 
   &__subTasks {
     grid-area: subTasks;
+  }
 
-    .subTasks {
-      @include input;
-      resize: none;
-    }
+  &__subTaskProgress {
+    grid-area: subTaskProgress;
+  }
+
+  &__subTasksList {
+    grid-area: subTasksList;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
   }
 
   &__commentsList {
@@ -139,10 +163,150 @@
   &__description,
   &__files,
   &__comments,
-  &__subTasks {
+  &__subTasks,
+  &__subTaskProgress {
     display: flex;
     flex-direction: column;
     gap: 5px;
+  }
+
+  .subTaskProgress {
+    &__head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      font-size: 0.85rem;
+      color: var(--font-color-dimmed-darker);
+    }
+
+    &__label {
+      font-weight: 600;
+    }
+
+    &__meta {
+      color: var(--font-color-dimmed);
+    }
+
+    &__track {
+      height: 9px;
+      border-radius: 999px;
+      background: var(--color-light-grey-darker);
+      overflow: hidden;
+    }
+
+    &__value {
+      height: 100%;
+      border-radius: inherit;
+      background: #2fbf71;
+      transition: width $transition;
+    }
+  }
+
+  .subTaskCreator {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 8px;
+    align-items: center;
+
+    &__input {
+      @include input;
+      min-height: 40px;
+      line-height: 1.2;
+    }
+
+    &__addBtn {
+      @include button($size: "xl", $color: "primary");
+      white-space: nowrap;
+      width: min-content;
+      min-width: 90px;
+    }
+  }
+
+  .emptySubTasks {
+    color: var(--font-color-dimmed);
+    font-size: 0.95rem;
+    padding: 6px 0;
+  }
+
+  .subTaskItem {
+    border-radius: $border-radius;
+    border: 1px solid var(--border-color);
+    border-top: 3px solid var(--subtask-line-color, transparent);
+    background: var(--color-light-grey);
+    padding: 8px 10px;
+
+    &_done {
+      .subTaskItem__name {
+        color: var(--font-color-dimmed);
+        text-decoration: line-through;
+      }
+    }
+
+    &__header {
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      gap: 8px;
+      align-items: center;
+    }
+
+    &__checkbox {
+      cursor: pointer;
+      transform: scale(1.2);
+    }
+
+    &__name {
+      min-width: 0;
+      line-height: 1.2;
+      word-break: break-word;
+    }
+
+    &__nameInput {
+      @include input;
+      min-width: 0;
+      min-height: 34px;
+      line-height: 1.2;
+      padding-top: 6px;
+      padding-bottom: 6px;
+    }
+
+    &__menuBtn {
+      @include button($size: "s", $variant: "icon", $color: "transparent");
+      width: fit-content;
+      height: fit-content;
+      padding: 0;
+      opacity: 0.8;
+
+      &:hover {
+        opacity: 1;
+      }
+    }
+
+    &__editActions {
+      display: flex;
+      gap: 8px;
+      margin-top: 8px;
+    }
+
+    &__saveBtn,
+    &__cancelBtn {
+      min-width: 90px;
+    }
+
+    &__cancelBtn {
+      background: color-mix(in srgb, var(--font-color) 10%, transparent);
+      border: 1px solid color-mix(in srgb, var(--font-color) 20%, var(--border-color));
+
+      &:hover {
+        background: color-mix(in srgb, var(--font-color) 16%, transparent);
+      }
+    }
+
+    &__doneDate {
+      margin: 7px 0 0;
+      font-size: 0.82rem;
+      color: var(--font-color-dimmed);
+    }
   }
 
   .created,
@@ -249,6 +413,16 @@
 
       &:hover {
         background: color-mix(in srgb, currentColor 20%, transparent);
+      }
+    }
+  }
+
+  @media screen and (width <= $mobile) {
+    .subTaskCreator {
+      grid-template-columns: 1fr;
+
+      &__addBtn {
+        justify-self: start;
       }
     }
   }
