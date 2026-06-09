@@ -1,10 +1,18 @@
 import { Prisma } from "@prisma/client";
 import { ZodError } from "zod";
 import jwt from "jsonwebtoken";
+import { logger } from "./logger";
 
 type ErrorHandler = (error: unknown) => string;
 
 export const errorHandler: ErrorHandler = (error) => {
+  const errorMessage = extractErrorMessage(error);
+  logger.error(errorMessage, { error });
+
+  return errorMessage;
+};
+
+const extractErrorMessage = (error: unknown): string => {
   if (error instanceof ZodError) {
     return error.errors.map((e) => e.message).join(", ");
   }

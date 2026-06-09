@@ -1,2 +1,5 @@
 /.idea
 node_modules
+
+# Logs (daily rotating files)
+server/logs/*.log

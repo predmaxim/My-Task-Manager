@@ -1,5 +1,5 @@
-export const SERVER_URL = 'http://localhost';
-export const SERVER_PORT = '5000';
+export const SERVER_URL = import.meta.env.VITE_SERVER_URL || 'http://localhost';
+export const SERVER_PORT = import.meta.env.VITE_SERVER_PORT || '5000';
 export const BASE_URL = `${SERVER_URL}:${SERVER_PORT}`;
 export const API_URL = `${BASE_URL}/api`;
 export const BASE_PROJECT_URL = '/project';
