@@ -9,10 +9,11 @@
     "start": "concurrently \"yarn server\" \"yarn client\"",
     "server": "cd server && yarn start",
     "client": "cd client && yarn dev",
-    "migrate": "cd server && yarn migrate"
+    "migrate": "cd server && yarn migrate",
+    "inst": "cd server && yarn install && cd ../client && yarn install && cd .."
   },
   "devDependencies": {
-    "concurrently": "^9.1.0"
+    "concurrently": "^10.0.3"
   },
   "dependencies": {
     "@dnd-kit/modifiers": "^7.0.0"
